@@ -1,0 +1,9 @@
+.header-menu-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+div > * {
+    margin: 10px 15px;
+}
