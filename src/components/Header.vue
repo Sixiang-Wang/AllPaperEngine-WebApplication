@@ -11,7 +11,7 @@
       style="height: 100%;"
   >
     <el-menu-item>
-      <img src="@/assets/logo.gif" style="width: 100px; height: 100px;"/>
+      <img src="@/assets/logo.gif" style="width: 50px; height: 50px;"/>
     </el-menu-item>
     <el-menu-item index="1">Processing Center</el-menu-item>
     <el-sub-menu index="2">
