@@ -5,7 +5,7 @@ import Header from "./components/Header.vue";
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header>
+      <el-header height="100px">
         <Header/>
       </el-header>
       <el-main><router-view/></el-main>

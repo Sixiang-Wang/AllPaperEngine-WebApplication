@@ -8,6 +8,7 @@
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
+      style="height: 100%;"
   >
     <el-menu-item>
       <img src="@/assets/logo.gif" style="width: 100px; height: 100px;"/>
