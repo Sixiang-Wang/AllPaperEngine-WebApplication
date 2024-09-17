@@ -1,8 +1,15 @@
 <script setup>
 import {ref} from "vue";
+import router from "@/router/index.js";
 
 const button_index = ref("登录");
 const user_name = ref("Monica");
+const back = ()=> {
+  router.push('/main');
+}
+const goToUserInfo = () => {
+  router.push('/user/info');
+}
 </script>
 
 <template>
@@ -14,9 +21,9 @@ const user_name = ref("Monica");
       style="height: 100%;"
       :ellipsis="false"
   >
-    <el-menu-item>
+    <div class="header-menu-left" @click="back">
       <img src="@/assets/image/logo.gif" style="width: 50px; height: 50px;"/>
-    </el-menu-item>
+    </div>
     <el-sub-menu index="2">
       <template #title>读者服务</template>
       <el-menu-item index="2-1">item one</el-menu-item>
@@ -30,7 +37,7 @@ const user_name = ref("Monica");
     </el-sub-menu>
     <el-menu-item index="4">联系我们</el-menu-item>
     <div class="header-menu-right">
-      <el-avatar shape="circle"></el-avatar>
+      <el-avatar shape="circle" @click="goToUserInfo"></el-avatar>
       <span>Hello, {{ user_name }}</span>
       <el-button style="margin-right: 30px">{{ button_index }}</el-button>
     </div>

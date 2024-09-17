@@ -9,15 +9,7 @@
       </el-aside>
 
       <el-main>
-        <el-card style="max-width: 700px">
-          <div class="card-header">
-            <span>基本信息</span>
-          </div>
-          <br>
-          <p class="card-item">aa</p>
-          <el-divider />
-          <p class="card-item">aa</p>
-        </el-card>
+        <router-view/>
       </el-main>
     </el-container>
   </div>
@@ -39,8 +31,6 @@ import UserAside from "@/components/UserAside.vue";
   border-bottom: none;
 }
 
-.card-item{
-  padding: 0 15px;
-}
+
 
 </style>
