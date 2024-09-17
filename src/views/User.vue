@@ -14,9 +14,9 @@
             <span>基本信息</span>
           </div>
           <br>
-          <p class="text item">aa</p>
+          <p class="card-item">aa</p>
           <el-divider />
-          <p class="text item">aa</p>
+          <p class="card-item">aa</p>
         </el-card>
       </el-main>
     </el-container>
@@ -39,6 +39,8 @@ import UserAside from "@/components/UserAside.vue";
   border-bottom: none;
 }
 
-
+.card-item{
+  padding: 0 15px;
+}
 
 </style>
