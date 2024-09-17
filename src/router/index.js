@@ -5,7 +5,34 @@ const router = createRouter({
         {
             path: '/user',
             name: 'user',
-            component: () => import('@/views/User.vue')
+            component: () => import('@/views/UserInfo.vue'),
+            children: [
+                {
+                    path: '/user/info',
+                    name: 'userInfo',
+                    component: () => import('@/views/UserInfoCard.vue')
+                },
+                {
+                    path: '/user/security',
+                    name: 'security',
+                    component: () => import('@/views/UserSecurity.vue')
+                },
+                {
+                    path: '/user/paper',
+                    name: 'paper',
+                    component: () => import('@/views/PaperManager.vue')
+                },
+                {
+                    path: '/user/statistics',
+                    name: 'statistics',
+                    component: () => import('@/views/UserStatistics.vue')
+                }
+            ]
+        },
+        {
+            path: '/home',
+            name: 'home',
+            component: () => import('@/views/Home.vue')
         }
     ]
 })

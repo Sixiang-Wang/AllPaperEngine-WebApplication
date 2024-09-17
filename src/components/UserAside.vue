@@ -1,33 +1,31 @@
 <template>
-  <el-col>
     <el-menu
         active-text-color="#000000"
         background-color="#ffffff"
         class="el-menu-vertical-demo"
-        default-active="2"
         text-color="#000000"
         @open="handleOpen"
         @close="handleClose"
+        router
         style="width:250px;border-right: none;box-shadow: none"
     >
-      <el-menu-item index="1">
+      <el-menu-item index="/user/info">
         <el-icon class="aside-icon"><User /></el-icon>
         <span class="fontStyle">个人信息</span>
       </el-menu-item>
-      <el-menu-item index="2">
+      <el-menu-item index="/user/security">
         <el-icon class="aside-icon"><Lock /></el-icon>
         <span class="fontStyle">安全隐私</span>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item index="/user/paper">
         <el-icon class="aside-icon"><document /></el-icon>
         <span class="fontStyle">论文管理</span>
       </el-menu-item>
-      <el-menu-item index="4">
+      <el-menu-item index="/user/statistics">
         <el-icon class="aside-icon"><data-line/></el-icon>
         <span class="fontStyle">成果统计</span>
       </el-menu-item>
     </el-menu>
-  </el-col>
 </template>
 
 
