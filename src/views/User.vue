@@ -4,7 +4,7 @@
 
   <div class="common-layout">
     <el-container>
-      <el-aside width="250px">
+      <el-aside width="400px">
         <UserAside></UserAside>
       </el-aside>
 

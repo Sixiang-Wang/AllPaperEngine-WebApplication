@@ -5,28 +5,28 @@ const router = createRouter({
         {
             path: '/user',
             name: 'user',
-            component: () => import('@/views/UserInfo.vue'),
+            component: () => import('@/views/User.vue'),
             redirect: '/user/info', // 添加重定向规则
             children: [
                 {
                     path: '/user/info',
                     name: 'userInfo',
-                    component: () => import('@/views/UserInfoCard.vue')
+                    component: () => import('@/views/user/UserInfo.vue')
                 },
                 {
                     path: '/user/security',
                     name: 'security',
-                    component: () => import('@/views/UserSecurity.vue')
+                    component: () => import('@/views/user/UserSecurity.vue')
                 },
                 {
                     path: '/user/paper',
                     name: 'paper',
-                    component: () => import('@/views/PaperManager.vue')
+                    component: () => import('@/views/user/PaperManager.vue')
                 },
                 {
                     path: '/user/statistics',
                     name: 'statistics',
-                    component: () => import('@/views/UserStatistics.vue')
+                    component: () => import('@/views/user/UserStatistics.vue')
                 }
             ]
         },
