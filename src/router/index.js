@@ -6,6 +6,7 @@ const router = createRouter({
             path: '/user',
             name: 'user',
             component: () => import('@/views/UserInfo.vue'),
+            redirect: '/user/info', // 添加重定向规则
             children: [
                 {
                     path: '/user/info',
