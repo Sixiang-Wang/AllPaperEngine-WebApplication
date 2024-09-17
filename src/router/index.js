@@ -3,9 +3,9 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/home',
-            name: 'home',
-            component: () => import('@/views/one.vue')
+            path: '/user',
+            name: 'user',
+            component: () => import('@/views/user.vue')
         }
     ]
 })
