@@ -9,7 +9,9 @@
       mode="horizontal"
       @select="handleSelect"
   >
-    <el-image src=""/>
+    <el-menu-item>
+      <img src="@/assets/logo.gif" style="width: 100px; height: 100px;"/>
+    </el-menu-item>
     <el-menu-item index="1">Processing Center</el-menu-item>
     <el-sub-menu index="2">
       <template #title>Workspace</template>
