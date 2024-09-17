@@ -8,7 +8,17 @@
         <UserAside></UserAside>
       </el-aside>
 
-      <el-main>Main</el-main>
+      <el-main>
+        <el-card style="max-width: 700px">
+          <div class="card-header">
+            <span>基本信息</span>
+          </div>
+          <br>
+          <p class="text item">aa</p>
+          <el-divider />
+          <p class="text item">aa</p>
+        </el-card>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -22,6 +32,13 @@ import UserAside from "@/components/UserAside.vue";
 .el-menu-vertical-demo{
   margin-left: 0;
   margin-right: 0;
-
 }
+
+.card-header{
+  font-size: large;
+  border-bottom: none;
+}
+
+
+
 </style>
