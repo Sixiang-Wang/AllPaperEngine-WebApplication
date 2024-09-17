@@ -9,6 +9,7 @@
       mode="horizontal"
       @select="handleSelect"
   >
+    <el-image src=""/>
     <el-menu-item index="1">Processing Center</el-menu-item>
     <el-sub-menu index="2">
       <template #title>Workspace</template>
