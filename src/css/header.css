@@ -3,12 +3,22 @@
     display: flex;
     align-items: center;
 }
+
 .header-menu-left {
 }
+
 div > * {
     margin: 10px 15px;
 }
 
-.user-avatar{
+.user-avatar {
     background-color: transparent;
+}
+
+.el-menu {
+    background-color: transparent !important;
+}
+
+.el-menu-item.is-active, .el-submenu.is-active > .el-menu-item {
+    background-color: transparent !important;
 }

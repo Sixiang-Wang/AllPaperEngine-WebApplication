@@ -1,7 +1,8 @@
 <script setup>
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
+import { useRoute } from 'vue-router';
 
 const button_index = ref("登录");
 const user_name = ref("World～(∠・▽< )⌒☆");
@@ -15,6 +16,10 @@ const avatar = ref({
   defaultAvatar: defaultAvatar,
   url : defaultAvatar
 })
+const route = useRoute();
+const textColor = computed(() => {
+  return route.path === '/main' ? '#ffffff' : '#000000'; // 选择颜色
+});
 </script>
 
 <template>
@@ -23,6 +28,7 @@ const avatar = ref({
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
+      :text-color="textColor"
       style="height: 100%;"
       :ellipsis="false"
   >
@@ -41,9 +47,9 @@ const avatar = ref({
       <el-menu-item index="3-2">学术成果认领</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="4">联系我们</el-menu-item>
-    <div class="header-menu-right">
+    <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
-      <span>Ciallo, {{ user_name }}</span>
+      <span :style="{color: textColor}">Ciallo, {{ user_name }}</span>
       <el-button style="margin-right: 30px">{{ button_index }}</el-button>
     </div>
   </el-menu>
@@ -56,4 +62,5 @@ const avatar = ref({
 .el-menu--horizontal > .el-menu-item:nth-child(4) {
   margin-right: auto;
 }
+
 </style>

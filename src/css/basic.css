@@ -9,4 +9,10 @@
     align-items: center;
 }
 .background {
+    width: 100%;
+    height: 100vh; /* 使背景占满视口高度 */
+    background-image: url("@/assets/image/background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }

@@ -1,9 +1,18 @@
 <script setup>
-import Header from "./components/Header.vue";
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import Header from '@/components/Header.vue';
+
+const route = useRoute();
+
+const isSpecificRoute = computed(() => {
+  // 根据需要替换成你的特定路由
+  return route.path === '/main';
+});
 </script>
 
 <template>
-  <div class="common-layout background" style="margin:0;padding: 0;">
+  <div :class="['common-layout', { background: isSpecificRoute }]" style="margin:0;padding: 0;">
     <el-container style="margin:0;padding: 0;">
       <el-header height="80px" style="margin:0;padding: 0;">
         <Header/>
