@@ -18,7 +18,7 @@ const avatar = ref({
 })
 const route = useRoute();
 const textColor = computed(() => {
-  return route.path === '/main' ? '#ffffff' : '#000000'; // 选择颜色
+  return route.path === '/main' ? '#000000' : '#000000'; // 选择颜色
 });
 </script>
 
@@ -50,7 +50,7 @@ const textColor = computed(() => {
     <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
       <span :style="{color: textColor}">Ciallo, {{ user_name }}</span>
-      <el-button style="margin-right: 30px">{{ button_index }}</el-button>
+      <el-button style="margin-right: 30px;background-color: transparent">{{ button_index }}</el-button>
     </div>
   </el-menu>
   <div class="h-6"/>
