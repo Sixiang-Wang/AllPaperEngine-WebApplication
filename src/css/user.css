@@ -3,5 +3,8 @@
     font-weight: 1;
 }
 .text-item{
-    padding-left: 15px;
+    padding-left: 10px;
+    font-size: 14px;
+    color: rgba(80, 80, 80, 0.92);
+    max-width: 100px;
 }
