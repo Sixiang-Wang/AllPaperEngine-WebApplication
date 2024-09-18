@@ -1,0 +1,13 @@
+.ad-text {
+    line-height: 1.5;
+    font-size: 20px;
+    font-weight: lighter;
+}
+.ad-header{
+    font-size: 25px;
+    font-weight: 1;
+}
+.ad-button {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+}
