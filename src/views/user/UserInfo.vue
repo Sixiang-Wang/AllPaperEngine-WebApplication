@@ -7,7 +7,7 @@ import * as url from "node:url";
 
 const avatar = ref({
   defaultAvatar: defaultAvatar,
-  url : ''
+  url : defaultAvatar
 })
 
 const tableData = [
@@ -34,7 +34,7 @@ const tableData = [
     <div style="display: flex; align-items: center;">
       <p class="text-item">个人资料照片</p>
       <el-avatar
-          :src=avatar.defaultAvatar
+          :src=avatar.url
           :size="70"
           shape="square"
           fit="cover"

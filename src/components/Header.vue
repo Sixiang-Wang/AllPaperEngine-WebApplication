@@ -1,15 +1,20 @@
 <script setup>
 import {ref} from "vue";
 import router from "@/router/index.js";
+import defaultAvatar from "@/assets/image/user.gif";
 
 const button_index = ref("登录");
-const user_name = ref("Monica");
+const user_name = ref("World～(∠・▽< )⌒☆");
 const back = ()=> {
   router.push('/main');
 }
 const goToUserInfo = () => {
   router.push('/user/info');
 }
+const avatar = ref({
+  defaultAvatar: defaultAvatar,
+  url : defaultAvatar
+})
 </script>
 
 <template>
@@ -37,8 +42,8 @@ const goToUserInfo = () => {
     </el-sub-menu>
     <el-menu-item index="4">联系我们</el-menu-item>
     <div class="header-menu-right">
-      <el-avatar shape="circle" @click="goToUserInfo"></el-avatar>
-      <span>Hello, {{ user_name }}</span>
+      <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
+      <span>Ciallo, {{ user_name }}</span>
       <el-button style="margin-right: 30px">{{ button_index }}</el-button>
     </div>
   </el-menu>

@@ -8,3 +8,7 @@
 div > * {
     margin: 10px 15px;
 }
+
+.user-avatar{
+    background-color: transparent;
+}
