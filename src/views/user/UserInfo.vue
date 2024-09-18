@@ -4,10 +4,11 @@ import * as https from "node:https";
 import defaultAvatar from "@/assets/image/user.gif";
 import {ref} from "vue";
 import * as url from "node:url";
+import Advertisement from "@/components/Advertisement.vue";
 
 const avatar = ref({
   defaultAvatar: defaultAvatar,
-  url : defaultAvatar
+  url: defaultAvatar
 })
 
 const tableData = [
@@ -24,41 +25,48 @@ const tableData = [
 </script>
 
 <template>
+  <div style="display: flex">
+    <div>
+      <el-card style="max-width: 800px">
+        <div class="card-header">
+          <span>基本信息</span>
+        </div>
 
-  <el-card style="max-width: 800px" >
-    <div class="card-header">
-      <span>基本信息</span>
+        <br>
+        <div style="display: flex; align-items: center;">
+          <p class="text-item">个人资料照片</p>
+          <el-avatar
+              :src=avatar.url
+              :size="70"
+              shape="square"
+              fit="cover"
+              class="user-avatar">
+          </el-avatar>
+
+        </div>
+        <el-divider style="margin: 0"/>
+        <el-table :data="tableData" style="width: 100%" :show-header="false">
+          <el-table-column prop="feature" label="Feature" width="100"/>
+          <el-table-column prop="value" label="Value" width="600"/>
+          <el-table-column width="50px">
+            <template #default="scope">
+              <arrow-right style="width: 25px; height: 25px;"/>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
     </div>
-
-    <br>
-    <div style="display: flex; align-items: center;">
-      <p class="text-item">个人资料照片</p>
-      <el-avatar
-          :src=avatar.url
-          :size="70"
-          shape="square"
-          fit="cover"
-          class="user-avatar">
-      </el-avatar>
-
+    <div style="margin-left: 5%">
+      <Advertisement/>
     </div>
-    <el-divider style="margin: 0"/>
-    <el-table :data="tableData" style="width: 100%" :show-header="false">
-      <el-table-column prop="feature" label="Feature" width="100" />
-      <el-table-column prop="value" label="Value" width="600" />
-      <el-table-column width="50px">
-        <template #default="scope">
-          <arrow-right style="width: 25px; height: 25px;"/>
-        </template>
-      </el-table-column>
-    </el-table>
-  </el-card>
+  </div>
 </template>
 
 
 <style scoped>
 @import "@/css/user.css";
-.el-table__body tr:last-child{
+
+.el-table__body tr:last-child {
   border-bottom: none !important;
 }
 </style>
