@@ -8,3 +8,29 @@
     color: rgba(80, 80, 80, 0.92);
     max-width: 100px;
 }
+.user-avatar{
+    background-color: transparent;
+    margin-left: auto;
+    border: 2px solid;
+    border-image: linear-gradient(red, yellow, green, blue) 1;
+    margin-bottom: 8px;
+    margin-right: 3px;
+    animation: rotate-border 15s linear infinite;
+}
+@keyframes rotate-border {
+    0% {
+        border-image-source: linear-gradient(red, yellow, green, blue);
+    }
+    25% {
+        border-image-source: linear-gradient(yellow, green, blue, red);
+    }
+    50% {
+        border-image-source: linear-gradient(green, blue, red, yellow);
+    }
+    75% {
+        border-image-source: linear-gradient(blue, red, yellow,green);
+    }
+    100% {
+        border-image-source: linear-gradient(red, yellow, green, blue);
+    }
+}
