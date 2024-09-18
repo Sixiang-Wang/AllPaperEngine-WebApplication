@@ -3,3 +3,8 @@
 .card-value {
     margin-left: 5%;
 }
+.vertical-center {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}

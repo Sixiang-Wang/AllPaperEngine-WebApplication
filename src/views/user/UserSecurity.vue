@@ -49,7 +49,7 @@ const tableData2 = [
       </el-card>
       <el-card style="max-width: 800px;margin-top: 5%">
         <div class="card-header">
-          <span>账号安全</span>
+          <span>设置</span>
         </div>
         <el-table :data="tableData2" style="width: 100%" show-header="false">
           <el-table-column prop="feature" width="700px"></el-table-column>

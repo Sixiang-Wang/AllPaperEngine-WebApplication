@@ -16,5 +16,5 @@
 </template>
 
 <style scoped>
-@import "@/css/ad.css";
+@import "@/css/advertisement.css";
 </style>
