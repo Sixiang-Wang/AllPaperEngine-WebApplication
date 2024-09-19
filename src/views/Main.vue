@@ -14,7 +14,7 @@ import {onMounted, ref} from "vue";
       } else {
         clearInterval(interval); // 打字完成后停止
       }
-    }, 150); // 设置打字速度，150ms显示一个字符
+    }, 100); // 设置打字速度，150ms显示一个字符
   });
 </script>
 
@@ -32,6 +32,9 @@ import {onMounted, ref} from "vue";
         <el-option label="关键词" value="3" />
       </el-select>
     </template>
+    <template #append>
+      <el-button>搜索</el-button>
+    </template>
   </el-input>
   </div>
 </div>
@@ -40,6 +43,10 @@ import {onMounted, ref} from "vue";
 <style scoped>
 
   @import "@/css/main.css";
+  :deep(.el-input-group__append) {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.7);
+  }
   :deep(.el-input__wrapper){
     background-color:rgba(0,0,0,0) !important;
     --el-input-focus-border-color:#FFFFFF;
@@ -64,5 +71,4 @@ import {onMounted, ref} from "vue";
     height: 40px;
     --el-input-focus-border-color: #FFFFFF;
   }
-
 </style>

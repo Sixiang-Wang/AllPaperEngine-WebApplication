@@ -8,3 +8,9 @@
     font-size: 60px;
     /*font-weight: 1000;*/
 }
+.main-statistics {
+    display: flex;
+    margin-top: 25%;
+    margin-left: 10%;
+    /*background-color: #fff;*/
+}

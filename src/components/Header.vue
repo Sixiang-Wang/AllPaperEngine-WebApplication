@@ -46,7 +46,8 @@ const textColor = computed(() => {
       <el-menu-item index="3-1">论文上传</el-menu-item>
       <el-menu-item index="3-2">学术成果认领</el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="4">联系我们</el-menu-item>
+    <el-menu-item index="4">热点分析</el-menu-item>
+    <el-menu-item index="5">联系我们</el-menu-item>
     <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
       <span :style="{color: textColor}">Ciallo, {{ user_name }}</span>
@@ -59,7 +60,7 @@ const textColor = computed(() => {
 <style scoped>
 @import "@/css/header.css";
 
-.el-menu--horizontal > .el-menu-item:nth-child(4) {
+.el-menu--horizontal > .el-menu-item:nth-child(5) {
   margin-right: auto;
 }
 
