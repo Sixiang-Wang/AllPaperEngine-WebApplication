@@ -14,3 +14,56 @@
     margin-left: 10%;
     /*background-color: #fff;*/
 }
+
+.search-input{
+    height: 40px;
+    max-width: 60%;
+}
+
+.search-button {
+    border-radius: 0 4px 4px 0; /* 使按钮圆角与输入框拼接 */
+    height: 40px;
+    color: rgba(255, 255, 255, 0.8);
+    background-color: transparent;
+    border-left-width: 0;
+}
+.search-button:hover {
+    border: 1px solid #00ffea;
+    border-left-width: 0;
+    color: rgba(0, 255, 234, 1);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+:deep(.el-input__wrapper){
+    background-color:rgba(0,0,0,0) !important;
+    border-radius: 0 !important;
+    --el-input-focus-border-color: rgba(100, 255, 255, 0.98);
+    --el-input-hover-border-color:rgba(99, 255, 255, 0.8);
+    --el-input-border-color: rgba(255, 255, 255, 0.7);
+}
+:deep(.el-input-group__prepend){
+    background-color:rgba(0,0,0,0);
+}
+:deep(.el-input__inner) {
+    background-color: rgba(0, 0, 0, 0) !important;
+    color: #fff;
+}
+:deep(.el-input__inner::placeholder) {
+    color: rgba(200, 200, 200, 0.7) !important;
+    cursor: pointer;
+}
+:deep(.el-select__selected-item) {
+    color: rgba(200, 200, 200, 0.7) !important;
+    cursor: pointer;
+}
+/*不要碰这里的代码*/
+:deep(.el-select__wrapper){
+    height: 40px;
+    --el-select-border-color: rgba(200, 200, 200, 0.7);
+    --el-select-focus-border-color:rgba(235, 235, 235, 0.8);
+}
+:deep(.el-input-group__append) {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 1);
+    --el-input-border-color: rgba(255, 255, 255, 0.7);
+}
