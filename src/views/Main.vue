@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, ref} from "vue";
   const searchType = ref("主题");
-
+  const searchInput = ref("");
   const fullText = "Ciallo, World～(∠・▽< )⌒☆";
   const displayedText = ref(""); // 动态显示的文字
 
@@ -24,7 +24,7 @@ import {onMounted, ref} from "vue";
     <h2 class="title">{{displayedText}}</h2>
   </div>
   <div style="background-color: transparent !important;">
-  <el-input style="height: 40px; max-width: 60%;" placeholder="请输入搜索内容">
+  <el-input v-model="searchInput" style="height: 40px; max-width: 60%;" placeholder="请输入搜索内容">
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="主题" value="1" />
@@ -41,7 +41,8 @@ import {onMounted, ref} from "vue";
 
   @import "@/css/main.css";
   :deep(.el-input__wrapper){
-    background-color:rgba(0,0,0,0);
+    background-color:rgba(0,0,0,0) !important;
+    --el-input-focus-border-color:#FFFFFF;
   }
   :deep(.el-input-group__prepend){
     background-color:rgba(0,0,0,0);
@@ -50,9 +51,18 @@ import {onMounted, ref} from "vue";
     background-color: rgba(0, 0, 0, 0) !important;
     color: #fff;
   }
+  :deep(.el-input__inner::placeholder) {
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: pointer;
+  }
+  :deep(.el-select__selected-item) {
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: pointer;
+  }
 /*不要碰这里的代码！别放到.css中*/
   :deep(.el-select__wrapper){
     height: 40px;
+    --el-input-focus-border-color: #FFFFFF;
   }
 
 </style>
