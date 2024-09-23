@@ -1,0 +1,33 @@
+.el-header {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    padding-top:2%;
+    padding-bottom: 2%;
+    background-color: #F4F5F8;
+    height: 100%;
+}
+
+.search-input {
+    width: 600px; /* 根据需要调整宽度 */
+    height: 40px;
+}
+.search-result-title {
+    font-weight: 500;
+    font-size: 20px;
+    color: #2c00a9;
+}
+.search-result-author {
+    font-size: 13px;
+    color: #256638;
+}
+.search-result-content {
+    font-size: 13px;
+}
+.search-result-bottom {
+    color: #2c00a9;
+    font-size: 13px;
+    margin-right: 3%;
+}
+.component {
+    margin-top: 5px;
+}

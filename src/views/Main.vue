@@ -1,11 +1,15 @@
 <script setup>
 import {onMounted, ref} from "vue";
+import router from "@/router/index.js";
 import {Search} from '@element-plus/icons-vue'
   const searchType = ref("主题");
   const searchInput = ref("");
   const fullText = "Ciallo, World～(∠・▽< )⌒☆";
   const displayedText = ref(""); // 动态显示的文字
-
+  const search = () => {
+    console.log(111);
+    router.push({path: "/search", query: {input: searchInput.value}});
+  }
   onMounted(() => {
     let index = 0;
     const interval = setInterval(() => {
@@ -17,10 +21,6 @@ import {Search} from '@element-plus/icons-vue'
       }
     }, 150); // 设置打字速度，150ms显示一个字符
   });
-
-const clickSearch = () => {
-
-};
 </script>
 
 <template>
@@ -39,11 +39,39 @@ const clickSearch = () => {
     </template>
 
   </el-input>
-    <el-button :icon="Search" @click="clickSearch" class="search-button"  />
+    <el-button :icon="Search" @click="search" class="search-button"  />
   </div>
 </div>
 </template>
 
 <style scoped>
   @import "@/css/main.css";
+  :deep(.el-input-group__append) {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  :deep(.el-input__wrapper){
+    background-color:rgba(0,0,0,0) !important;
+    --el-input-focus-border-color:#FFFFFF;
+  }
+  :deep(.el-input-group__prepend){
+    background-color:rgba(0,0,0,0);
+  }
+  :deep(.el-input__inner) {
+    background-color: rgba(0, 0, 0, 0) !important;
+    color: #fff;
+  }
+  :deep(.el-input__inner::placeholder) {
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: pointer;
+  }
+  :deep(.el-select__selected-item) {
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: pointer;
+  }
+/*不要碰这里的代码！别放到.css中*/
+  :deep(.el-select__wrapper){
+    height: 40px;
+    --el-input-focus-border-color: #FFFFFF;
+  }
 </style>
