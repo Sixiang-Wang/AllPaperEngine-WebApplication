@@ -54,7 +54,7 @@ const searchResults = ref([
         <div style="display: flex;">
           <div>
             <SingleResult v-for="result in searchResults" :author="result.author" :content="result.content"
-                          :title="result.title" :cited="result.cited"></SingleResult>
+                          :title="result.title" :cited="result.cited "></SingleResult>
           </div>
           <div>
             <Advertisement/>
