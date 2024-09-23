@@ -51,6 +51,7 @@ const searchResults = ref([
         <SearchAside/>
       </el-aside>
       <el-main style="margin-left: 2%;">
+        <span class="search-result-statistic">共查询到{{ searchResults.length }}个结果</span>
         <div style="display: flex;">
           <div>
             <SingleResult v-for="result in searchResults" :author="result.author" :content="result.content"

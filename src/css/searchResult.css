@@ -28,6 +28,10 @@
     font-size: 13px;
     margin-right: 3%;
 }
+.search-result-statistic {
+    color: gray;
+    font-size: 13px;
+}
 .component {
     margin-top: 5px;
 }
