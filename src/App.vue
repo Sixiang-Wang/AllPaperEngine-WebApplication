@@ -9,10 +9,13 @@ const isSpecificRoute = computed(() => {
   // 根据需要替换成你的特定路由
   return route.path === '/main';
 });
+const isLogin = computed(()=> {
+  return route.path === '/login';
+})
 </script>
 
 <template>
-  <div :class="['common-layout', { background: isSpecificRoute }]" style="margin:0;padding: 0;">
+  <div :class="['common-layout', { background: isSpecificRoute}]" style="margin:0;padding: 0;">
     <el-container style="margin:0;padding: 0;">
       <el-header height="80px" style="margin:0;padding: 0;">
         <Header/>
