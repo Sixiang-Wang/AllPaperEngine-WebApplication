@@ -16,7 +16,7 @@ const isLogin = computed(()=> {
 
 <template>
   <div :class="['common-layout', { background: isSpecificRoute}]" style="margin:0;padding: 0;">
-<!--    <div v-if="isLogin" class="backgroundBlur"></div>-->
+    <div v-if="isLogin" class="backgroundBlur"></div>
     <el-container style="margin:0;padding: 0;z-index: 1">
       <el-header height="80px" style="margin:0;padding: 0;">
         <Header/>
