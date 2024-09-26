@@ -1,4 +1,4 @@
-package com.example.scholar.entity;
+package com.example.scholar.domain;
 
 
 import java.util.HashMap;
@@ -13,11 +13,11 @@ public class R extends HashMap<String, Object> {
     }
 
     public static R error() {
-        return error(500, "未知异常，请联系管理员");
+        return error(414, "未知异常，请联系管理员");
     }
 
     public static R error(String msg) {
-        return error(500, msg);
+        return error(414, msg);
     }
 
     public static R error(int code, String msg) {
