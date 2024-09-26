@@ -20,6 +20,9 @@ const route = useRoute();
 const textColor = computed(() => {
   return route.path === '/main' ? '#000000' : '#000000'; // 选择颜色
 });
+const goToLogin = () => {
+  router.push('/login');
+}
 </script>
 
 <template>
@@ -51,7 +54,7 @@ const textColor = computed(() => {
     <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
       <span :style="{color: textColor}">Ciallo, {{ user_name }}</span>
-      <el-button style="margin-right: 30px;background-color: transparent">{{ button_index }}</el-button>
+      <el-button @click="goToLogin" style="margin-right: 30px;background-color: transparent">{{ button_index }}</el-button>
     </div>
   </el-menu>
   <div class="h-6"/>

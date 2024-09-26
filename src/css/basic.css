@@ -25,7 +25,9 @@
     background-repeat: no-repeat;
     background-position: center;
 }
-
+.component {
+    margin-bottom: 5%;
+}
 .backgroundBlur {
     position: absolute;
     top: 0;
