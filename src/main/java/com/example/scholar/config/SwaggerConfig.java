@@ -23,7 +23,7 @@ public class SwaggerConfig {
     @Bean
     public Docket docket(Environment environment) {
         // 设置环境范围
-        Profiles profiles = Profiles.of("dev","test");
+        Profiles profiles = Profiles.of("dev","pro");
         // 如果在该环境返回内则返回：true，反之返回 false
         boolean flag = environment.acceptsProfiles(profiles);
         // 创建一个 swagger 的 bean 实例

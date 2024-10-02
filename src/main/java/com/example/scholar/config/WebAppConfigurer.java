@@ -1,5 +1,6 @@
 package com.example.scholar.config;
 
+import com.example.scholar.config.handler.TokenToUserMethodArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -11,6 +12,15 @@ import java.util.List;
 
 @Configuration
 public class WebAppConfigurer implements WebMvcConfigurer {
+    @Autowired
+    private TokenToUserMethodArgumentResolver tokenToUserMethodArgumentResolver;
+    /*
+tokenToUserMethodArgumentResolver 注解处理方法
+ */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(tokenToUserMethodArgumentResolver);
+    }
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

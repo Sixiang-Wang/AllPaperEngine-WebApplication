@@ -51,7 +51,7 @@
 
   在开发过程中最好按照规范添加注解，以便于前后端的功能查看。包括`@ApiModel` `@ApiOperation`等注解。启动后端程序后，可通过`http://localhost:1145/swagger-ui.html#/`进入到Swagger的可视化界面。在这里可以看到所有接口及Model的定义，也可以进行接口测试。swagger的UI如下图：
 
-  ![Swagger-UI](swagger-ui.png)
+  ![Swagger-UI](docs/swagger-ui.png)
 
 * `Apifox`集成`Swagger2`
 
@@ -59,7 +59,7 @@
 
   导入后效果如图：
 
-  ![Api-Fox](Api-fox.png)
+  ![Api-Fox](docs/Api-fox.png)
 
 ### 后续
 
