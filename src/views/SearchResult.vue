@@ -5,6 +5,8 @@ import {Search} from "@element-plus/icons-vue";
 import {ref} from "vue";
 import SingleResult from "@/components/SingleResult.vue";
 import Advertisement from "@/components/Advertisement.vue";
+import router from "@/router/index.js";
+import { useRoute } from 'vue-router';
 
 const searchInput = ref("");
 const searchType = ref("主题");
@@ -22,8 +24,48 @@ const searchResults = ref([
     content: "… Diffusion coefficients of binary mixtures of dilute gases are … Almost every gaseous diffusion\n" +
         "coefficient which was experimentally … In addition, diffusion coefficients for several mixtures are …",
     cited: "115"
+  },
+  {
+    title: "Diffusion in binary solutions. Variation of diffusion coefficient with composition",
+    author: "A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications",
+    content: "… The coefficient of interdiffusion, experimentally determined from Pick's second law, is the\n" +
+        "product of an activity-corrected diffusion coefficient and a thermodynamic factor which …",
+    cited: "114"
+  },
+  {
+    title: "Gaseous diffusion coefficients",
+    author: "TR Marrero, EA Mason - Journal of Physical and Chemical Reference …, 1972 - pubs.aip.org",
+    content: "… Diffusion coefficients of binary mixtures of dilute gases are … Almost every gaseous diffusion\n" +
+        "coefficient which was experimentally … In addition, diffusion coefficients for several mixtures are …",
+    cited: "115"
+  },
+  {
+    title: "Diffusion in binary solutions. Variation of diffusion coefficient with composition",
+    author: "A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications",
+    content: "… The coefficient of interdiffusion, experimentally determined from Pick's second law, is the\n" +
+        "product of an activity-corrected diffusion coefficient and a thermodynamic factor which …",
+    cited: "114"
+  },
+  {
+    title: "Gaseous diffusion coefficients",
+    author: "TR Marrero, EA Mason - Journal of Physical and Chemical Reference …, 1972 - pubs.aip.org",
+    content: "… Diffusion coefficients of binary mixtures of dilute gases are … Almost every gaseous diffusion\n" +
+        "coefficient which was experimentally … In addition, diffusion coefficients for several mixtures are …",
+    cited: "115"
   }
 ]);
+const route = useRoute();
+const currentPage = ref(1);
+const handlePageChange = (page) => {
+  router.push({path: "/search", query: {input: route.query.input, page: page}}).then(()=>{
+    currentPage.value = page;
+    updateSearchResults();
+  });
+}
+const updateSearchResults = async ()=> {
+//   const res = await http.get('#',{});
+
+}
 </script>
 
 <template>
@@ -50,19 +92,30 @@ const searchResults = ref([
       <el-aside>
         <SearchAside/>
       </el-aside>
-      <el-main style="margin-left: 2%;">
-        <span class="search-result-statistic">共查询到{{ searchResults.length }}个结果</span>
-        <div style="display: flex;">
-          <div>
-            <SingleResult v-for="result in searchResults" :author="result.author" :content="result.content"
-                          :title="result.title" :cited="result.cited "></SingleResult>
+        <el-main style="margin-left: 2%;">
+          <span class="search-result-statistic">共查询到{{ searchResults.length }}个结果</span>
+          <div style="display: flex;">
+            <div>
+              <SingleResult v-for="result in searchResults" :author="result.author" :content="result.content"
+                            :title="result.title" :cited="result.cited "></SingleResult>
+            </div>
+            <div>
+              <Advertisement/>
+            </div>
           </div>
-          <div>
-            <Advertisement/>
-          </div>
-        </div>
-      </el-main>
+        </el-main>
     </el-container>
+    <el-footer>
+      <div style="display: flex; justify-content: center;">
+        <el-pagination background layout="prev, pager, next"
+                       :total="1000"
+                       :current-page="currentPage"
+                       @current-change="handlePageChange"
+        />
+        <!--                       style="&#45;&#45;el-color-primary: #C3EEFD"-->
+
+      </div>
+    </el-footer>
   </el-container>
 </template>
 
@@ -85,4 +138,5 @@ const searchResults = ref([
 .el-aside::-webkit-scrollbar {
   display: none;
 }
+
 </style>

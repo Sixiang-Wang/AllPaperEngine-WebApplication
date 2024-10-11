@@ -1,11 +1,11 @@
 <script setup>
-import {computed, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
 import { useRoute } from 'vue-router';
-
+import cookieUtil from "@/utils/cookie.js"
 const button_index = ref("登录");
-const user_name = ref("World～(∠・▽< )⌒☆");
+const user_name = ref(cookieUtil.getCookie("username"));
 const back = ()=> {
   router.push('/main');
 }
@@ -21,8 +21,25 @@ const textColor = computed(() => {
   return route.path === '/main' ? '#000000' : '#000000'; // 选择颜色
 });
 const goToLogin = () => {
-  router.push('/login');
+  if(cookieUtil.getCookie("token")===null||cookieUtil.getCookie("token")===''){
+    router.push('/login');
+  }else{
+    cookieUtil.deleteCookie("token");
+    cookieUtil.deleteCookie("username");
+    location.reload();
+  }
 }
+onMounted(() =>{
+  if(cookieUtil.getCookie("token")===null || cookieUtil.getCookie("token")===''){
+    button_index.value = "登录";
+  }else{
+    button_index.value = "退出";
+  }
+})
+watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
+  user_name.value = newValue;
+  console.log(newValue);
+})
 </script>
 
 <template>
@@ -53,8 +70,12 @@ const goToLogin = () => {
     <el-menu-item index="5">联系我们</el-menu-item>
     <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
-      <span :style="{color: textColor}">Ciallo, {{ user_name }}</span>
-      <el-button @click="goToLogin" style="margin-right: 30px;background-color: transparent">{{ button_index }}</el-button>
+      <span :style="{color: textColor}" v-if="user_name.value===''">欢迎, {{ user_name }}</span>
+      <span :style="{color: textColor}" v-else>点此登录</span>
+      <el-button @click="goToLogin"
+                 style="margin-right: 30px;background-color: transparent">
+        {{ button_index }}
+      </el-button>
     </div>
   </el-menu>
   <div class="h-6"/>

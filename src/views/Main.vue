@@ -1,14 +1,15 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import {Search} from '@element-plus/icons-vue'
+import cookieUtil from "@/utils/cookie.js"
   const searchType = ref("主题");
   const searchInput = ref("");
   const fullText = "Ciallo, World～(∠・▽< )⌒☆";
   const displayedText = ref(""); // 动态显示的文字
   const search = () => {
     console.log(111);
-    router.push({path: "/search", query: {input: searchInput.value}});
+    router.push({path: "/search", query: {input: searchInput.value, page: 1}});
   }
   onMounted(() => {
     let index = 0;
@@ -21,6 +22,7 @@ import {Search} from '@element-plus/icons-vue'
       }
     }, 150); // 设置打字速度，150ms显示一个字符
   });
+
 </script>
 
 <template>

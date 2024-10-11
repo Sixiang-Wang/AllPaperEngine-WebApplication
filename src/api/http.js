@@ -1,30 +1,24 @@
-import axios from 'axios'
-import router from "../router";
-import api from "@/api/index.js";
+// 引入axios
+import axios from 'axios';
+import store from '@/api/index.js'
 
 let baseUrl="http://localhost:1145/";
-
-axios.defaults.timeout = 3000 //超时时间设定为5s
-axios.defaults.withCredentials = true //允许跨域
-
-// Content-Type 响应头
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-
 // 创建axios实例
 const httpService = axios.create({
   // url前缀-'http:xxx.xxx'
   // baseURL: process.env.BASE_API, // 需自定义
   baseURL:baseUrl,
   // 请求超时时间
-  timeout: 3000, // 需自定义
-  withCredentials: true,
+  timeout: 3000 // 需自定义
 });
 
+//添加请求和响应拦截器
+// 添加请求拦截器
 httpService.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   //config.headers.token=window.sessionStorage.getItem('token');
-  console.log("store="+api.getters.GET_TOKEN)
-  config.headers.token=api.getters.GET_TOKEN
+  console.log("store="+store.getters.GET_TOKEN)
+  config.headers.token=store.getters.GET_TOKEN
   return config;
 }, function (error) {
   // 对请求错误做些什么

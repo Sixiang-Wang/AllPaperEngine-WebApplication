@@ -3,8 +3,10 @@ import { ref, reactive, onMounted} from 'vue'
 import SIdentify from "../components/SIdentify.vue"
 import {ElMessage} from "element-plus";
 import router from "@/router/index.js";
+import cookieUtil from "@/utils/cookie.js";
 const identifyCode = ref('');
 const identifyCodes = '1234567890abcdefghijklmnopqrstuvwxyz'
+import http from "@/api/http.js"
 const loginForm = ref({
   mail: '',
   password: '',
@@ -60,9 +62,23 @@ onMounted(() => {
 const login =  async() => {
   if(loginForm.value.mail === "admin" && loginForm.value.password === "admin"){
     ElMessage.success("登陆成功！");
-    router.push('/main');
+    await router.push('/main');
   }else{
-    ElMessage.warning("登录失败");
+    try{
+      const res = await http.post('/user/login',{
+        account: loginForm.value.mail,
+        password: loginForm.value.password
+      })
+      if(res.data.msg === "login success") {
+        ElMessage.success("登陆成功！");
+        cookieUtil.setCookie("token",res.data.token,0.25);
+        cookieUtil.setCookie("username",res.data.username, 0.25);
+        await router.push('/main');
+      }
+      console.log(res.data);
+    }catch(e){
+      console.error(e);
+    }
   }
 }
 </script>
