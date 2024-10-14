@@ -1,7 +1,7 @@
 package com.example.scholar.util;
 
-import com.example.scholar.domain.CheckResult;
-import com.example.scholar.domain.JwtConstant;
+import com.example.scholar.domain.constant.CheckResult;
+import com.example.scholar.domain.constant.JwtConstant;
 import io.jsonwebtoken.*;
 import org.bouncycastle.util.encoders.Base64;
 

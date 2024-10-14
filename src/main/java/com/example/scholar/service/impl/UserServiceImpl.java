@@ -10,6 +10,7 @@ import com.example.scholar.util.Md5Utils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.example.scholar.config.SystemConst.tokenValidTime;
@@ -21,10 +22,12 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserTokenMapper userTokenMapper;
     @Override
-    public String login(String account, String password) {
+    public HashMap<String, Object> login(String account, String password) {
         User user = userMapper.selectUserByAccount(account);
+        HashMap<String,Object> map = new HashMap<>();
         if(user == null){
-            return "no such user";
+            map.put("msg", "no such user");
+            return map;
         }else{
             if(Md5Utils.verify(password,user.getPassword())){
                 //添加token
@@ -34,9 +37,12 @@ public class UserServiceImpl implements UserService {
                 }else{
                     userTokenMapper.insertUserToken(jwtToken,user.getUserid());
                 }
-                return jwtToken;
+                map.put("token",jwtToken);
+                map.put("username",user.getName());
+                return map;
             }else{
-                return "wrong password";
+                map.put("msg","wrong password");
+                return map;
             }
         }
     }

@@ -3,7 +3,8 @@ spring:
     name: scholar
   profiles:
     active: pro # 在这里切换项目环境，dev为开发环境（本地数据库），pro为生产环境（已连接服务器数据库）
-
 server:
   port: 1145
-
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

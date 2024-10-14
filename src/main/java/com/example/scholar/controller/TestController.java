@@ -1,6 +1,6 @@
 package com.example.scholar.controller;
 
-import com.example.scholar.domain.R;
+import com.example.scholar.domain.constant.R;
 import com.example.scholar.dto.TestDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;

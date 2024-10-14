@@ -1,4 +1,4 @@
-package com.example.scholar.domain;
+package com.example.scholar.domain.constant;
 
 import io.jsonwebtoken.Claims;
 

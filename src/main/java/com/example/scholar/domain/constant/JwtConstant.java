@@ -1,4 +1,4 @@
-package com.example.scholar.domain;
+package com.example.scholar.domain.constant;
 
 /**
  * 系统级静态变量
