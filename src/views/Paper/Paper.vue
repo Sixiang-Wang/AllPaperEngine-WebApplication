@@ -2,13 +2,42 @@
 
 import {Search} from "@element-plus/icons-vue";
 import {ref} from "vue";
+import { useTransition } from '@vueuse/core'
 
-const question = ref("");
+
+const citedNum = ref(0);
+const citeNum = ref(0);
+const collectNum = ref(0);
+const commentNum = ref(0);
+let citedNumChange = useTransition(citedNum, {
+  duration: 500,
+})
+let citeNumChange = useTransition(citeNum, {
+  duration: 500,
+})
+let collectNumChange = useTransition(collectNum, {
+  duration: 500,
+})
+let commentNumChange = useTransition(commentNum, {
+  duration: 500,
+})
+
+//统计值在这里
+citedNum.value = 129
+citeNum.value = 51
+collectNum.value = 273
+commentNum.value = 9
+//
+
+const question = ref("")
+
 const submitQuestion = ()=> {
-      console.log("Question submitted:", this.question);
+  console.log("Question submitted:", question);
       // Handle the form submission logic
-    }
+}
 const abstract = ref("Despite declining incidence and mortality rates in many countries, the abdominal aortic aneurysm (AAA) continues to represent a life-threatening cardiovascular condition with an overall prevalence of about 2–3% in the industrialized world. While the risk of AAA development is considerably higher for men of advanced age with a history of smoking, screening programs serve to detect the often asymptomatic condition and prevent aortic rupture with an associated death rate of up to 80%. This review summarizes the current knowledge on identified risk factors, the multifactorial process of pathogenesis, as well as the latest advances in medical treatment and surgical repair to provide a perspective for AAA management.\n");
+
+
 </script>
 
 <template>
@@ -37,7 +66,27 @@ const abstract = ref("Despite declining incidence and mortality rates in many co
 <!--        </div>-->
         <div></div>
       </div>
+
       <div class="side">
+        <el-card style="width: 320px;margin-bottom: 30px" shadow="always">
+          <el-row style="margin-bottom: 15px">
+            <el-col :span="12" style="padding-left: 12px">
+              <el-statistic title="被引用次数" :value="citedNumChange" :value-style="{ color: '#132fc1' }" />
+            </el-col>
+            <el-col :span="12" style="padding-left: 12px">
+              <el-statistic title="引用文章数" :value="citeNumChange" :value-style="{ color: '#45a801' }"/>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12" style="padding-left: 12px">
+              <el-statistic title="平台收藏量" :value="collectNumChange" :value-style="{ color: '#b10101' }"/>
+            </el-col>
+            <el-col :span="12" style="padding-left: 12px">
+              <el-statistic title="文章评论量" :value="commentNumChange" :value-style="{ color: '#dd8500' }"/>
+            </el-col>
+          </el-row>
+
+        </el-card>
         <!-- Form Section -->
         <div class="ai-assistant">
           <h3>AI Assistant</h3>
@@ -46,7 +95,6 @@ const abstract = ref("Despite declining incidence and mortality rates in many co
           </p>
           <el-input
               v-model="question"
-
               style="width: 230px;padding-right: 10px"
               :autosize="{ minRows: 4, maxRows: 10 }"
               type="textarea"
@@ -93,7 +141,7 @@ const abstract = ref("Despite declining incidence and mortality rates in many co
 }
 
 .side {
-  flex: 400px; /* Take less space for the sidebar */
+  flex: 320px; /* Take less space for the sidebar */
   padding: 50px 20px 20px 20px;
 
 }
