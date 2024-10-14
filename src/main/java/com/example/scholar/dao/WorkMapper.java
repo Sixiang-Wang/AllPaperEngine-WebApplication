@@ -8,4 +8,8 @@ import java.util.List;
 public interface WorkMapper {
     @Select("select * from openalex_works")
     List<Work> selectAllWorks();
+    @Select("select * from openalex_works limit #{from},#{to}")
+    List<Work> selectAllWorksByPage(int from, int to);
+    @Select("select count(*) from openalex_works")
+    int getWorksLength();
 }

@@ -1,4 +1,4 @@
-package com.example.scholar.controller;
+package com.example.scholar.config;
 
 public class PathConfig {
     public static final String avatarUrl = System.getProperty("user.dir") + "/images/avatars/";

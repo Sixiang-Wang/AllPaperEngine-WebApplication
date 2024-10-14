@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import springfox.documentation.spring.web.json.Json;
 
+import java.beans.Transient;
+
 @Component
 @Data
 public class Work {
@@ -20,4 +22,5 @@ public class Work {
     private String citedByApiUrl;
     private String abstractInvertedIndex;
     private String language;
+    private String abstractText;
 }
