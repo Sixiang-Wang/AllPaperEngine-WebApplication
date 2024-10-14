@@ -24,7 +24,7 @@ const router = createRouter({
                 },
                 {
                     path: '/user/paper',
-                    name: 'paper',
+                    name: 'userpaper',
                     component: () => import('@/views/user/PaperManager.vue')
                 },
                 {
@@ -54,16 +54,17 @@ const router = createRouter({
             name: 'test',
             component: () => import('@/views/Test.vue')
         },
+
+        {
+            path: '/paper',
+            name: 'paper',
+            component: ()=> import('@/views/Paper/Paper.vue')
+        },
         {
             path: '/:pathMatch(.*)*',
             name: 'NotFound',
             component: () => import('@/views/404.vue')
         },
-        {
-            path: '/paper',
-            name: 'paper',
-            component: ()=> import('@/views/Paper/Paper.vue')
-        }
     ]
 })
 // 导出

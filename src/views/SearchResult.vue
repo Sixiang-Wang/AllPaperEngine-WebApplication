@@ -2,70 +2,46 @@
 
 import SearchAside from "@/components/SearchAside.vue";
 import {Search} from "@element-plus/icons-vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import SingleResult from "@/components/SingleResult.vue";
 import Advertisement from "@/components/Advertisement.vue";
 import router from "@/router/index.js";
 import { useRoute } from 'vue-router';
-
+import httpUtil from "@/api/http.js"
 const searchInput = ref("");
 const searchType = ref("主题");
-const searchResults = ref([
-  {
-    title: "Diffusion in binary solutions. Variation of diffusion coefficient with composition",
-    author: "A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications",
-    content: "… The coefficient of interdiffusion, experimentally determined from Pick's second law, is the\n" +
-        "product of an activity-corrected diffusion coefficient and a thermodynamic factor which …",
-    cited: "114"
-  },
-  {
-    title: "Gaseous diffusion coefficients",
-    author: "TR Marrero, EA Mason - Journal of Physical and Chemical Reference …, 1972 - pubs.aip.org",
-    content: "… Diffusion coefficients of binary mixtures of dilute gases are … Almost every gaseous diffusion\n" +
-        "coefficient which was experimentally … In addition, diffusion coefficients for several mixtures are …",
-    cited: "115"
-  },
-  {
-    title: "Diffusion in binary solutions. Variation of diffusion coefficient with composition",
-    author: "A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications",
-    content: "… The coefficient of interdiffusion, experimentally determined from Pick's second law, is the\n" +
-        "product of an activity-corrected diffusion coefficient and a thermodynamic factor which …",
-    cited: "114"
-  },
-  {
-    title: "Gaseous diffusion coefficients",
-    author: "TR Marrero, EA Mason - Journal of Physical and Chemical Reference …, 1972 - pubs.aip.org",
-    content: "… Diffusion coefficients of binary mixtures of dilute gases are … Almost every gaseous diffusion\n" +
-        "coefficient which was experimentally … In addition, diffusion coefficients for several mixtures are …",
-    cited: "115"
-  },
-  {
-    title: "Diffusion in binary solutions. Variation of diffusion coefficient with composition",
-    author: "A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications",
-    content: "… The coefficient of interdiffusion, experimentally determined from Pick's second law, is the\n" +
-        "product of an activity-corrected diffusion coefficient and a thermodynamic factor which …",
-    cited: "114"
-  },
-  {
-    title: "Gaseous diffusion coefficients",
-    author: "TR Marrero, EA Mason - Journal of Physical and Chemical Reference …, 1972 - pubs.aip.org",
-    content: "… Diffusion coefficients of binary mixtures of dilute gases are … Almost every gaseous diffusion\n" +
-        "coefficient which was experimentally … In addition, diffusion coefficients for several mixtures are …",
-    cited: "115"
-  }
-]);
+const totalLength = ref(0);
+const searchResults = ref([]);
 const route = useRoute();
 const currentPage = ref(1);
 const handlePageChange = (page) => {
   router.push({path: "/search", query: {input: route.query.input, page: page}}).then(()=>{
     currentPage.value = page;
     updateSearchResults();
+    window.scrollTo({
+      top: 0,
+      // behavior: 'smooth' // 平滑滚动到顶部
+    });
   });
 }
 const updateSearchResults = async ()=> {
-//   const res = await http.get('#',{});
-
+  const res = await httpUtil.get('/openalex/get/page',{
+    page: currentPage.value
+  })
+  console.log(res.data);
+  searchResults.value = res.data.works;
 }
+onMounted(async()=>{
+  const res = await httpUtil.get('/openalex/get/page',{
+    page: currentPage.value
+  })
+  const res2 = await httpUtil.get('/openalex/get/length');
+  totalLength.value = res2.data.leng;
+  console.log(res.data);
+  searchResults.value = res.data.works;
+}
+)
+const loading = ref(true)
 </script>
 
 <template>
@@ -88,20 +64,29 @@ const updateSearchResults = async ()=> {
       </div>
 
     </el-header>
-    <el-container>
+    <el-container >
       <el-aside>
         <SearchAside/>
       </el-aside>
-        <el-main style="margin-left: 2%;">
-          <span class="search-result-statistic">共查询到{{ searchResults.length }}个结果</span>
-          <div style="display: flex;">
+        <el-main style="margin-left: 2%;" >
+          <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
+          <div v-if="searchResults.length!==0" style="display: flex;">
             <div>
-              <SingleResult v-for="result in searchResults" :author="result.author" :content="result.content"
-                            :title="result.title" :cited="result.cited "></SingleResult>
+              <SingleResult v-for="result in searchResults" :author="result.paperInformation" :content="result.abstractText"
+                            :title="result.title" :cited="result.cited" :id="result.id"></SingleResult>
             </div>
-            <div>
-              <Advertisement/>
-            </div>
+          </div>
+          <div v-else style="margin-top: 4%; max-width: 70%">
+            <el-skeleton :rows="3" animated />
+            <el-divider/>
+            <el-skeleton :rows="3" animated />
+            <el-divider/>
+            <el-skeleton :rows="3" animated />
+            <el-divider/>
+            <el-skeleton :rows="3" animated />
+            <el-divider/>
+            <el-skeleton :rows="3" animated />
+            <el-divider/>
           </div>
         </el-main>
     </el-container>

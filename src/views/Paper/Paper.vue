@@ -1,27 +1,14 @@
-<script>
+<script setup>
 
 import {Search} from "@element-plus/icons-vue";
+import {ref} from "vue";
 
-export default {
-  computed: {
-    Search() {
-      return Search
-    }
-  },
-
-  data() {
-    return {
-      question: "",
-    };
-  },
-  methods: {
-    submitQuestion() {
+const question = ref("");
+const submitQuestion = ()=> {
       console.log("Question submitted:", this.question);
       // Handle the form submission logic
-    },
-  },
-};
-
+    }
+const abstract = ref("Despite declining incidence and mortality rates in many countries, the abdominal aortic aneurysm (AAA) continues to represent a life-threatening cardiovascular condition with an overall prevalence of about 2–3% in the industrialized world. While the risk of AAA development is considerably higher for men of advanced age with a history of smoking, screening programs serve to detect the often asymptomatic condition and prevent aortic rupture with an associated death rate of up to 80%. This review summarizes the current knowledge on identified risk factors, the multifactorial process of pathogenesis, as well as the latest advances in medical treatment and surgical repair to provide a perspective for AAA management.\n");
 </script>
 
 <template>
@@ -36,17 +23,19 @@ export default {
         </div>
 
         <!-- TLDR Section -->
-        <div class="tldr">
-          <strong>TLDR:</strong> The current knowledge on identified risk factors, the multifactorial process of pathogenesis, as well as the latest advances in medical treatment and surgical repair are summarized to provide a perspective for AAA management.
+        <div class="abstract">
+          <strong>Abstract:</strong>
+          <br>
+          {{abstract}}
         </div>
 
         <!-- Abstract Section -->
-        <div class="abstract">
-          <h2>Abstract</h2>
-          <p>
-            Despite declining incidence and mortality rates in many countries, the abdominal aortic aneurysm (AAA) continues to represent a life-threatening cardiovascular condition with an overall prevalence of about 2–3% in the industrialized world. While the risk of AAA development is considerably higher for men of advanced age with a history of smoking, screening programs serve to detect the often asymptomatic condition and prevent aortic rupture with an associated death rate of up to 80%. This review summarizes the current knowledge on identified risk factors, the multifactorial process of pathogenesis, as well as the latest advances in medical treatment and surgical repair to provide a perspective for AAA management.
-          </p>
-        </div>
+<!--        <div class="abstract">-->
+<!--          <h2></h2>-->
+<!--          <p>-->
+<!--          </p>-->
+<!--        </div>-->
+        <div></div>
       </div>
       <div class="side">
         <!-- Form Section -->
@@ -119,17 +108,16 @@ export default {
   color: #666;
 }
 
-.tldr {
+.abstract {
   background-color: #f9f9f9;
   padding: 10px;
   margin: 20px 0;
-  border-left: 4px solid #4caf50;
+  border-left: 4px solid #C3EEFD;
 }
 
-.abstract {
-  margin-bottom: 30px;
+.reference {
+  margin: 20px 0;
 }
-
 .ai-assistant {
   background-color: rgba(240, 240, 240, 0.5);
   padding: 5px 20px 20px 20px;

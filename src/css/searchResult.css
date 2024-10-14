@@ -16,9 +16,19 @@
     font-size: 20px;
     color: #2c00a9;
 }
+.search-result-title:hover {
+    text-decoration: underline;
+    color: #2c00a9;
+    cursor: pointer;
+}
 .search-result-author {
     font-size: 13px;
     color: #256638;
+}
+.search-result-author:hover{
+    text-decoration: underline;
+    color: #256638;
+    cursor: pointer;
 }
 .search-result-content {
     font-size: 13px;
