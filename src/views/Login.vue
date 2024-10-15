@@ -55,6 +55,10 @@ const checkCaptcha = () => {
   return true;
 };
 
+const goToRegister = () => {
+  router.push('/register');
+}
+
 onMounted(() => {
   identifyCode.value = '';
   makeCode(identifyCodes, 4);

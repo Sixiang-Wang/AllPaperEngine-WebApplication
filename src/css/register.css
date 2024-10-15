@@ -1,0 +1,19 @@
+.register-div {
+    position: absolute;
+    top: 30%;
+    right: 35%; /* 从右侧开始，距离视口右侧 10% 的位置 */
+    width: 30%; /* 宽度可以根据需要调整 */
+    background-color: rgb(254, 255, 254);
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 30px 50px;
+    opacity: 0.85;
+    z-index: 1; /* 确保 div 在背景图片之上 */
+    display: flex;
+    flex-direction: column;
+}
+
+.register-title {
+    font-size: 25px;
+    font-weight: 450;
+}

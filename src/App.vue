@@ -7,16 +7,20 @@ const route = useRoute();
 
 const isSpecificRoute = computed(() => {
   // 根据需要替换成你的特定路由
-  return route.path === '/main'||route.path === '/login';
+  return route.path === '/main'||route.path === '/login'||route.path === '/register';
 });
 const isLogin = computed(()=> {
   return route.path === '/login';
+})
+const isRegister = computed(()=> {
+  return route.path === '/register';
 })
 </script>
 
 <template>
   <div :class="['common-layout', { background: isSpecificRoute}]" style="margin:0;padding: 0;">
     <div v-if="isLogin" class="backgroundBlur"></div>
+    <div v-if="isRegister" class="backgroundBlur"></div>
     <el-container style="margin:0;padding: 0;z-index: 1">
       <el-header height="80px" style="margin:0;padding: 0;">
         <Header/>
