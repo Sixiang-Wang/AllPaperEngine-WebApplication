@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class AuthorShips {
-    private String work_id;
-    private String author_position;
-    private String author_id;
-    private String institution_id;
-    private String raw_affiliation_string;
+    private String workId;
+    private String authorPosition;
+    private String authorId;
+    private String institutionId;
+    private String rawAffiliationString;
 }
