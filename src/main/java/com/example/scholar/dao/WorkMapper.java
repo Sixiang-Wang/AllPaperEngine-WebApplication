@@ -12,4 +12,6 @@ public interface WorkMapper {
     List<Work> selectAllWorksByPage(int from, int to);
     @Select("select count(*) from openalex_works")
     int getWorksLength();
+    @Select("select * from openalex_works where id = #{workId}")
+    Work getWorkById(String workId);
 }

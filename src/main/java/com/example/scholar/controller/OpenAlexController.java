@@ -1,7 +1,9 @@
 package com.example.scholar.controller;
 
+import com.example.scholar.dao.AuthorMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.constant.R;
+import com.example.scholar.service.AuthorService;
 import com.example.scholar.service.WorkService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,13 @@ public class OpenAlexController {
     private WorkMapper workMapper;
     @Resource
     private WorkService workService;
+
+    @Resource
+    private AuthorMapper authorMapper;
+    @Resource
+    private AuthorService authorService;
+
+
     @GetMapping(value = "/getall")
     public R getAllWorks(){
         try {
@@ -36,6 +45,16 @@ public class OpenAlexController {
     public R getAllWorksLength(){
         try{
             return R.ok().put("leng",workMapper.getWorksLength());
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+    @GetMapping(value="/work/get")
+    public R getWorkById(@RequestParam("workId") String workId){
+        try{
+            return R.ok().put("getWorkById",workService.getWorkById(workId));
         }catch (Exception e){
             return R.error(e.toString());
         }

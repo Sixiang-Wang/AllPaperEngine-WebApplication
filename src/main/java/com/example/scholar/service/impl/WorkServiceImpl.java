@@ -1,8 +1,11 @@
 package com.example.scholar.service.impl;
 
+import com.example.scholar.dao.AuthorMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.WorkResultDto;
+import com.example.scholar.dto.WorkSpecificResultDto;
+import com.example.scholar.service.AuthorService;
 import com.example.scholar.service.WorkService;
 import com.example.scholar.util.AbstractRestore;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import java.util.List;
 public class WorkServiceImpl implements WorkService {
     @Resource
     private WorkMapper workMapper;
+    @Resource
+    private AuthorService authorService;
     @Override
     public List<WorkResultDto> getWorks() {
         List<Work> works = workMapper.selectAllWorks();
@@ -46,4 +51,22 @@ public class WorkServiceImpl implements WorkService {
             workResultDtos.add(workResultDto);
         }
         return workResultDtos;    }
+
+    @Override
+    public WorkSpecificResultDto getWorkById(String workId) {
+        Work work = workMapper.getWorkById(workId);
+        WorkSpecificResultDto workSpecificResultDto = new WorkSpecificResultDto();
+
+        workSpecificResultDto.setWorkAuthorResultDtos(authorService.getAuthorsByWorkId(workId));
+        workSpecificResultDto.setLanguage(work.getLanguage());
+        workSpecificResultDto.setCitedByApiUrl(work.getCitedByApiUrl());
+        workSpecificResultDto.setType(work.getType());
+        workSpecificResultDto.setPublicationDate(work.getPublicationDate());
+        workSpecificResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+        workSpecificResultDto.setCitedByCount(work.getCitedByCount());
+        workSpecificResultDto.setTitle(work.getTitle());
+        workSpecificResultDto.setPublicationYear(work.getPublicationYear());
+
+        return workSpecificResultDto;
+    }
 }
