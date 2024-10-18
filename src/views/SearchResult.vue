@@ -97,8 +97,6 @@ const loading = ref(true)
                        :current-page="currentPage"
                        @current-change="handlePageChange"
         />
-        <!--                       style="&#45;&#45;el-color-primary: #C3EEFD"-->
-
       </div>
     </el-footer>
   </el-container>
