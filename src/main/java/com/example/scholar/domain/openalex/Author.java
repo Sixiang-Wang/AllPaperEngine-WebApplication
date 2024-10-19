@@ -11,12 +11,12 @@ import java.util.ArrayList;
 public class Author {
     private String id;
     private String orcid;
-    private String display_name;
-    private String display_name_alternatives;//display_alternatives对应的各种名字
-    private int works_count;
-    private int cited_by_count;
-    private String last_known_institution;
-    private String works_api_url;
-    private String updated_date;
+    private String displayName;
+    private String displayNameAlternatives;//display_alternatives对应的各种名字
+    private int worksCount;
+    private int citedByCount;
+    private String lastKnownInstitution;
+    private String worksApiUrl;
+    private String updatedDate;
 
 }

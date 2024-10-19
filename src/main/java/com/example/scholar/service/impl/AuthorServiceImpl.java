@@ -25,14 +25,14 @@ public class AuthorServiceImpl implements AuthorService {
         for(AuthorShips authorShip:authorships){
             if(authorShip!=null){
                 WorkAuthorResultDto workAuthorResultDto = new WorkAuthorResultDto();
-                workAuthorResultDto.setPosition(authorShip.getAuthor_position());
-                Author author = authorMapper.selectAuthorById(authorShip.getAuthor_id());
+                workAuthorResultDto.setPosition(authorShip.getAuthorPosition());
+                Author author = authorMapper.selectAuthorById(authorShip.getAuthorId());
                 AuthorResultDto authorResultDto = new AuthorResultDto();
-                authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplay_name_alternatives()));
+                authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
                 authorResultDto.setAuthorId(author.getId());
-                authorResultDto.setWorks_count(author.getWorks_count());
-                authorResultDto.setWorks_api_url(author.getWorks_api_url());
-                authorResultDto.setCited_by_count(author.getCited_by_count());
+                authorResultDto.setWorks_count(author.getWorksCount());
+                authorResultDto.setWorks_api_url(author.getWorksApiUrl());
+                authorResultDto.setCited_by_count(author.getCitedByCount());
                 workAuthorResultDto.setAuthorResultDto(authorResultDto);
                 authorResultDtos.add(workAuthorResultDto);
             }
