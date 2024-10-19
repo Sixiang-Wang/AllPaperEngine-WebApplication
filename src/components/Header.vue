@@ -53,7 +53,7 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
       :ellipsis="false"
   >
     <div class="header-menu-left" @click="back">
-      <img src="@/assets/image/iScholar.png" style="width: 50px; height: 50px;"/>
+      <img src="@/assets/image/logo.png" style="width: 50px; height: 50px;"/>
     </div>
     <el-sub-menu index="2">
       <template #title>读者服务</template>
