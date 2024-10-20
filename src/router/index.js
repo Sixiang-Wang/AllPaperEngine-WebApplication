@@ -26,11 +26,6 @@ const router = createRouter({
                     path: '/user/paper',
                     name: 'userpaper',
                     component: () => import('@/views/user/PaperManager.vue')
-                },
-                {
-                    path: '/user/statistics',
-                    name: 'statistics',
-                    component: () => import('@/views/user/UserStatistics.vue')
                 }
             ]
         },
@@ -64,6 +59,29 @@ const router = createRouter({
             path: '/paper',
             name: 'paper',
             component: ()=> import('@/views/Paper/Paper.vue')
+        },
+        {
+            path: '/personalportal',
+            name: 'personalportal',
+            component: () => import('@/views/personalPortal/PersonalPortal.vue'),
+            redirect: '/personalportal/personalInfo',
+            children: [
+                {
+                    path: '/personalportal/personalInfo',
+                    name: 'PersonalPortalInfo',
+                    component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
+                },
+                {
+                    path: '/personalportal/academicClaim',
+                    name: 'AcademicClaim',
+                    component: ()=> import('@/views/personalPortal/AcademicClaim.vue')
+                },
+                {
+                    path: '/personalportal/otherService',
+                    name: 'OtherService',
+                    component: ()=> import('@/views/personalPortal/OtherService.vue')
+                },
+            ]
         },
         {
             path: '/:pathMatch(.*)*',

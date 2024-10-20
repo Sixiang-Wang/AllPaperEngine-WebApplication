@@ -24,7 +24,7 @@
       </el-menu-item>
       <el-menu-item index="/user/statistics">
         <el-icon class="aside-icon"><data-line/></el-icon>
-        <span class="fontStyle">成果统计</span>
+        <span class="fontStyle">个人门户</span>
       </el-menu-item>
     </el-menu>
 </template>
