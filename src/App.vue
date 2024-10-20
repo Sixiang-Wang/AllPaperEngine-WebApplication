@@ -33,4 +33,10 @@ const isRegister = computed(()=> {
 
 <style scoped>
 @import "@/css/basic.css";
+@font-face {
+  font-family: "espano";
+  src: url('./assets/font/espano.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
 </style>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup xmlns="http://www.w3.org/1999/html">
 import {computed, onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
@@ -45,7 +45,7 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
 <template>
   <el-menu
       :default-active="activeIndex"
-      class="el-menu-demo"
+      class="el-menu"
       mode="horizontal"
       @select="handleSelect"
       :text-color="textColor"
@@ -54,8 +54,15 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
       :ellipsis="false"
   >
     <div class="header-menu-left" @click="back">
-      <img src="@/assets/image/logo.png" style="width: 50px; height: 50px;"/>
+      <img src="@/assets/image/logo.png" style="width: 45px; height: 45px;margin-top: 10px"/>
+      <div style="font-size:9.5px;font-family: espano;text-align: center;margin-top: -13px;color: #06008c">
+        AllPaper
+        <br>
+        Engine
+      </div>
     </div>
+
+
     <el-sub-menu index="2">
       <template #title>读者服务</template>
       <el-menu-item index="2-1">item one</el-menu-item>
