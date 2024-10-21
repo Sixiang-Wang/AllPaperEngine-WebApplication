@@ -55,7 +55,7 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   >
     <div class="header-menu-left" @click="back">
       <img src="@/assets/image/logo.png" style="width: 45px; height: 45px;margin-top: 10px"/>
-      <div style="font-size:9.5px;font-family: espano;text-align: center;margin-top: -13px;color: #06008c">
+      <div style="font-size:9.5px;font-family: espano;text-align: center;margin-top: -13px;color: #06008c;user-select: none">
         AllPaper
         <br>
         Engine

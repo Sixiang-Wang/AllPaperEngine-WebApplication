@@ -39,8 +39,8 @@ import cookieUtil from "@/utils/cookie.js"
 <template>
 <div class="input">
   <div style="margin-bottom: 5%;margin-top: -35px">
-    <h2 class="title" >{{displayedText}}</h2>
-    <h2 class="title" style="font-size: 45px;margin-bottom: -15px">
+    <h2 class="title" style="   user-select: none;" >{{displayedText}}</h2>
+    <h2 class="title" style="font-size: 45px;margin-bottom: -15px; user-select: none;">
       {{displayedText2}}</h2>
   </div>
   <div style="background-color: transparent !important;">
