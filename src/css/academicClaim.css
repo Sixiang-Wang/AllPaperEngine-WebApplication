@@ -1,47 +1,29 @@
-.input {
-    width: 70%;
-    margin-top: 15%;
-    margin-left: 10%;
-    background-color: transparent !important;
+:deep(.el-tabs__nav-wrap::after) {
+    position: static !important;
 }
-.title {
-    font-size: 60px;
-    font-family: espano;
-    margin-top: -30px;
-    /*font-weight: 1000;*/
-}
-.main-statistics {
-    display: flex;
-    margin-top: 25%;
-    margin-left: 10%;
-    /*background-color: #fff;*/
-}
-
 .search-input{
     height: 40px;
-    max-width: 60%;
+    max-width: 80%;
 }
 
 .search-button {
     border-radius: 0 4px 4px 0; /* 使按钮圆角与输入框拼接 */
     height: 40px;
-    color: rgba(255, 255, 255, 0.8);
     background-color: transparent;
     border-left-width: 0;
 }
 .search-button:hover {
-    border: 1px solid #00ffea;
+    border: 1px solid #1F578F;
     border-left-width: 0;
-    color: rgba(0, 255, 234, 1);
+    color: #1F578F;
     background-color: rgba(255, 255, 255, 0.05);
 }
 
 :deep(.el-input__wrapper){
     background-color:rgba(0,0,0,0) !important;
     border-radius: 0 !important;
-    --el-input-focus-border-color: rgba(100, 255, 255, 0.98);
-    --el-input-hover-border-color:rgba(99, 255, 255, 0.8);
-    --el-input-border-color: rgba(255, 255, 255, 0.7);
+    --el-input-focus-border-color: #1F578F;
+    --el-input-hover-border-color: #1F578F;
 }
 :deep(.el-input-group__prepend){
     background-color:rgba(0,0,0,0);
@@ -68,4 +50,30 @@
     background-color: transparent !important;
     color: rgba(255, 255, 255, 1);
     --el-input-border-color: rgba(255, 255, 255, 0.7);
+}
+
+.academic-claim-title {
+    padding: 1% 1%;
+}
+.academic-dialog-title{
+    font-size: 1.3em;
+    color: black;
+    margin-left: 2%;
+}
+:deep(.el-tabs__item){
+    color: #1F578F;
+    opacity: 0.5;
+}
+:deep(.el-tabs__item.is-active){
+    color: #1F578F;
+    opacity: 1;
+}
+:deep(.el-tabs__active-bar){
+    background-color: #1F578F;
+}
+:deep(.el-checkbox__input.is-checked+.el-checkbox__label){
+    color: #1F578F;
+}
+:deep(.el-checkbox__input.is-checked .el-checkbox__inner){
+    background-color: #1F578F;
 }

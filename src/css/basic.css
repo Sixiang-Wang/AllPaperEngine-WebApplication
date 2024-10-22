@@ -28,6 +28,10 @@
 .component {
     margin-bottom: 5%;
 }
+.component-span-align {
+    display: flex;
+    align-items: center;
+}
 .backgroundBlur {
     position: absolute;
     top: 0;

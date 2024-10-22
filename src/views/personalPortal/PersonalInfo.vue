@@ -3,7 +3,8 @@
 </script>
 
 <template>
-this is user statistics.
+
+
 </template>
 
 <style scoped>

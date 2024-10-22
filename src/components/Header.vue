@@ -1,4 +1,4 @@
-<script setup>
+<script setup xmlns="http://www.w3.org/1999/html">
 import {computed, onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
@@ -45,16 +45,24 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
 <template>
   <el-menu
       :default-active="activeIndex"
-      class="el-menu-demo"
+      class="el-menu"
       mode="horizontal"
       @select="handleSelect"
       :text-color="textColor"
       style="height: 100%;"
+      router
       :ellipsis="false"
   >
     <div class="header-menu-left" @click="back">
-      <img src="@/assets/image/iScholar.png" style="width: 50px; height: 50px;"/>
+      <img src="@/assets/image/logo.png" style="width: 45px; height: 45px;margin-top: 10px"/>
+      <div style="font-size:9.5px;font-family: espano;text-align: center;margin-top: -13px;color: #06008c;user-select: none">
+        AllPaper
+        <br>
+        Engine
+      </div>
     </div>
+
+
     <el-sub-menu index="2">
       <template #title>读者服务</template>
       <el-menu-item index="2-1">item one</el-menu-item>
@@ -63,8 +71,8 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
     </el-sub-menu>
     <el-sub-menu index="3">
       <template #title>作者服务</template>
-      <el-menu-item index="3-1">论文上传</el-menu-item>
-      <el-menu-item index="3-2">学术成果认领</el-menu-item>
+      <el-menu-item index="/personalportal">个人门户</el-menu-item>
+      <el-menu-item index="/personalportal/academicClaim">学术成果认领</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="4">热点分析</el-menu-item>
     <el-menu-item index="5">联系我们</el-menu-item>

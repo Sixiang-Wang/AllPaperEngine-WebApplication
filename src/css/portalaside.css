@@ -1,0 +1,40 @@
+.fontStyle {
+    font-size: medium;
+    display: flex;
+    margin-right: 20px;
+}
+
+.aside-icon {
+    width: 2em;
+}
+
+.el-menu-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px; /* 调整菜单栏目的高度 */
+    line-height: 50px; /* 确保文字垂直居中 */
+    padding: 0 20px; /* 调整左右内边距，使内容更居中 */
+    border-radius: 0 26px 26px 0;
+}
+
+.el-menu-item:hover {
+    font-size: medium;
+}
+
+.el-menu-item.is-active{
+    background-color: #C3EEFD;
+}
+
+.portal-aside-head {
+    display: flex;
+}
+
+.portal-aside-title {
+    margin-top: 5%;
+    margin-left: 25%;
+    margin-bottom: 5%;
+    font-size: larger;
+    font-weight: bold;
+    color: #6b778c;
+}

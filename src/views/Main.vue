@@ -5,14 +5,17 @@ import {Search} from '@element-plus/icons-vue'
 import cookieUtil from "@/utils/cookie.js"
   const searchType = ref("主题");
   const searchInput = ref("");
-  const fullText = "Ciallo, World～(∠・▽< )⌒☆";
-  const displayedText = ref(""); // 动态显示的文字
+  const fullText = "llPaper Engine";
+  const displayedText = ref("A"); // 动态显示的文字
+  const fullText2 = "ower Your Academic Journey";
+  const displayedText2 = ref("P"); // 动态显示的文字
   const search = () => {
     console.log(111);
     router.push({path: "/search", query: {input: searchInput.value, page: 1}});
   }
   onMounted(() => {
     let index = 0;
+    let index2 = 0;
     const interval = setInterval(() => {
       if (index < fullText.length) {
         displayedText.value += fullText[index];
@@ -20,15 +23,25 @@ import cookieUtil from "@/utils/cookie.js"
       } else {
         clearInterval(interval); // 打字完成后停止
       }
-    }, 150); // 设置打字速度，150ms显示一个字符
+    }, 100); // 设置打字速度，150ms显示一个字符
+    const interval2 = setInterval(() => {
+      if (index2 < fullText2.length) {
+        displayedText2.value += fullText2[index2];
+        index2++;
+      } else {
+        clearInterval(interval2); // 打字完成后停止
+      }
+    }, 60); // 设置打字速度，150ms显示一个字符
   });
 
 </script>
 
 <template>
 <div class="input">
-  <div style="margin-bottom: 5%">
-    <h2 class="title">{{displayedText}}</h2>
+  <div style="margin-bottom: 5%;margin-top: -35px">
+    <h2 class="title" style="   user-select: none;" >{{displayedText}}</h2>
+    <h2 class="title" style="font-size: 45px;margin-bottom: -15px; user-select: none;">
+      {{displayedText2}}</h2>
   </div>
   <div style="background-color: transparent !important;">
   <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容">
