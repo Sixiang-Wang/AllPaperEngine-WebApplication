@@ -16,11 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "echarts": "^5.5.1",
     "element-plus": "^2.8.2",
-<<<<<<< HEAD
-    "scholar-frontend": "file:",
-=======
     "save": "^2.9.0",
->>>>>>> 5e2f5f259b9bdf82fcebb5bbc612990c1f3ec87c
     "vue": "^3.4.37",
     "vue-router": "^4.4.4"
   },
