@@ -1,8 +1,10 @@
 package com.example.scholar.dto;
 
+import com.example.scholar.domain.openalex.WorksConcepts;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,4 +20,5 @@ public class WorkSpecificResultDto {
     private String type;
     private String grants;
     private Map<String, Float> keywords;
+    private List<WorksConcepts> worksConceptsList;
 }

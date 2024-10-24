@@ -5,6 +5,7 @@ import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.service.ConceptsService;
+import com.example.scholar.service.InstitutionsService;
 import com.example.scholar.service.WorkService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,8 @@ public class OpenAlexController {
     private WorkService workService;
     @Resource
     private ConceptsService conceptsService;
+    @Resource
+    private InstitutionsService institutionsService;
     @Resource
     private AuthorMapper authorMapper;
     @Resource
@@ -68,6 +71,26 @@ public class OpenAlexController {
     public R getConceptsByWorkId(@RequestParam("workId") String workId){
         try{
             return R.ok().put("getConceptsByWorkId"+workId+"\n",conceptsService.getConceptsByWorkId(workId));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value="/author/getAuthorsByWorkId")
+    public R getAuthorsByWorkId(@RequestParam("workId") String workId){
+        try{
+            return R.ok().put("getAuthorsByWorkId"+workId+"\n",authorService.getAuthorsByWorkId(workId));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+
+    @GetMapping(value="/institutions/getInstitutionById")
+    public R getInstitutionById(@RequestParam("institutionId") String institutionId){
+        try{
+            return R.ok().put("getInstitutionById"+institutionId+"\n",institutionsService.getInstitutionById(institutionId));
         }catch (Exception e){
             return R.error(e.toString());
         }

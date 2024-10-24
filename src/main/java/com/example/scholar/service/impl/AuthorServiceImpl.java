@@ -7,6 +7,7 @@ import com.example.scholar.dto.AuthorResultDto;
 import com.example.scholar.dto.WorkAuthorResultDto;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.util.AuthorNameRestore;
+import com.example.scholar.util.JsonDisposer;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,12 +21,13 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {
         List<AuthorShips> authorships = authorMapper.selectAuthorsById(workId);
-        System.out.print(authorships);
+//        System.out.print(authorships);
         ArrayList<WorkAuthorResultDto> authorResultDtos = new ArrayList<WorkAuthorResultDto>();
         for(AuthorShips authorShip:authorships){
             if(authorShip!=null){
                 WorkAuthorResultDto workAuthorResultDto = new WorkAuthorResultDto();
                 workAuthorResultDto.setPosition(authorShip.getAuthorPosition());
+                workAuthorResultDto.setInstitutions(JsonDisposer.disposeInstitutions(authorShip.getInstitutions()));
                 Author author = authorMapper.selectAuthorById(authorShip.getAuthorId());
                 AuthorResultDto authorResultDto = new AuthorResultDto();
                 authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));

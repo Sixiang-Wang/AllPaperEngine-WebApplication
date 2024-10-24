@@ -1,6 +1,7 @@
 package com.example.scholar.service.impl;
 
 import com.example.scholar.dao.AuthorMapper;
+import com.example.scholar.dao.ConceptsMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.WorkResultDto;
@@ -21,6 +22,8 @@ public class WorkServiceImpl implements WorkService {
     private WorkMapper workMapper;
     @Resource
     private AuthorService authorService;
+    @Resource
+    private ConceptsMapper conceptsMapper;
     @Override
     public List<WorkResultDto> getWorks() {
         List<Work> works = workMapper.selectAllWorks();
@@ -51,6 +54,8 @@ public class WorkServiceImpl implements WorkService {
             workResultDto.setCited(work.getCitedByCount());
             workResultDto.setPaperInformation("A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications");
             //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
             workResultDtos.add(workResultDto);
         }
         return workResultDtos;    }
@@ -71,6 +76,7 @@ public class WorkServiceImpl implements WorkService {
         workSpecificResultDto.setPublicationYear(work.getPublicationYear());
         workSpecificResultDto.setGrants(work.getGrants());
         workSpecificResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+        workSpecificResultDto.setWorksConceptsList(conceptsMapper.getWorksConceptsListById(workId));
         return workSpecificResultDto;
     }
 }
