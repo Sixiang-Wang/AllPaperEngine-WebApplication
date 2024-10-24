@@ -30,9 +30,9 @@ public class AuthorServiceImpl implements AuthorService {
                 AuthorResultDto authorResultDto = new AuthorResultDto();
                 authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
                 authorResultDto.setAuthorId(author.getId());
-                authorResultDto.setWorks_count(author.getWorksCount());
-                authorResultDto.setWorks_api_url(author.getWorksApiUrl());
-                authorResultDto.setCited_by_count(author.getCitedByCount());
+                authorResultDto.setWorksCount(author.getWorksCount());
+                authorResultDto.setWorksApiUrl(author.getWorksApiUrl());
+                authorResultDto.setCitedByCount(author.getCitedByCount());
                 workAuthorResultDto.setAuthorResultDto(authorResultDto);
                 authorResultDtos.add(workAuthorResultDto);
             }

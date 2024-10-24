@@ -23,4 +23,6 @@ public class Work {
     private String abstractInvertedIndex;
     private String language;
     private String abstractText;
+    private String grants;
+    private String keywords;
 }

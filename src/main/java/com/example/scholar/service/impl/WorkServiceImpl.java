@@ -8,6 +8,7 @@ import com.example.scholar.dto.WorkSpecificResultDto;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.service.WorkService;
 import com.example.scholar.util.AbstractRestore;
+import com.example.scholar.util.JsonDisposer;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +30,8 @@ public class WorkServiceImpl implements WorkService {
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
             workResultDto.setPaperInformation("A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications");
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
             //这里后续需要修改
             workResultDtos.add(workResultDto);
         }
@@ -66,7 +69,8 @@ public class WorkServiceImpl implements WorkService {
         workSpecificResultDto.setCitedByCount(work.getCitedByCount());
         workSpecificResultDto.setTitle(work.getTitle());
         workSpecificResultDto.setPublicationYear(work.getPublicationYear());
-
+        workSpecificResultDto.setGrants(work.getGrants());
+        workSpecificResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
         return workSpecificResultDto;
     }
 }

@@ -3,6 +3,7 @@ package com.example.scholar.dto;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Data
 public class WorkSpecificResultDto {
@@ -15,4 +16,6 @@ public class WorkSpecificResultDto {
     private int publicationYear;
     private String publicationDate;
     private String type;
+    private String grants;
+    private Map<String, Float> keywords;
 }
