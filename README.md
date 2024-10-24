@@ -61,6 +61,15 @@
 
   ![Api-Fox](docs/Api-fox.png)
 
+### 论文部分数据结构介绍
+![img.png](论文数据库结构.png)
+
+* 有关数据导入的部分（目前是手动导入）包括每个work(论文)对应的authors,concepts以及每个author对应的institutions部分，导入python程序为insert.py
+
+
 ### 后续
+
+
+
 
 可能还有别的注意项，之后再添加，希望大家开发顺利~🤪
