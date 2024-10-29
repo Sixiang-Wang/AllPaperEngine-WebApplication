@@ -44,8 +44,7 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public List<WorkResultDto> getWorksByPage(int page) {
         int from = page*20-20;//设置前端每页最多20条
-        int to = page*20;
-        List<Work> works = workMapper.selectAllWorksByPage(from,to);
+        List<Work> works = workMapper.selectAllWorksByPage(from);
         List<WorkResultDto> workResultDtos = new ArrayList<>();
         for(Work work: works){
             WorkResultDto workResultDto = new WorkResultDto();
