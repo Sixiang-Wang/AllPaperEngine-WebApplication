@@ -171,6 +171,7 @@ onBeforeUnmount(() => {
       </el-table-column>
     </el-table>
   </el-card>
+  
 </template>
 
 <style scoped>

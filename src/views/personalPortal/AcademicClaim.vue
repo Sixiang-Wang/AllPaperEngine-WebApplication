@@ -69,7 +69,9 @@ const submit = async() => {
 
         </el-checkbox-group>
       </el-tab-pane>
-      <el-tab-pane label="高级检索"></el-tab-pane>
+      <el-tab-pane label="高级检索">
+        
+      </el-tab-pane>
     </el-tabs>
     <template #footer>
       <el-button  @click="handleDialogChange" color="#1F578F" plain>返回</el-button>
