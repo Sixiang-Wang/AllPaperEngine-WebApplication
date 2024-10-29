@@ -61,6 +61,9 @@
 
   ![Api-Fox](docs/Api-fox.png)
 
+### Github CI/CD 自动化部署 
+博客链接：[Github CI/CD 部署SpringBoot项目](https://blog.csdn.net/weixin_46294086/article/details/133967079)
+
 ### 论文部分数据结构介绍
 ![img.png](论文数据库结构.png)
 

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service("workService")
 public class WorkServiceImpl implements WorkService {
@@ -24,6 +25,8 @@ public class WorkServiceImpl implements WorkService {
     private AuthorService authorService;
     @Resource
     private ConceptsMapper conceptsMapper;
+    @Resource
+    private WorkService workService;
     @Override
     public List<WorkResultDto> getWorks() {
         List<Work> works = workMapper.selectAllWorks();
@@ -51,8 +54,7 @@ public class WorkServiceImpl implements WorkService {
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
             workResultDto.setCited(work.getCitedByCount());
-            workResultDto.setPaperInformation("A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications");
-            //这里后续需要修改
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
             workResultDto.setGrants(work.getGrants());
             workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
             workResultDtos.add(workResultDto);
@@ -78,4 +80,46 @@ public class WorkServiceImpl implements WorkService {
         workSpecificResultDto.setWorksConceptsList(conceptsMapper.getWorksConceptsListById(workId));
         return workSpecificResultDto;
     }
+
+    @Override
+    public List<WorkResultDto> getWorksByTitleWords(String word) {
+        List<Work> works = workMapper.selectWorksByTitleWord(word);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+
+        for(Work work: works){
+
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+
+        return workResultDtoList;
+    }
+
+    @Override
+    public String ToMainInformation(Work work) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Publiced on "+work.getPublicationDate()+" KeyWords: ");
+        Map<String,Float> map = JsonDisposer.disposeWorkKeywords(work.getKeywords());
+        int size = map.size();
+        int i=0;
+        for(Map.Entry<String,Float> entry:map.entrySet()){
+            String keyword = entry.getKey();
+            if(i<size-1){
+                sb.append(keyword+" && ");
+            }else{
+                sb.append(keyword);
+            }
+            i++;
+        }
+        return sb.toString();
+    }
+
+
 }
