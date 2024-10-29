@@ -12,4 +12,6 @@ public interface WorkService {
     List<WorkResultDto> getWorks();
     List<WorkResultDto> getWorksByPage(int page);
     WorkSpecificResultDto getWorkById(String workId);
+    List<WorkResultDto> getWorksByTitleWords(String word);
+    String ToMainInformation(Work work);
 }

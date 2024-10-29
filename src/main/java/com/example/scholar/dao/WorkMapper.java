@@ -14,4 +14,6 @@ public interface WorkMapper {
     int getWorksLength();
     @Select("select * from openalex_works where id = #{workId}")
     Work getWorkById(String workId);
+    @Select("select * from openalex_works where match(title) against(#{word})")
+    List<Work> selectWorksByTitleWord(String word);
 }
