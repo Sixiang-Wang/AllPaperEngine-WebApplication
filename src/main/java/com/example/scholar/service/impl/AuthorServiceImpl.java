@@ -1,8 +1,10 @@
 package com.example.scholar.service.impl;
 
 import com.example.scholar.dao.AuthorMapper;
+import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalex.AuthorShips;
+import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
 import com.example.scholar.dto.WorkAuthorResultDto;
 import com.example.scholar.service.AuthorService;
@@ -18,6 +20,8 @@ import java.util.List;
 public class AuthorServiceImpl implements AuthorService {
     @Resource
     private AuthorMapper authorMapper;
+    @Resource
+    private WorkMapper workMapper;
     @Override
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {
         List<AuthorShips> authorships = authorMapper.selectAuthorsById(workId);
@@ -40,5 +44,24 @@ public class AuthorServiceImpl implements AuthorService {
             }
         }
         return authorResultDtos;
+    }
+
+    @Override
+    public String getAuthorIdByAuthorName(String authorName) {
+        return authorMapper.getAuthorIdByAuthorName(authorName);
+    }
+
+    @Override
+    public List<Work> getWorksByAuthorName(String authorName) {
+        String authorId = getAuthorIdByAuthorName(authorName);
+        List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
+        List<Work> works = new ArrayList<>();
+        for (String workId : workIds) {
+            Work work = workMapper.getWorkById(workId);
+            if (work != null) {
+                works.add(work);
+            }
+        }
+        return works;
     }
 }
