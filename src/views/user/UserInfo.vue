@@ -8,20 +8,26 @@ const avatar = ref({
   url: defaultAvatar,
 });
 
+const dialogVisible = ref(false);
+
+const openDialog = () => {
+  dialogVisible.value = true;
+};
+
 const tableData = ref([
   {
     feature: "姓名",
-    value: "miaomiao",
+    value: "Albert Einstein",
     editable: false,
   },
   {
     feature: "生日",
-    value: "2007-02-21",
+    value: "1897-03-14",
     editable: false,
   },
   {
     feature: "性别",
-    value: "保密",
+    value: "男",
     editable: false,
   },
 ]);
@@ -29,12 +35,12 @@ const tableData = ref([
 const tableData2 = ref([
   {
     feature: "学术领域",
-    value: "软件工程",
+    value: "理论物理",
     editable: false,
   },
   {
     feature: "在职单位",
-    value: "南京航空航天大学",
+    value: "普林斯顿高等研究院",
     editable: false,
   },
   {
@@ -93,6 +99,7 @@ onBeforeUnmount(() => {
       <span>基本信息</span>
     </div>
     <br />
+
     <div style="display: flex; align-items: center;">
       <p class="text-item">个人资料照片</p>
       <el-avatar
@@ -102,7 +109,19 @@ onBeforeUnmount(() => {
           fit="cover"
           class="user-avatar"
       />
+      <arrow-right @click="openDialog" style="width: 25px; height: 25px; margin-left: 10px;margin-right: 3%;" />
     </div>
+    <el-dialog v-model="dialogVisible" title="修改头像" width="300px">
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+        <img src="@/assets/image/take-photo.jpg" alt="选择图片" style="width: 100px; height: 100px; opacity: 0.5;" />
+      </div>
+      <br />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false" style="margin-left: 15%;">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false" style="margin-left: 20%;">保 存</el-button>
+      </span>
+    </el-dialog>
+
     <el-divider style="margin: 0" />
     <el-table :data="tableData" style="width: 100%" :show-header="false">
       <el-table-column prop="feature" label="Feature" width="100" />
