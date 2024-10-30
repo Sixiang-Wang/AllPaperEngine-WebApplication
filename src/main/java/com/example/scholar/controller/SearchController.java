@@ -17,7 +17,7 @@ public class SearchController {
     @GetMapping(value="/getWorkByTitleWord")
     public R getWorkByTitleWord(@RequestParam("word") String word,@RequestParam("page") int page){
         try{
-            return R.ok().put("getWorkByTitleWord"+word+" page: "+page+"\n",workService.getWorksByTitleWords(word,page));
+            return R.ok().put("works:",workService.getWorksByTitleWords(word,page));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -26,7 +26,7 @@ public class SearchController {
     @GetMapping(value="/getWorkByPublicationYear")
     public R getWorkByPublicationYear(@RequestParam("from") int from,@RequestParam("to")int to,@RequestParam("page")int page){
         try{
-            return R.ok().put("getWorkByPublicationYear"+ " from "+from+" to "+to+"\n",workService.getWorksByPublicationYear(from, to, page));
+            return R.ok().put("works:",workService.getWorksByPublicationYear(from, to, page));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -35,7 +35,7 @@ public class SearchController {
     @GetMapping(value="/getWorkByTitleAndPublicationYear")
     public R getWorkByTitleAndPublicationYear(@RequestParam("word") String word,@RequestParam("from") int from,@RequestParam("to")int to,@RequestParam("page")int page){
         try{
-            return R.ok().put("getWorkByTitleAndPublicationYear"+" from "+from+" to "+to+"word"+word+"\n",workService.getWorkByTitleAndPublicationYear(word, from, to, page));
+            return R.ok().put("works:",workService.getWorkByTitleAndPublicationYear(word, from, to, page));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -45,7 +45,7 @@ public class SearchController {
     @GetMapping(value="/getWorkByKeywords")
     public R getWorkByKeywords(@RequestParam("word") String word,@RequestParam("page")int page){
         try{
-            return R.ok().put("getWorkByKeywords"+" keyword: "+word+"\n",workService.getWorkByKeywords(word,page));
+            return R.ok().put("works:",workService.getWorkByKeywords(word,page));
         }catch (Exception e){
             return R.error(e.toString());
         }
