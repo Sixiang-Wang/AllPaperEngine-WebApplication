@@ -40,6 +40,7 @@ onMounted(async () => {
   totalLength.value = res2.data.leng;
   console.log(totalLength.value);
   searchResults.value = res.data.works;
+  console.log(searchResults.value);
 });
 
 // 监听路由变化，以便更新 currentPage
