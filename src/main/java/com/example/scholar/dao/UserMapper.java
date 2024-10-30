@@ -11,4 +11,7 @@ public interface UserMapper {
     User selectUserById(int userId);
     @Select("select * from user where account = #{account}")
     User selectUserByAccount(String account);
+
+    @Update("update user SET avatar = #{avatar} WHERE userid = #{userid}")
+    Integer updateUserAvatar(String userid,String avatar);
 }
