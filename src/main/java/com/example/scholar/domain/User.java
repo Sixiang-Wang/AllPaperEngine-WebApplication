@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class User {
     private int userid;
     private String name;
-    private String account;
     private String password;
     private String avatar;
     private LocalDateTime birthTime;
@@ -24,4 +23,6 @@ public class User {
     private String company;
     private AcademicFieldType academicField;
     private String profession;
+    private String role;
+    private String biography;
 }

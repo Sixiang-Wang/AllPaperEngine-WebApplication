@@ -2,6 +2,7 @@ package com.example.scholar.controller;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.LoginDto;
+import com.example.scholar.dto.RegistDto;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
 import io.swagger.annotations.ApiOperation;
@@ -37,23 +38,18 @@ public class UserController {
     }
     @PostMapping(value = "/register")
     @ApiOperation("注册接口")
-    public R register(@ApiParam(value = "账号") @RequestParam String account,
-                      @ApiParam(value = "密码") @RequestParam String password,
-                      @ApiParam(value = "姓名") @RequestParam String name,
-                      @ApiParam(value = "邮箱") @RequestParam String mail,
-                      @ApiParam(value = "电话") @RequestParam String phone,
-                      @ApiParam(value = "公司") @RequestParam String company,
-                      @ApiParam(value = "学术领域") @RequestParam AcademicFieldType academicField,
-                      @ApiParam(value = "职业") @RequestParam String profession)
-    {
+    public R register(@ApiParam(value="登录表单") @RequestBody RegistDto registDto) {
+        String name = registDto.getName();
+        String password = registDto.getPassword();
+        String mail = registDto.getMail();
         try {
-            HashMap<String, Object> res = userService.register(account, password, name, mail, phone, company, academicField, profession);
+            HashMap<String, Object> res = userService.register(name, password, mail);
             if ("account already exists".equals(res.get("msg"))) {
-                return R.error("Account already exists");
+                return R.error("account already exists");
             } else if ("注册成功".equals(res.get("msg"))) {
-                return R.ok("Registration successful").put("userid", res.get("userid"));
+                return R.ok("register success").put("userid", res.get("userid"));
             } else {
-                return R.error("Registration failed");
+                return R.error("register failed");
             }
         } catch (Exception e) {
             return R.error(e.toString());

@@ -9,8 +9,8 @@ import java.util.List;
 
 @Component
 public interface UserService {
-    HashMap<String,Object> login(String account, String password);
-    HashMap<String, Object> register(String account, String password, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession);
+    HashMap<String, Object> login(String account, String password);
+    HashMap<String, Object> register(String name, String password, String mail);
     HashMap<String, Object> updateUserInfo(int userId, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession);
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
     HashMap<String, Object> logout(int userId);

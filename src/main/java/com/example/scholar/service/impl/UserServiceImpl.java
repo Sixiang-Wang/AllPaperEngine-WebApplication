@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private UserTokenMapper userTokenMapper;
     @Override
     public HashMap<String, Object> login(String account, String password) {
-        User user = userMapper.selectUserByAccount(account);
+        User user = userMapper.selectUserByMail(account);
         HashMap<String,Object> map = new HashMap<>();
         if(user == null){
             map.put("msg", "no such user");
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         }else{
             if(Md5Utils.verify(password, user.getPassword())){
                 //添加token
-                String jwtToken = JwtUtils.createJWT(String.valueOf(user.getUserid()),user.getAccount(),tokenValidTime);
+                String jwtToken = JwtUtils.createJWT(String.valueOf(user.getUserid()),user.getMail(),tokenValidTime);
                 if(userTokenMapper.ifUserToken(user.getUserid())==1){
                     userTokenMapper.updateUserToken(jwtToken, user.getUserid());
                 }else{
@@ -51,9 +51,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> register(String account, String password, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession) {
+    public HashMap<String, Object> register(String name, String password, String mail) {
         // 检查账号是否已存在
-        User existingUser = userMapper.selectUserByAccount(account);
+        User existingUser = userMapper.selectUserByMail(mail);
         HashMap<String,Object> resultMap = new HashMap<>();
         if (existingUser != null) {
             resultMap.put("msg", "account already exists");
@@ -65,16 +65,10 @@ public class UserServiceImpl implements UserService {
 
         // 创建新用户对象并赋值
         User newUser = new User();
-        newUser.setAccount(account);
         newUser.setPassword(hashedPassword);  // 存储加密后的密码
         newUser.setName(name);
         newUser.setMail(mail);
-        newUser.setPhone(phone);
-        newUser.setCompany(company);
-        newUser.setAcademicField(academicField);
-        newUser.setProfession(profession);
         newUser.setAvatar(""); // 可以设置默认头像
-        newUser.setBirthTime(LocalDateTime.now()); // 设置当前时间或根据需求提供输入
 
         // 插入新用户到数据库
         int result = userMapper.insertUser(newUser);
