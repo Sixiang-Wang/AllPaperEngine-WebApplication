@@ -69,10 +69,8 @@ const startCountdown = async () => {
 }
 
 const sendVerificationCode = async () => {
-  const res = await axios.get('/sendMail', {
-    params: {
-      to: registerForm.value.mail,
-    },
+  const res = await httpUtil.get('/sendMail', {
+    to: registerForm.value.mail,  
   });
   if (!res.data.verifyCode) {
     throw new Error("发送验证码失败");
