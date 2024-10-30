@@ -1,14 +1,17 @@
 package com.example.scholar.config;
 
 public class PathConfig {
-    public static final String avatarUrl = System.getProperty("user.dir") + "/images/avatars/";
-    public static final String travelUrl = System.getProperty("user.dir") + "/images/suggestTrips/";
-    public static final String avatar = "file/avatar/";
-    public static final String hotelUrl = System.getProperty("user.dir") + "/images/hotels/";
-    public static final String hotel = "file/hotels/";
-    public static final String foodUrl = System.getProperty("user.dir") + "/images/foods/";
-    public static final String food = "file/foods/";
-    public static final String roomUrl = System.getProperty("user.dir") + "/images/rooms";
-    public static final String room = "file/rooms/";
-    public static final String daoUrl = "com.example.wangwang.dao.";
+
+    public static final String os = System.getProperty("os.name").toLowerCase();
+    public static String path;
+    public static final String pathLinux = "/root/Scholar/store";
+    public static final String pathWindow = System.getProperty("user.dir")+"\\store";
+
+    static {
+        if (os.contains("win")) {
+            path = pathWindow;
+        } else {
+            path = pathLinux;
+        }
+    }
 }

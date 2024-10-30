@@ -7,6 +7,7 @@ import com.example.scholar.domain.User;
 import com.example.scholar.service.UserService;
 import com.example.scholar.util.JwtUtils;
 import com.example.scholar.util.Md5Utils;
+import io.swagger.models.auth.In;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,5 +46,10 @@ public class UserServiceImpl implements UserService {
                 return map;
             }
         }
+    }
+
+    @Override
+    public Boolean updateUserAvatar(Integer userid, String avatar){
+        return userMapper.updateUserAvatar(userid.toString(),avatar)>0;
     }
 }

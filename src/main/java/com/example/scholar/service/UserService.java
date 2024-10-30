@@ -9,4 +9,6 @@ import java.util.List;
 @Component
 public interface UserService {
     HashMap<String,Object> login(String account, String password);
+
+    Boolean updateUserAvatar(Integer userid,String avatar);
 }
