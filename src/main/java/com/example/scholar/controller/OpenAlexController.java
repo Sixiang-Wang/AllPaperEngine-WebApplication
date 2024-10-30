@@ -3,6 +3,7 @@ package com.example.scholar.controller;
 import com.example.scholar.dao.AuthorMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.constant.R;
+import com.example.scholar.dto.WorkResultDto;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.service.ConceptsService;
 import com.example.scholar.service.InstitutionsService;
@@ -10,6 +11,7 @@ import com.example.scholar.service.WorkService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -42,7 +44,8 @@ public class OpenAlexController {
     @GetMapping(value="/get/page")
     public R getAllWorksByPage(@RequestParam("page")int page){
         try{
-            return R.ok().put("works",workService.getWorksByPage(page));
+            List<WorkResultDto> workResultDtoList = workService.getWorksByPage(page);
+            return R.ok().put("works",workResultDtoList).put("length",workResultDtoList.size() );
         }catch (Exception e){
             return R.error(e.toString());
         }

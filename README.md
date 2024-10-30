@@ -69,6 +69,11 @@
 
 * 有关数据导入的部分（目前是手动导入）包括每个work(论文)对应的authors,concepts以及每个author对应的institutions部分，导入python程序为insert.py
 
+### 文件存储
+文件在Windows系统下被存储在 项目路径（自动识别）\store\..
+文件在Linux系统下被存储在 /root/Scholar/store/..
+
+
 
 ### 后续
 

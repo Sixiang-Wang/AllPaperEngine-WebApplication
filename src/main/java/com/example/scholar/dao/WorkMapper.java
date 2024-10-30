@@ -8,8 +8,8 @@ import java.util.List;
 public interface WorkMapper {
     @Select("select * from openalex_works")
     List<Work> selectAllWorks();
-    @Select("select * from openalex_works limit #{from},#{to}")
-    List<Work> selectAllWorksByPage(int from, int to);
+    @Select("select * from openalex_works limit 20 offset #{from}")
+    List<Work> selectAllWorksByPage(int from);
     @Select("select count(*) from openalex_works")
     int getWorksLength();
     @Select("select * from openalex_works where id = #{workId}")
