@@ -15,12 +15,42 @@ public class SearchController {
 
 
     @GetMapping(value="/getWorkByTitleWord")
-    public R getConceptsByWorkId(@RequestParam("word") String word){
+    public R getWorkByTitleWord(@RequestParam("word") String word,@RequestParam("page") int page){
         try{
-            return R.ok().put("getWorkByTitleWord"+word+"\n",workService.getWorksByTitleWords(word));
+            return R.ok().put("getWorkByTitleWord"+word+" page: "+page+"\n",workService.getWorksByTitleWords(word,page));
         }catch (Exception e){
             return R.error(e.toString());
         }
     }
+
+    @GetMapping(value="/getWorkByPublicationYear")
+    public R getWorkByPublicationYear(@RequestParam("from") int from,@RequestParam("to")int to,@RequestParam("page")int page){
+        try{
+            return R.ok().put("getWorkByPublicationYear"+ " from "+from+" to "+to+"\n",workService.getWorksByPublicationYear(from, to, page));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value="/getWorkByTitleAndPublicationYear")
+    public R getWorkByTitleAndPublicationYear(@RequestParam("word") String word,@RequestParam("from") int from,@RequestParam("to")int to,@RequestParam("page")int page){
+        try{
+            return R.ok().put("getWorkByTitleAndPublicationYear"+" from "+from+" to "+to+"word"+word+"\n",workService.getWorkByTitleAndPublicationYear(word, from, to, page));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+    @GetMapping(value="/getWorkByKeywords")
+    public R getWorkByKeywords(@RequestParam("word") String word,@RequestParam("page")int page){
+        try{
+            return R.ok().put("getWorkByKeywords"+" keyword: "+word+"\n",workService.getWorkByKeywords(word,page));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
 
 }
