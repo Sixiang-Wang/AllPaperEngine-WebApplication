@@ -2,8 +2,7 @@
 import { ref } from 'vue'
 import { ElMessage } from "element-plus"
 import router from "@/router/index.js"
-import axios from "axios"
-
+import httpUtil from "@/api/http.js";
 const registerForm = ref({
   account: '',
   password: '',
@@ -85,7 +84,7 @@ const register = async () => {
   }
   
   try {
-    const res = await axios.post('/user/register', {
+    const res = await httpUtil.get('/user/register', {
       account: registerForm.value.account,
       password: registerForm.value.password,
       mail: registerForm.value.mail,
