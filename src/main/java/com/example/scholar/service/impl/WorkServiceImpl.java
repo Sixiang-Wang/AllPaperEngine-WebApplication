@@ -53,6 +53,7 @@ public class WorkServiceImpl implements WorkService {
             WorkResultDto workResultDto = new WorkResultDto();
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
+            workResultDto.setId(work.getId());
             workResultDto.setCited(work.getCitedByCount());
             workResultDto.setPaperInformation(workService.ToMainInformation(work));
             workResultDto.setGrants(work.getGrants());
