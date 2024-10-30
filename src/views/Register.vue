@@ -9,7 +9,8 @@ const registerForm = ref({
   password: '',
   confirmPassword: '',
   mail: '',
-  verificationCode: ''
+  verificationCode: '',
+  sentCode: ''
 })
 
 const registerFormRef = ref(null)
@@ -43,6 +44,7 @@ const registerRule = ref({
 
 const countdown = ref(60);
 const isCounting = ref(false);
+const verificationCodeisValid = ref(false);
 
 const startCountdown = async () => {
   if (isCounting.value) return;
@@ -51,12 +53,14 @@ const startCountdown = async () => {
     await sendVerificationCode();
     isCounting.value = true;
     countdown.value = 60;
+    verificationCodeisValid.value = true;
 
     const interval = setInterval(() => {
       countdown.value--;
       if (countdown.value <= 0) {
         clearInterval(interval);
         isCounting.value = false;
+        verificationCodeisValid = false;
       }
     }, 1000);
   } catch (error) {
@@ -65,21 +69,28 @@ const startCountdown = async () => {
 }
 
 const sendVerificationCode = async () => {
-  const res = await axios.post('/user/send-verification-code', {
-    mail: registerForm.value.mail,
+  const res = await axios.get('/sendMail', {
+    params: {
+      to: registerForm.value.mail,
+    },
   });
-  if (res.data.msg !== "code sent") {
-    throw new Error(res.data.msg || "发送验证码失败");
+  if (!res.data.verifyCode) {
+    throw new Error("发送验证码失败");
   }
+  registerForm.value.sentCode = res.data.verifyCode;
 }
 
-const register = async () => {  
+const register = async () => {
+  if (registerForm.value.verificationCode !== registerForm.value.sentCode || !verificationCodeisValid.value) {
+    ElMessage.error("验证码不正确或已过期");
+    return;
+  }
+  
   try {
     const res = await axios.post('/user/register', {
       account: registerForm.value.account,
       password: registerForm.value.password,
       mail: registerForm.value.mail,
-      verificationCode: registerForm.value.verificationCode
     });
     
     if (res.data.msg === "register success") {
@@ -88,7 +99,6 @@ const register = async () => {
     } else {
       ElMessage.error(res.data.msg || "注册失败，请重试");
     }
-    console.log(res.data);
   } catch (e) {
     console.error(e);
     ElMessage.error("注册失败，请重试");
