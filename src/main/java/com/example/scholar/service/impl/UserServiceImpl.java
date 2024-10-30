@@ -25,8 +25,8 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserTokenMapper userTokenMapper;
     @Override
-    public HashMap<String, Object> login(String account, String password) {
-        User user = userMapper.selectUserByMail(account);
+    public HashMap<String, Object> login(String mail, String password) {
+        User user = userMapper.selectUserByMail(mail);
         HashMap<String,Object> map = new HashMap<>();
         if(user == null){
             map.put("msg", "no such user");

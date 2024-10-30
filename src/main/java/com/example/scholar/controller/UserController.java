@@ -26,7 +26,7 @@ public class UserController {
     @ApiOperation("登录接口")
     public R login(@ApiParam(value="登录表单") @RequestBody LoginDto loginDto){
         try {
-            HashMap<String, Object> res = userService.login(loginDto.getAccount(), loginDto.getPassword());
+            HashMap<String, Object> res = userService.login(loginDto.getMail(), loginDto.getPassword());
             if("no such user".equals(res.get("msg"))|| "wrong password".equals(res.get("msg"))){
                 return R.ok((String) res.get("msg"));
             }else {
