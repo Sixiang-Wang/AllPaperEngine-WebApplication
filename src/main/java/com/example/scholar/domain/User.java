@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.beans.Transient;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Component
 @Data
@@ -17,7 +18,7 @@ public class User {
     private String account;
     private String password;
     private String avatar;
-    private Date birthTime;
+    private LocalDateTime birthTime;
     private String mail;
     private String phone;
     private String company;

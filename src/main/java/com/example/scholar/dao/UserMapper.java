@@ -1,14 +1,28 @@
 package com.example.scholar.dao;
 
 import com.example.scholar.domain.User;
+import com.example.scholar.domain.myenum.AcademicFieldType;
 import org.apache.ibatis.annotations.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Mapper
 public interface UserMapper {
     @Select("select * from user where userid = #{userId}")
     User selectUserById(int userId);
+
     @Select("select * from user where account = #{account}")
     User selectUserByAccount(String account);
+
+    // 插入新用户
+    @Insert("INSERT INTO user (name, account, password, avatar, birthTime, mail, phone, company, academicField, profession) " +
+            "VALUES (#{name}, #{account}, #{password}, #{avatar}, #{birthTime}, #{mail}, #{phone}, #{company}, #{academicField}, #{profession})")
+    @Options(useGeneratedKeys = true, keyProperty = "userid")
+    int insertUser(User user);
+
+    @Update("UPDATE user SET name = #{name}, mail = #{mail}, phone = #{phone}, company = #{company}, academicField = #{academicField}, profession = #{profession} WHERE userid = #{userid}")
+    int updateUser(User user);
+
+
 }

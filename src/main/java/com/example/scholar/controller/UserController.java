@@ -1,5 +1,6 @@
 package com.example.scholar.controller;
 import com.example.scholar.domain.constant.R;
+import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.LoginDto;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
@@ -34,4 +35,80 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+    @PostMapping(value = "/register")
+    @ApiOperation("注册接口")
+    public R register(@ApiParam(value = "账号") @RequestParam String account,
+                      @ApiParam(value = "密码") @RequestParam String password,
+                      @ApiParam(value = "姓名") @RequestParam String name,
+                      @ApiParam(value = "邮箱") @RequestParam String mail,
+                      @ApiParam(value = "电话") @RequestParam String phone,
+                      @ApiParam(value = "公司") @RequestParam String company,
+                      @ApiParam(value = "学术领域") @RequestParam AcademicFieldType academicField,
+                      @ApiParam(value = "职业") @RequestParam String profession)
+    {
+        try {
+            HashMap<String, Object> res = userService.register(account, password, name, mail, phone, company, academicField, profession);
+            if ("account already exists".equals(res.get("msg"))) {
+                return R.error("Account already exists");
+            } else if ("注册成功".equals(res.get("msg"))) {
+                return R.ok("Registration successful").put("userid", res.get("userid"));
+            } else {
+                return R.error("Registration failed");
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @PostMapping(value = "/updateUserInfo")
+    @ApiOperation("修改个人信息接口")
+    public R updateUserInfo(@RequestParam int userId,
+                            @RequestParam(required = false) String name,
+                            @RequestParam(required = false) String mail,
+                            @RequestParam(required = false) String phone,
+                            @RequestParam(required = false) String company,
+                            @RequestParam(required = false) AcademicFieldType academicField,
+                            @RequestParam(required = false) String profession)
+    {
+        try {
+            HashMap<String, Object> resultMap = userService.updateUserInfo(userId, name, mail, phone, company, academicField, profession);
+            if ("用户信息更新成功".equals(resultMap.get("msg"))) {
+                return R.ok("用户信息更新成功");
+            } else {
+                return R.error((String) resultMap.get("msg"));  // 返回错误信息
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @PostMapping(value = "/changePassword")
+    @ApiOperation("修改密码接口")
+    public R changePassword(
+            @RequestParam int userId,
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword) {
+        try {
+            HashMap<String, Object> res = userService.changePassword(userId, oldPassword, newPassword);
+            if ("密码修改成功".equals(res.get("msg"))) {
+                return R.ok("Password changed successfully");
+            } else {
+                return R.error((String) res.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @PostMapping(value = "/logout")
+    @ApiOperation("退出登录接口")
+    public R logout(@RequestParam int userId) {
+        try {
+            HashMap<String, Object> resultMap = userService.logout(userId);
+            return R.ok((String) resultMap.get("msg"));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 }
