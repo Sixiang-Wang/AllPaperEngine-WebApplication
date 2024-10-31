@@ -38,4 +38,16 @@ public class FileService {
         }
         return storePath;
     }
+
+    public void deleteFile(String path){
+        String filePath = PathConfig.path + FileSystems.getDefault().getSeparator() + "img"+ FileSystems.getDefault().getSeparator() +"avatar";
+        if(path!=null&&!"/img/avatar/default_avatar.jpg".equals(path)){
+            File userPic = new File(filePath+ FileSystems.getDefault().getSeparator() + path);
+            if(userPic.exists()){
+                if (!userPic.delete()) {
+                    System.out.println(path + ":\n" + "头像不存在或删除失败:SingerController-deleteSinger");
+                }
+            }
+        }
+    }
 }
