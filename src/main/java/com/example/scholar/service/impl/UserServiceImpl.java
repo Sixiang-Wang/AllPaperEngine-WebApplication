@@ -50,44 +50,37 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
-//    public HashMap<String, Object> register(String mail, String password, String name, String phone, String company, AcademicFieldType academicField, String profession) {
-//        // 检查账号是否已存在
-//        User existingUser = userMapper.selectUserByMail(mail);
-//        HashMap<String,Object> resultMap = new HashMap<>();
-//        if (existingUser != null) {
-//            resultMap.put("msg", "account already exists");
-//            return resultMap;
-//        }
-//
-//        // 密码加密
-//        String hashedPassword = Md5Utils.agenerate(password);
-//
-//        // 创建新用户对象并赋值
-//        User newUser = new User();
-//        newUser.setMail(account);
-//        newUser.setPassword(hashedPassword);  // 存储加密后的密码
-//        newUser.setName(name);
-//        newUser.setMail(mail);
-//        newUser.setPhone(phone);
-//        newUser.setCompany(company);
-//        newUser.setAcademicField(academicField);
-//        newUser.setProfession(profession);
-//        newUser.setAvatar(""); // 可以设置默认头像
-//        newUser.setBirthTime(LocalDateTime.now()); // 设置当前时间或根据需求提供输入
-//
-//        // 插入新用户到数据库
-//        int result = userMapper.insertUser(newUser);
-//        if (result > 0) {
-//            resultMap.put("msg", "注册成功");
-//            resultMap.put("userid", newUser.getUserid());
-//        } else {
-//            resultMap.put("msg", "注册失败");
-//        }
-//
-//        return resultMap;
-//    }
+    @Override
+    public HashMap<String, Object> register(String name, String password, String mail) {
+        // 检查账号是否已存在
+        User existingUser = userMapper.selectUserByMail(mail);
+        HashMap<String,Object> resultMap = new HashMap<>();
+        if (existingUser != null) {
+            resultMap.put("msg", "account already exists");
+            return resultMap;
+        }
 
+        // 密码加密
+        String hashedPassword = Md5Utils.agenerate(password);
+
+        // 创建新用户对象并赋值
+        User newUser = new User();
+        newUser.setPassword(hashedPassword);  // 存储加密后的密码
+        newUser.setName(name);
+        newUser.setMail(mail);
+        newUser.setAvatar(""); // 可以设置默认头像
+
+        // 插入新用户到数据库
+        int result = userMapper.insertUser(newUser);
+        if (result > 0) {
+            resultMap.put("msg", "注册成功");
+            resultMap.put("userid", newUser.getUserid());
+        } else {
+            resultMap.put("msg", "注册失败");
+        }
+
+        return resultMap;
+    }
 
     @Override
     public HashMap<String, Object> updateUserName(int userId, String username) {
@@ -230,6 +223,7 @@ public class UserServiceImpl implements UserService {
         }
         return resultMap;
     }
+
 
     @Override
     public HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword) {

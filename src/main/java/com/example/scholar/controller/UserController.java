@@ -2,6 +2,7 @@ package com.example.scholar.controller;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.LoginDto;
+import com.example.scholar.dto.RegistDto;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +27,7 @@ public class UserController {
     @ApiOperation("登录接口")
     public R login(@ApiParam(value="登录表单") @RequestBody LoginDto loginDto){
         try {
-            HashMap<String, Object> res = userService.login(loginDto.getAccount(), loginDto.getPassword());
+            HashMap<String, Object> res = userService.login(loginDto.getMail(), loginDto.getPassword());
             if("no such user".equals(res.get("msg"))|| "wrong password".equals(res.get("msg"))){
                 return R.ok((String) res.get("msg"));
             }else {
@@ -36,31 +37,25 @@ public class UserController {
             return R.error(e.toString());
         }
     }
-//    @PostMapping(value = "/register")
-//    @ApiOperation("注册接口")
-//    public R register(@ApiParam(value = "账号") @RequestParam String account,
-//                      @ApiParam(value = "密码") @RequestParam String password,
-//                      @ApiParam(value = "姓名") @RequestParam String name,
-//                      @ApiParam(value = "邮箱") @RequestParam String mail,
-//                      @ApiParam(value = "电话") @RequestParam String phone,
-//                      @ApiParam(value = "公司") @RequestParam String company,
-//                      @ApiParam(value = "学术领域") @RequestParam AcademicFieldType academicField,
-//                      @ApiParam(value = "职业") @RequestParam String profession)
-//    {
-//        try {
-//            HashMap<String, Object> res = userService.register(account, password, name, mail, phone, company, academicField, profession);
-//            if ("account already exists".equals(res.get("msg"))) {
-//                return R.error("Account already exists");
-//            } else if ("注册成功".equals(res.get("msg"))) {
-//                return R.ok("Registration successful").put("userid", res.get("userid"));
-//            } else {
-//                return R.error("Registration failed");
-//            }
-//        } catch (Exception e) {
-//            return R.error(e.toString());
-//        }
-//    }
-
+    @PostMapping(value = "/register")
+    @ApiOperation("注册接口")
+    public R register(@ApiParam(value="登录表单") @RequestBody RegistDto registDto) {
+        String name = registDto.getName();
+        String password = registDto.getPassword();
+        String mail = registDto.getMail();
+        try {
+            HashMap<String, Object> res = userService.register(name, password, mail);
+            if ("account already exists".equals(res.get("msg"))) {
+                return R.error("account already exists");
+            } else if ("注册成功".equals(res.get("msg"))) {
+                return R.ok("register success").put("userid", res.get("userid"));
+            } else {
+                return R.error("register failed");
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
     @PostMapping(value = "/updateUserName")
     @ApiOperation("修改用户名接口")
     public R updateUsername(@RequestParam int userId,
@@ -81,7 +76,7 @@ public class UserController {
     @PostMapping(value = "/updateUserAvatar")
     @ApiOperation("修改用户头像接口")
     public R updateUseravatar(@RequestParam int userId,
-                            @RequestParam(required = false) String avatar)
+                              @RequestParam(required = false) String avatar)
     {
         try {
             HashMap<String, Object> resultMap = userService.updateUserAvatar(userId, avatar);
@@ -98,7 +93,7 @@ public class UserController {
     @PostMapping(value = "/updateUserBirthTime")
     @ApiOperation("修改用户生日接口")
     public R updateUserbirthTime(@RequestParam int userId,
-                            @RequestParam(required = false) LocalDateTime birthTime)
+                                 @RequestParam(required = false) LocalDateTime birthTime)
     {
         try {
             HashMap<String, Object> resultMap = userService.updateUserBirthTime(userId, birthTime);
@@ -115,7 +110,7 @@ public class UserController {
     @PostMapping(value = "/updateUserCompany")
     @ApiOperation("修改在职单位接口")
     public R updateUsercompany(@RequestParam int userId,
-                            @RequestParam(required = false) String company)
+                               @RequestParam(required = false) String company)
     {
         try {
             HashMap<String, Object> resultMap = userService.updateUserCompany(userId, company);
@@ -132,7 +127,7 @@ public class UserController {
     @PostMapping(value = "/updateUserAcademicField")
     @ApiOperation("修改学术领域接口")
     public R updateUserAcademicField(@RequestParam int userId,
-                              @RequestParam(required = false) AcademicFieldType academicField)
+                                     @RequestParam(required = false) AcademicFieldType academicField)
     {
         try {
             HashMap<String, Object> resultMap = userService.updateUserAcademicField(userId, academicField);
@@ -149,7 +144,7 @@ public class UserController {
     @PostMapping(value = "/updateUserProfession")
     @ApiOperation("修改用户职业接口")
     public R updateUserProfession(@RequestParam int userId,
-                               @RequestParam(required = false) String profession)
+                                  @RequestParam(required = false) String profession)
     {
         try {
             HashMap<String, Object> resultMap = userService.updateUserProfession(userId, profession);
@@ -166,7 +161,7 @@ public class UserController {
     @PostMapping(value = "/updateUserPhone")
     @ApiOperation("修改用户电话接口")
     public R updateUserPhone(@RequestParam int userId,
-                                  @RequestParam(required = false) String phone)
+                             @RequestParam(required = false) String phone)
     {
         try {
             HashMap<String, Object> resultMap = userService.updateUserPhone(userId, phone);
@@ -179,7 +174,6 @@ public class UserController {
             return R.error(e.toString());
         }
     }
-
 
     @PostMapping(value = "/changePassword")
     @ApiOperation("修改密码接口")
