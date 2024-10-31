@@ -12,8 +12,8 @@ public interface UserMapper {
     @Select("select * from user where userid = #{userId}")
     User selectUserById(int userId);
 
-    @Select("select * from user where account = #{account}")
-    User selectUserByAccount(String account);
+    @Select("select * from user where mail = #{mail}")
+    User selectUserByMail(String mail);
 
     // 插入新用户
     @Insert("INSERT INTO user (name, account, password, avatar, birthTime, mail, phone, company, academicField, profession) " +
@@ -23,6 +23,10 @@ public interface UserMapper {
 
     @Update("UPDATE user SET name = #{name}, mail = #{mail}, phone = #{phone}, company = #{company}, academicField = #{academicField}, profession = #{profession} WHERE userid = #{userid}")
     int updateUser(User user);
+
+    @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
+    int updateUserName(User user);
+
 
 
 }

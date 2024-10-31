@@ -25,8 +25,8 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserTokenMapper userTokenMapper;
     @Override
-    public HashMap<String, Object> login(String account, String password) {
-        User user = userMapper.selectUserByAccount(account);
+    public HashMap<String, Object> login(String mail, String password) {
+        User user = userMapper.selectUserByMail(mail);
         HashMap<String,Object> map = new HashMap<>();
         if(user == null){
             map.put("msg", "no such user");
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         }else{
             if(Md5Utils.verify(password, user.getPassword())){
                 //添加token
-                String jwtToken = JwtUtils.createJWT(String.valueOf(user.getUserid()),user.getAccount(),tokenValidTime);
+                String jwtToken = JwtUtils.createJWT(String.valueOf(user.getUserid()),user.getMail(),tokenValidTime);
                 if(userTokenMapper.ifUserToken(user.getUserid())==1){
                     userTokenMapper.updateUserToken(jwtToken, user.getUserid());
                 }else{
@@ -50,82 +50,184 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+//    @Override
+//    public HashMap<String, Object> register(String mail, String password, String name, String phone, String company, AcademicFieldType academicField, String profession) {
+//        // 检查账号是否已存在
+//        User existingUser = userMapper.selectUserByMail(mail);
+//        HashMap<String,Object> resultMap = new HashMap<>();
+//        if (existingUser != null) {
+//            resultMap.put("msg", "account already exists");
+//            return resultMap;
+//        }
+//
+//        // 密码加密
+//        String hashedPassword = Md5Utils.agenerate(password);
+//
+//        // 创建新用户对象并赋值
+//        User newUser = new User();
+//        newUser.setMail(account);
+//        newUser.setPassword(hashedPassword);  // 存储加密后的密码
+//        newUser.setName(name);
+//        newUser.setMail(mail);
+//        newUser.setPhone(phone);
+//        newUser.setCompany(company);
+//        newUser.setAcademicField(academicField);
+//        newUser.setProfession(profession);
+//        newUser.setAvatar(""); // 可以设置默认头像
+//        newUser.setBirthTime(LocalDateTime.now()); // 设置当前时间或根据需求提供输入
+//
+//        // 插入新用户到数据库
+//        int result = userMapper.insertUser(newUser);
+//        if (result > 0) {
+//            resultMap.put("msg", "注册成功");
+//            resultMap.put("userid", newUser.getUserid());
+//        } else {
+//            resultMap.put("msg", "注册失败");
+//        }
+//
+//        return resultMap;
+//    }
+
+
     @Override
-    public HashMap<String, Object> register(String account, String password, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession) {
-        // 检查账号是否已存在
-        User existingUser = userMapper.selectUserByAccount(account);
-        HashMap<String,Object> resultMap = new HashMap<>();
-        if (existingUser != null) {
-            resultMap.put("msg", "account already exists");
-            return resultMap;
+    public HashMap<String, Object> updateUserName(int userId, String username) {
+        User existingUser = userMapper.selectUserById(userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
         }
-
-        // 密码加密
-        String hashedPassword = Md5Utils.agenerate(password);
-
-        // 创建新用户对象并赋值
-        User newUser = new User();
-        newUser.setAccount(account);
-        newUser.setPassword(hashedPassword);  // 存储加密后的密码
-        newUser.setName(name);
-        newUser.setMail(mail);
-        newUser.setPhone(phone);
-        newUser.setCompany(company);
-        newUser.setAcademicField(academicField);
-        newUser.setProfession(profession);
-        newUser.setAvatar(""); // 可以设置默认头像
-        newUser.setBirthTime(LocalDateTime.now()); // 设置当前时间或根据需求提供输入
-
-        // 插入新用户到数据库
-        int result = userMapper.insertUser(newUser);
+        if (username != null && !username.isEmpty()) {
+            existingUser.setName(username);
+        }
+        int result = userMapper.updateUserName(existingUser);
         if (result > 0) {
-            resultMap.put("msg", "注册成功");
-            resultMap.put("userid", newUser.getUserid());
-        } else {
-            resultMap.put("msg", "注册失败");
+            resultMap.put("msg", "用户名更新成功");
+        }
+        else{
+            resultMap.put("msg", "用户名更新失败");
         }
 
         return resultMap;
     }
 
     @Override
-    public HashMap<String, Object> updateUserInfo(int userId, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession) {
-        // 获取当前用户
+    public HashMap<String, Object> updateUserAvatar(int userId, String avatar) {
         User existingUser = userMapper.selectUserById(userId);
         HashMap<String, Object> resultMap = new HashMap<>();
-
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
-            return resultMap;
         }
-
-        if (name != null && !name.isEmpty()) {
-            existingUser.setName(name);
+        if (avatar != null && !avatar.isEmpty()){
+            existingUser.setAvatar(avatar);
         }
-        if (mail != null && !mail.isEmpty()) {
-            existingUser.setMail(mail);
-        }
-        if (phone != null && !phone.isEmpty()) {
-            existingUser.setPhone(phone);
-        }
-        if (company != null && !company.isEmpty()) {
-            existingUser.setCompany(company);
-        }
-        if (academicField != null) {
-            existingUser.setAcademicField(academicField);
-        }
-        if (profession != null && !profession.isEmpty()) {
-            existingUser.setProfession(profession);
-        }
-
-        // 更新数据库
         int result = userMapper.updateUser(existingUser);
         if (result > 0) {
-            resultMap.put("msg", "用户信息更新成功");
-        } else {
-            resultMap.put("msg", "用户信息更新失败");
+            resultMap.put("msg", "用户名更新成功");
+        }
+        else{
+            resultMap.put("msg", "用户名更新失败");
         }
 
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> updateUserBirthTime(int userId, LocalDateTime birthTime) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+        }
+        if(birthTime != null){
+            existingUser.setBirthTime(birthTime);
+        }
+        int result = userMapper.updateUser(existingUser);
+        if (result > 0) {
+            resultMap.put("msg", "用户生日更新成功");
+        }
+        else{
+            resultMap.put("msg", "用户生日更新失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> updateUserCompany(int userId, String company) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+        }
+        if(company != null && !company.isEmpty()){
+            existingUser.setCompany(company);
+        }
+        int result = userMapper.updateUser(existingUser);
+        if (result > 0) {
+            resultMap.put("msg", "在职单位更新成功");
+        }
+        else{
+            resultMap.put("msg", "在职单位更新失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> updateUserAcademicField(int userId, AcademicFieldType academicField) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+        }
+        if(academicField != null){
+            existingUser.setAcademicField(academicField);
+        }
+        int result = userMapper.updateUser(existingUser);
+        if (result > 0) {
+            resultMap.put("msg", "学术领域更新成功");
+        }
+        else {
+            resultMap.put("msg", "学术领域更新失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> updateUserProfession(int userId, String profession) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+        }
+        if(profession != null && !profession.isEmpty()){
+            existingUser.setProfession(profession);
+        }
+        int result = userMapper.updateUser(existingUser);
+        if (result > 0) {
+            resultMap.put("msg", "用户职业更新成功");
+        }
+        else {
+            resultMap.put("msg", "用户职业更新失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> updateUserPhone(int userId, String phone) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+        }
+        if(phone != null && !phone.isEmpty()){
+            existingUser.setPhone(phone);
+        }
+        int result = userMapper.updateUser(existingUser);
+        if (result > 0) {
+            resultMap.put("msg", "用户电话更新成功");
+        }
+        else {
+            resultMap.put("msg", "用户电话更新失败");
+        }
         return resultMap;
     }
 
