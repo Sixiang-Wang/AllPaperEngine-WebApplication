@@ -14,7 +14,14 @@ public class FileService {
         if (multipartFile.isEmpty()) {
             return null;
         }
-        String fileName = multipartFile.getOriginalFilename() + System.currentTimeMillis();
+        String fileName = multipartFile.getOriginalFilename();
+        if (fileName != null) {
+            int dotIndex = fileName.lastIndexOf('.');
+            String name = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+            String extension = (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+            fileName = name + "_" + System.currentTimeMillis() + extension;
+
+        }
         //文件路径
         String filePath = PathConfig.path + FileSystems.getDefault().getSeparator() + "img"+ FileSystems.getDefault().getSeparator() +"avatar";
         File file1 = new File(filePath);

@@ -43,7 +43,7 @@ public class UserController {
 
     @ApiOperation("头像接口")
     @RequestMapping(value = "/updateUserAvatar", method = RequestMethod.GET)
-    public R updateUserAvatar(@RequestParam("file") MultipartFile profilePictureFile, @RequestParam("userid") int userid){
+    public R updateUserAvatar(@RequestParam("avatar") MultipartFile profilePictureFile, @RequestParam("userid") int userid){
         if (profilePictureFile.isEmpty()) {
             return R.error();
         }
