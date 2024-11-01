@@ -14,7 +14,7 @@ public interface UserService {
     HashMap<String, Object> register(String name, String password, String mail);
     //HashMap<String, Object> updateUserInfo(int userId, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession);
     HashMap<String, Object> updateUserName(int userId, String username);
-    HashMap<String, Object> updateUserAvatar(int userId, String avatar);
+    //HashMap<String, Object> updateUserAvatar(int userId, String avatar);
     HashMap<String, Object> updateUserBirthTime(int userId, LocalDateTime birthTime);
     HashMap<String, Object> updateUserCompany(int userId, String company);
     HashMap<String, Object> updateUserAcademicField(int userId, AcademicFieldType academicField);
@@ -22,4 +22,5 @@ public interface UserService {
     HashMap<String, Object> updateUserPhone(int userId, String phone);
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
     HashMap<String, Object> logout(int userId);
+    Boolean updateUserAvatar(Integer userid,String avatar);
 }

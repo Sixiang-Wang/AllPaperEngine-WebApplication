@@ -63,7 +63,7 @@ public class OpenAlexController {
     @GetMapping(value="/work/get")
     public R getWorkById(@RequestParam("workId") String workId){
         try{
-            return R.ok().put("getWorkById"+workId+"\n",workService.getWorkById(workId));
+            return R.ok().put("work",workService.getWorkById(workId));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -73,7 +73,7 @@ public class OpenAlexController {
     @GetMapping(value="/concepts/getByWorkId")
     public R getConceptsByWorkId(@RequestParam("workId") String workId){
         try{
-            return R.ok().put("getConceptsByWorkId"+workId+"\n",conceptsService.getConceptsByWorkId(workId));
+            return R.ok().put("concepts"+workId+"\n",conceptsService.getConceptsByWorkId(workId));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -82,7 +82,7 @@ public class OpenAlexController {
     @GetMapping(value="/author/getAuthorsByWorkId")
     public R getAuthorsByWorkId(@RequestParam("workId") String workId){
         try{
-            return R.ok().put("getAuthorsByWorkId"+workId+"\n",authorService.getAuthorsByWorkId(workId));
+            return R.ok().put("authors",authorService.getAuthorsByWorkId(workId));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -93,7 +93,7 @@ public class OpenAlexController {
     @GetMapping(value="/institutions/getInstitutionById")
     public R getInstitutionById(@RequestParam("institutionId") String institutionId){
         try{
-            return R.ok().put("getInstitutionById"+institutionId+"\n",institutionsService.getInstitutionById(institutionId));
+            return R.ok().put("institutions",institutionsService.getInstitutionById(institutionId));
         }catch (Exception e){
             return R.error(e.toString());
         }

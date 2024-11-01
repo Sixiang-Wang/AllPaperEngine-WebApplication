@@ -103,25 +103,30 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
-    @Override
-    public HashMap<String, Object> updateUserAvatar(int userId, String avatar) {
-        User existingUser = userMapper.selectUserById(userId);
-        HashMap<String, Object> resultMap = new HashMap<>();
-        if (existingUser == null) {
-            resultMap.put("msg", "User not found");
-        }
-        if (avatar != null && !avatar.isEmpty()){
-            existingUser.setAvatar(avatar);
-        }
-        int result = userMapper.updateUser(existingUser);
-        if (result > 0) {
-            resultMap.put("msg", "用户名更新成功");
-        }
-        else{
-            resultMap.put("msg", "用户名更新失败");
-        }
+//    @Override
+//    public HashMap<String, Object> updateUserAvatar(int userId, String avatar) {
+//        User existingUser = userMapper.selectUserById(userId);
+//        HashMap<String, Object> resultMap = new HashMap<>();
+//        if (existingUser == null) {
+//            resultMap.put("msg", "User not found");
+//        }
+//        if (avatar != null && !avatar.isEmpty()){
+//            existingUser.setAvatar(avatar);
+//        }
+//        int result = userMapper.updateUser(existingUser);
+//        if (result > 0) {
+//            resultMap.put("msg", "用户名更新成功");
+//        }
+//        else{
+//            resultMap.put("msg", "用户名更新失败");
+//        }
+//
+//        return resultMap;
+//    }
 
-        return resultMap;
+    @Override
+    public Boolean updateUserAvatar(Integer userid, String avatar){
+        return userMapper.updateUserAvatar(userid.toString(),avatar)>0;
     }
 
     @Override
@@ -269,6 +274,5 @@ public class UserServiceImpl implements UserService {
 
         return resultMap;
     }
-
 
 }

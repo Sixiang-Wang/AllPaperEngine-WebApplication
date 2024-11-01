@@ -9,6 +9,7 @@ import java.util.Map;
 
 @Data
 public class WorkResultDto {
+    private String id;
     private String title;
     private String paperInformation;
     private String abstractText;

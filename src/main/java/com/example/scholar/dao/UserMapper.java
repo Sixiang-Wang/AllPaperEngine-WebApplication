@@ -1,10 +1,8 @@
 package com.example.scholar.dao;
 
 import com.example.scholar.domain.User;
-import com.example.scholar.domain.myenum.AcademicFieldType;
 import org.apache.ibatis.annotations.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -14,6 +12,9 @@ public interface UserMapper {
 
     @Select("select * from user where mail = #{mail}")
     User selectUserByMail(String mail);
+
+    @Update("update user SET avatar = #{avatar} WHERE userid = #{userid}")
+    Integer updateUserAvatar(String userid,String avatar);
 
     // 插入新用户
     @Insert("INSERT INTO user (name, password, avatar, birthTime, mail, phone, company, academicField, profession, role, biography) " +
@@ -26,7 +27,4 @@ public interface UserMapper {
 
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
     int updateUserName(User user);
-
-
-
 }

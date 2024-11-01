@@ -53,6 +53,7 @@ public class WorkServiceImpl implements WorkService {
             WorkResultDto workResultDto = new WorkResultDto();
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
+            workResultDto.setId(work.getId());
             workResultDto.setCited(work.getCitedByCount());
             workResultDto.setPaperInformation(workService.ToMainInformation(work));
             workResultDto.setGrants(work.getGrants());
@@ -82,8 +83,11 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public List<WorkResultDto> getWorksByTitleWords(String word) {
-        List<Work> works = workMapper.selectWorksByTitleWord(word);
+    public List<WorkResultDto> getWorksByTitleWords(String word,int page) {
+
+        int from = page*20-20;//设置前端每页最多20条
+        int to = page*20;
+        List<Work> works = workMapper.selectWorksByTitleWord(word,from,to);
         List<WorkResultDto> workResultDtoList = new ArrayList<>();
 
         for(Work work: works){
@@ -119,6 +123,71 @@ public class WorkServiceImpl implements WorkService {
             i++;
         }
         return sb.toString();
+    }
+
+    @Override
+    public List<WorkResultDto> getWorksByPublicationYear(int from, int to, int page) {
+        int frompage = page*20-20;//设置前端每页最多20条
+        int topage = page*20;
+        List<Work> works = workMapper.selectWorksByPublicationYear(from,to,frompage,topage);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+        for(Work work: works){
+
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+        return workResultDtoList;
+    }
+
+    @Override
+    public List<WorkResultDto> getWorkByTitleAndPublicationYear(String word, int from, int to, int page) {
+        int frompage = page*20-20;//设置前端每页最多20条
+        int topage = page*20;
+        List<Work> works = workMapper.selectWorkByTitleAndPublicationYear(word,from,to,frompage,topage);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+        for(Work work: works){
+
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+        return workResultDtoList;
+    }
+
+    @Override
+    public List<WorkResultDto> getWorkByKeywords(String word, int page) {
+        int from = page*20-20;//设置前端每页最多20条
+        int to = page*20;
+        List<Work> works = workMapper.selectWorkByKeywords(word,from,to);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+
+        for(Work work: works){
+
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+
+        return workResultDtoList;
     }
 
 
