@@ -26,12 +26,20 @@
         <el-icon class="aside-icon"><data-line/></el-icon>
         <span class="fontStyle">个人门户</span>
       </el-menu-item>
+      <el-menu-item index="/user/favorite">
+        <el-icon class="aside-icon"><star/></el-icon>
+        <span class="fontStyle">个人收藏</span>
+      </el-menu-item>
+      <el-menu-item index="/user/history">
+        <el-icon class="aside-icon"><clock/></el-icon>
+        <span class="fontStyle">浏览历史</span>
+      </el-menu-item>
     </el-menu>
 </template>
 
 
 <script setup>
-import {DataLine, Document, Lock, Setting, User} from '@element-plus/icons-vue'
+import {Clock, DataLine, Document, Lock, Setting, Star, User} from '@element-plus/icons-vue'
 
 const handleOpen = (key, keyPath) => {
   console.log(key, keyPath)

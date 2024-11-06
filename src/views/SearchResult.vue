@@ -4,7 +4,7 @@ import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
 import SingleResult from "@/components/SingleResult.vue";
 import router from "@/router/index.js";
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
 
 const searchInput = ref("");
@@ -33,14 +33,38 @@ const updateSearchResults = async () => {
 };
 
 onMounted(async () => {
-  const res = await httpUtil.get('/openalex/get/page', {
-    page: currentPage.value
-  });
-  const res2 = await httpUtil.get('/openalex/get/length');
-  totalLength.value = res2.data.leng;
-  console.log(totalLength.value);
-  searchResults.value = res.data.works;
-  console.log(searchResults.value);
+  switch (route.query.type) {
+    case '1'://按标题查找
+      //为方便测试，这里保留搜索所有结果的接口
+      if(route.query.input===null||route.query.input === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        console.log(res);
+        searchResults.value = res.data.works;
+        console.log(searchResults.value);
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+        console.log(totalLength.value);
+      }else {
+        const res = await httpUtil.get('/search/getWorkByTitleWord', {
+          page: currentPage.value,
+          word: route.query.input
+        })
+        console.log(res);
+        searchResults.value = res.data.works;
+        console.log(searchResults.value);
+        const res2 = await httpUtil.get('/search/getWorkLengthByTitle', {
+          word: route.query.input
+        });
+        totalLength.value = res2.data.leng;
+        console.log(totalLength.value);
+      }
+
+      break;
+    case 2://按主题查找
+  }
+
 });
 
 // 监听路由变化，以便更新 currentPage
