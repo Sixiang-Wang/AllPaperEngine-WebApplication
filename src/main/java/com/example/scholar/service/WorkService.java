@@ -17,4 +17,5 @@ public interface WorkService {
     List<WorkResultDto> getWorksByPublicationYear(int from,int to,int page);
     List<WorkResultDto> getWorkByTitleAndPublicationYear(String word,int from,int to,int page);
     List<WorkResultDto> getWorkByKeywords(String word,int page);
+    void updateKeywordsAndAbstract();
 }

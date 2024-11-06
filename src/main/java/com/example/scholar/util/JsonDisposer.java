@@ -27,6 +27,16 @@ public class JsonDisposer {
         return resultMap;
     }
 
+
+    public static String getKeywords(Map<String, Float> map){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Map.Entry<String,Float> entry:map.entrySet()){
+            stringBuilder.append(entry.getKey()+",");
+        }
+        stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+        return stringBuilder.toString();
+    }
+
     // 定义 Keyword 类来映射 JSON 对象中的字段
     private static class Keyword {
         String id;

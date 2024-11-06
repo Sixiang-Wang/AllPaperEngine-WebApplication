@@ -79,6 +79,7 @@ public class WorkServiceImpl implements WorkService {
         workSpecificResultDto.setGrants(work.getGrants());
         workSpecificResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
         workSpecificResultDto.setWorksConceptsList(conceptsMapper.getWorksConceptsListById(workId));
+        workSpecificResultDto.setDoi(work.getDoi());
         return workSpecificResultDto;
     }
 
@@ -188,6 +189,17 @@ public class WorkServiceImpl implements WorkService {
         }
 
         return workResultDtoList;
+    }
+
+    @Override
+    public void updateKeywordsAndAbstract() {
+        List<Work> works = workMapper.selectAllWorks();
+        for(Work work:works){
+            String id = work.getId();
+            String keywords = JsonDisposer.getKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            String abstractText = AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex());
+            workMapper.insertKeywordsAndAbstract(id,keywords,abstractText);
+        }
     }
 
 
