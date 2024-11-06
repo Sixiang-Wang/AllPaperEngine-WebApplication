@@ -33,8 +33,13 @@ public class JsonDisposer {
         for(Map.Entry<String,Float> entry:map.entrySet()){
             stringBuilder.append(entry.getKey()+",");
         }
-        stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
-        return stringBuilder.toString();
+        if(stringBuilder.isEmpty()){
+            return "";
+        }else{
+            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+            return stringBuilder.toString();
+        }
+
     }
 
     // 定义 Keyword 类来映射 JSON 对象中的字段

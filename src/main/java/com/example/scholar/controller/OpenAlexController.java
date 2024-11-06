@@ -69,6 +69,16 @@ public class OpenAlexController {
         }
     }
 
+    @PostMapping(value="/work/updateKeywordsAndAbstract")
+    public R updateKeywordsAndAbstract(){
+        try{
+            workService.updateKeywordsAndAbstract();
+            return R.ok().put("successfully update","end");
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
 
     @GetMapping(value="/concepts/getByWorkId")
     public R getConceptsByWorkId(@RequestParam("workId") String workId){
@@ -98,4 +108,7 @@ public class OpenAlexController {
             return R.error(e.toString());
         }
     }
+
+
+
 }
