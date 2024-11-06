@@ -3,7 +3,7 @@ import {onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import {Search} from '@element-plus/icons-vue'
 import cookieUtil from "@/utils/cookie.js"
-  const searchType = ref("主题");
+  const searchType = ref('1');
   const searchInput = ref("");
   const fullText = "llPaper Engine";
   const displayedText = ref("A"); // 动态显示的文字
@@ -11,7 +11,7 @@ import cookieUtil from "@/utils/cookie.js"
   const displayedText2 = ref("P"); // 动态显示的文字
   const search = () => {
     console.log(111);
-    router.push({path: "/search", query: {input: searchInput.value, page: 1}});
+    router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value}});
   }
   onMounted(() => {
     let index = 0;
@@ -44,13 +44,17 @@ import cookieUtil from "@/utils/cookie.js"
       {{displayedText2}}</h2>
   </div>
   <div style="background-color: transparent !important;">
-  <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容">
+  <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容" @keyup.enter="search">
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
-        <el-option label="主题" value="1" />
-        <el-option label="篇名" value="2" />
+        <el-option label="篇名" value="1" />
+        <el-option label="主题" value="2" />
         <el-option label="关键词" value="3" />
       </el-select>
+
+
+
+
     </template>
 
   </el-input>

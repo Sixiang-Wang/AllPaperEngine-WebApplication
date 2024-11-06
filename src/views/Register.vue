@@ -43,7 +43,7 @@ const registerRule = ref({
 
 const countdown = ref(60);
 const isCounting = ref(false);
-const verificationCodeisValid = ref(false);
+let verificationCodeisValid = ref(false);
 
 const startCountdown = async () => {
   if (isCounting.value) return;
@@ -139,7 +139,7 @@ const register = async () => {
                     placeholder="请输入邮箱"
                     size="large"
                     clearable></el-input>
-          <el-button :disabled="isCounting" @click="startCountdown" size="small" style="margin-left: 10px;">
+          <el-button :disabled="isCounting" @click="startCountdown" style="margin-left: 10px;width: 200px;height: 40px;">
             {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}
           </el-button>
         </div>
