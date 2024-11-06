@@ -22,6 +22,14 @@ public class SearchController {
             return R.error(e.toString());
         }
     }
+    @GetMapping(value="/getWorkLengthByTitle")
+    public R getWorkLengthByTitle(@RequestParam("word")String word){
+        try{
+            return R.ok().put("leng", workService.getWorkLengthByTitleWords(word));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
 
     @GetMapping(value="/getWorkByPublicationYear")
     public R getWorkByPublicationYear(@RequestParam("from") int from,@RequestParam("to")int to,@RequestParam("page")int page){
@@ -50,7 +58,6 @@ public class SearchController {
             return R.error(e.toString());
         }
     }
-
 
 
 }
