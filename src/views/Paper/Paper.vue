@@ -6,6 +6,16 @@ import { useTransition } from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
 import SingleResult from "@/components/SingleResult.vue";
 import httpUtil from "@/api/http.js";
+import * as urlParams from "@/api/http.js";
+import {useRoute} from "vue-router";
+
+const title = ref("");
+const auth = ref([]);
+const doi =ref("Loading...");
+const abstract = ref("")
+const citedByApiUrl = ref("")
+const publicationDate = ref("")
+const conceptList = ref([]);
 
 const citeNum = ref(0);
 const referenceNum = ref(0);
@@ -22,6 +32,9 @@ const citeResults = ref([]);
 const citePageResults = ref([]);
 const citeTotalLength = ref(0);
 const citeCurrentPage = ref(1);
+let workId = ref(0);
+
+const tmp = ref("<span style='color:red'>Effect</span> of Latrotoxin-Like Protein on Spontaneous Postsynaptic Activity in Hippocampal Cell Cultures\"");
 
 const updateReferencePageResults = () => {
   const start = (referenceCurrentPage.value - 1) * pageSize;
@@ -43,8 +56,73 @@ const handleCitePageChange = (newPage) => {
   updateCitePageResults();  // 更新当前页的数据
 };
 
-onMounted(async()=>{
 
+const getWork = async (workId) => {
+  try {
+    const res = await httpUtil.get('/openalex/work/get', {
+      workId: workId,
+    });
+    console.log(res.data);
+
+    const data = res.data.work;
+
+    /**
+     * title
+     */
+    title.value = data.title;
+    /**
+     * Author
+     */
+    data.workAuthorResultDtos.forEach((authorDto) => {
+      const authorName = authorDto.authorResultDto.authorName[0];
+      const authorId = authorDto.authorResultDto.authorId;
+
+      const citedByCount = authorDto.authorResultDto.citedByCount;
+      const worksCount = authorDto.authorResultDto.worksCount;
+
+      auth.value.push({ name: authorName,
+        id: authorId,
+        citedByCount:citedByCount,
+        worksCount:worksCount});
+    });
+    /**
+     * Doi
+     */
+    if (data.doi) {
+      // 直接修改 doi.value
+      doi.value = data.doi.replace(/^https?:\/\//, "");
+    }
+
+    if(data.abstractText){
+      abstract.value = data.abstractText;
+    }
+
+    if(data.citedByCount){
+      citeNum.value = data.citedByCount;
+    }
+
+    if(data.citedByApiUrl){
+      citedByApiUrl.value = data.citedByApiUrl;
+    }
+
+    conceptList.value = data.worksConceptsList.map(item => item.displayName);
+
+    if(data.publicationDate){
+      publicationDate.value = data.publicationDate;
+    }
+  }catch (error){
+    console.error("Failed to fetch data:", error);
+    title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
+
+  }
+};
+
+onMounted(async()=>{
+  const route = useRoute();
+
+  // 从查询参数中获取 id
+  workId = route.query.id;
+  console.log(workId);
   const res = await httpUtil.get('/openalex/getall');
   referenceTotalLength.value = res.data.works.length;
   referenceResults.value = res.data.works;
@@ -54,6 +132,7 @@ onMounted(async()=>{
 
   updateReferencePageResults();
   updateCitePageResults();
+    getWork(workId);
   }
 )
 
@@ -71,7 +150,7 @@ let commentNumChange = useTransition(commentNum, {
 })
 
 //统计值在这里
-citeNum.value = 129
+citeNum.value = 0
 referenceNum.value = 51
 collectNum.value = 273
 commentNum.value = 9
@@ -84,7 +163,6 @@ const submitQuestion = ()=> {
   console.log("Question submitted:", question);
       // Handle the form submission logic
 }
-const abstract = ref("Despite declining incidence and mortality rates in many countries, the abdominal aortic aneurysm (AAA) continues to represent a life-threatening cardiovascular condition with an overall prevalence of about 2–3% in the industrialized world. While the risk of AAA development is considerably higher for men of advanced age with a history of smoking, screening programs serve to detect the often asymptomatic condition and prevent aortic rupture with an associated death rate of up to 80%. This review summarizes the current knowledge on identified risk factors, the multifactorial process of pathogenesis, as well as the latest advances in medical treatment and surgical repair to provide a perspective for AAA management.\n");
 
 const collectContent = computed(() =>
     isCollected.value ? '取消收藏' : '添加到收藏'
@@ -126,9 +204,33 @@ const toggleCollect = () => {
       <div class = "left-part">
         <!-- Header Section -->
         <div class="header">
-          <h1>AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis</h1>
-          <p>V. Kessler, J. Klopf, C. Brostjan +2 authors • Published in Biomedicines 1 January 2022 • Medicine</p>
-          <p><strong>DOI:</strong> 10.3390/biomedicines10010094</p>
+          <h1>{{title}}</h1>
+
+          <p>
+            <span v-for="(author, index) in auth" :key="index">
+              <a
+                  :href="'http://localhost:2221/authorInfo?id=' + author.id + '&citedByCount=' + author.citedByCount + '&worksCount=' + author.worksCount"
+                  target="_blank"
+                  class="author-link"
+              >
+                {{ author.name }}
+              </a>
+              <span v-if="index < auth.length - 1">, </span>
+            </span>
+            • Published in Biomedicines {{publicationDate}}
+          </p>
+
+          <p>
+            <span v-for="(concept, index) in conceptList.slice(0, 4)" :key="index">
+              {{ concept }}
+            <span v-if="index < Math.min(conceptList.length, 4) - 1"> • </span>
+            </span>
+            <span v-if="conceptList.length > 4"> • {{ conceptList.length - 4 }} More</span>
+          </p>
+
+          <p>
+            <strong>DOI:</strong> {{doi}}</p>
+
         </div>
 
         <!-- TLDR Section -->
