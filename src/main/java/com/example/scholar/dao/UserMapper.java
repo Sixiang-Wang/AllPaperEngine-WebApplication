@@ -22,7 +22,7 @@ public interface UserMapper {
     @Options(useGeneratedKeys = true, keyProperty = "userid")
     int insertUser(User user);
 
-    @Update("UPDATE user SET name = #{name}, mail = #{mail}, phone = #{phone}, company = #{company}, academicField = #{academicField}, profession = #{profession} WHERE userid = #{userid}")
+    @Update("UPDATE user SET name = #{name}, mail = #{mail}, birthTime = #{birthTime}, phone = #{phone}, company = #{company}, academicField = #{academicField}, profession = #{profession}, biography = #{biography} WHERE userid = #{userid}")
     int updateUser(User user);
 
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")

@@ -1,4 +1,5 @@
 package com.example.scholar.controller;
+import com.example.scholar.domain.constant.CheckResult;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.LoginDto;
@@ -6,6 +7,8 @@ import com.example.scholar.dto.RegistDto;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
 import com.example.scholar.service.impl.FileService;
+import com.example.scholar.util.JwtUtils;
+import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -60,17 +64,63 @@ public class UserController {
                 return R.error(e.toString());
             }
         }
+
+    @PostMapping(value = "/setUserDetails")
+    @ApiOperation("设置用户详细信息接口")
+    public R setUserDetails(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) String avatar,
+            @RequestParam(required = false) LocalDate birthTime,
+            @RequestParam(required = false) String biography,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) AcademicFieldType academicField,
+            @RequestParam(required = false) String profession,
+            @RequestParam(required = false) String phone) {
+        try {
+            // 验证 token 并获取 userId
+            CheckResult checkResult = JwtUtils.validateJWT(token);
+            if (!checkResult.isSuccess()) {
+                return R.error("Token无效或已过期");
+            }
+
+            Claims claims = checkResult.getClaims();
+            int userId = Integer.parseInt(claims.getId());  // 从 token 中获取用户ID
+
+            // 使用 userService 更新用户详细信息
+            HashMap<String, Object> resultMap = userService.setUserDetails(
+                    userId, avatar, birthTime, biography, company, academicField, profession, phone);
+
+            if ("详细信息更新成功".equals(resultMap.get("msg"))) {
+                return R.ok("详细信息更新成功");
+            } else {
+                return R.error((String) resultMap.get("msg"));  // 返回错误信息
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
         @PostMapping(value = "/updateUserName")
         @ApiOperation("修改用户名接口")
-        public R updateUsername(@RequestParam int userId,
-                                @RequestParam(required = false) String name)
+        public R updateUsername(
+                @RequestHeader("Authorization") String token,  // 从请求头中获取JWT
+                @RequestParam(required = false) String name)
         {
             try {
+                // 解析 token 获取 userId
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId());  // 从 token 中获取用户ID
+
                 HashMap<String, Object> resultMap = userService.updateUserName(userId, name);
                 if ("用户名更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("用户名更新成功");
                 } else {
-                    return R.error((String) resultMap.get("msg"));  // 返回错误信息
+                    return R.error((String) resultMap.get("msg"));
                 }
             } catch (Exception e) {
                 return R.error(e.toString());
@@ -90,10 +140,20 @@ public class UserController {
 
         @PostMapping(value = "/updateUserBirthTime")
         @ApiOperation("修改用户生日接口")
-        public R updateUserbirthTime(@RequestParam int userId,
-                                     @RequestParam(required = false) LocalDateTime birthTime)
-        {
+        public R updateUserBirthTime(
+                @RequestHeader("Authorization") String token,  // 从请求头获取 JWT token
+                @RequestParam(required = false) LocalDate birthTime) {
+
             try {
+                // 验证 token 并获取 userId
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
+
                 HashMap<String, Object> resultMap = userService.updateUserBirthTime(userId, birthTime);
                 if ("用户生日更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("用户生日更新成功");
@@ -107,11 +167,19 @@ public class UserController {
 
         @PostMapping(value = "/updateUserCompany")
         @ApiOperation("修改在职单位接口")
-        public R updateUsercompany(@RequestParam int userId,
+        public R updateUsercompany(@RequestHeader("Authorization") String token,
                                    @RequestParam(required = false) String company)
         {
             try {
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
+
                 HashMap<String, Object> resultMap = userService.updateUserCompany(userId, company);
+
                 if ("在职单位更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("在职单位更新成功");
                 } else {
@@ -124,10 +192,16 @@ public class UserController {
 
         @PostMapping(value = "/updateUserAcademicField")
         @ApiOperation("修改学术领域接口")
-        public R updateUserAcademicField(@RequestParam int userId,
+        public R updateUserAcademicField(@RequestHeader("Authorization") String token,
                                          @RequestParam(required = false) AcademicFieldType academicField)
         {
             try {
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
                 HashMap<String, Object> resultMap = userService.updateUserAcademicField(userId, academicField);
                 if ("学术领域更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("学术领域更新成功");
@@ -141,10 +215,16 @@ public class UserController {
 
         @PostMapping(value = "/updateUserProfession")
         @ApiOperation("修改用户职业接口")
-        public R updateUserProfession(@RequestParam int userId,
+        public R updateUserProfession(@RequestHeader("Authorization") String token,
                                       @RequestParam(required = false) String profession)
         {
             try {
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
                 HashMap<String, Object> resultMap = userService.updateUserProfession(userId, profession);
                 if ("用户职业更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("用户职业更新成功");
@@ -158,10 +238,16 @@ public class UserController {
 
         @PostMapping(value = "/updateUserPhone")
         @ApiOperation("修改用户电话接口")
-        public R updateUserPhone(@RequestParam int userId,
+        public R updateUserPhone(@RequestHeader("Authorization") String token,
                                  @RequestParam(required = false) String phone)
         {
             try {
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
                 HashMap<String, Object> resultMap = userService.updateUserPhone(userId, phone);
                 if ("用户电话更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("用户电话更新成功");
@@ -176,10 +262,16 @@ public class UserController {
         @PostMapping(value = "/changePassword")
         @ApiOperation("修改密码接口")
         public R changePassword(
-                @RequestParam int userId,
+                @RequestHeader("Authorization") String token,
                 @RequestParam String oldPassword,
                 @RequestParam String newPassword) {
             try {
+                CheckResult checkResult = JwtUtils.validateJWT(token);
+                if (!checkResult.isSuccess()) {
+                    return R.error("Token无效或已过期");
+                }
+                Claims claims = checkResult.getClaims();
+                int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
                 HashMap<String, Object> res = userService.changePassword(userId, oldPassword, newPassword);
                 if ("密码修改成功".equals(res.get("msg"))) {
                     return R.ok("Password changed successfully");
@@ -202,6 +294,5 @@ public class UserController {
             }
         }
 
-    }
-
 }
+
