@@ -26,6 +26,16 @@ const router = createRouter({
                     path: '/user/paper',
                     name: 'userpaper',
                     component: () => import('@/views/user/PaperManager.vue')
+                },
+                {
+                    path: '/user/favorite',
+                    name: 'favorite',
+                    component: () => import('@/views/user/Favorite.vue')
+                },
+                {
+                    path: '/user/history',
+                    name: 'history',
+                    component: () => import('@/views/user/History.vue')
                 }
             ]
         },
