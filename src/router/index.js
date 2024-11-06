@@ -54,11 +54,15 @@ const router = createRouter({
             name: 'test',
             component: () => import('@/views/Test.vue')
         },
-
         {
             path: '/paper',
             name: 'paper',
             component: ()=> import('@/views/Paper/Paper.vue')
+        },
+        {
+            path: '/authorInfo',
+            name: 'authorInfo',
+            component: ()=> import('@/views/user/AuthorInfo.vue')
         },
         {
             path: '/personalportal',
