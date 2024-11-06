@@ -8,10 +8,12 @@ import com.example.scholar.service.UserTokenService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 
 
 @CrossOrigin
@@ -193,6 +195,58 @@ public class UserController {
         }
     }
 
+    // 添加用户收藏
+    @PostMapping(value = "/addUserFavorite")
+    @ApiOperation("添加用户收藏接口")
+    public R addUserFavorite(
+            @RequestParam int userId,
+            @RequestParam int publicationId,
+            @RequestParam LocalDateTime timestamp) {
+        try {
+            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, timestamp);
+            if ("收藏添加成功".equals(resultMap.get("msg"))) {
+                return R.ok("Favorite added successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 查看所有收藏
+    @GetMapping("/viewAllFavorites")
+    @ApiOperation("查看所有收藏接口")
+    public R viewAllFavorites(@RequestParam int userId) {
+        try {
+            List<HashMap<String, Object>> favoriteList = userService.viewAllFavorites(userId);
+            if (favoriteList.isEmpty()) {
+                return R.error("No favorites found for this user");
+            } else {
+                return R.ok().put("favoriteList", favoriteList);
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+    // 删除用户收藏
+    @DeleteMapping("/deleteUserFavorite")
+    @ApiOperation("删除用户收藏接口")
+    public R deleteUserFavorite(@RequestParam int userId,
+                                @RequestParam int publicationId) {
+        try {
+            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId);
+            if ("收藏删除成功".equals(resultMap.get("msg"))) {
+                return R.ok("Favorite deleted successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 退出登录
     @PostMapping(value = "/logout")
     @ApiOperation("退出登录接口")
     public R logout(@RequestParam int userId) {
@@ -204,4 +258,71 @@ public class UserController {
         }
     }
 
+    // 添加一条浏览历史
+    @PostMapping("/addHistory")
+    @ApiOperation("添加一条浏览历史接口")
+    @DateTimeFormat
+    public R addHistory(@RequestParam int userId,
+                        @RequestParam int publicationId,
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
+        try {
+            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, timestamp);
+            if ("浏览历史添加成功".equals(resultMap.get("msg"))) {
+                return R.ok("History added successfully");
+            } else {
+                return R.error("Failed to add history");
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 查看所有浏览历史
+    @GetMapping("/viewAllHistory")
+    @ApiOperation("查看所有浏览历史接口")
+    public R viewAllHistory(@RequestParam int userId) {
+        try {
+            List<HashMap<String, Object>> historyList = userService.viewAllHistory(userId);
+            if (historyList.isEmpty()) {
+                return R.error("No history found for this user");
+            } else {
+                return R.ok().put("historyList", historyList);
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 删除某条浏览历史
+    @DeleteMapping("/deleteHistory/{id}")
+    @ApiOperation("删除某条浏览历史接口")
+    public R deleteHistory(@RequestParam int userId,
+                           @RequestParam int publicationId) {
+        try {
+            HashMap<String, Object> resultMap = userService.deleteHistory(userId, publicationId);
+            if ("浏览历史删除成功".equals(resultMap.get("msg"))) {
+                return R.ok("History deleted successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 清空所有浏览历史
+    @DeleteMapping("/clearAllHistory")
+    @ApiOperation("清空所有浏览历史接口")
+    public R clearAllHistory(@RequestParam int userId) {
+        try {
+            HashMap<String, Object> resultMap = userService.clearAllHistory(userId);
+            if ("浏览历史清空成功".equals(resultMap.get("msg"))) {
+                return R.ok("History cleared successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
 }

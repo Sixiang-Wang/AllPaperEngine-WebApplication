@@ -21,5 +21,28 @@ public interface UserService {
     HashMap<String, Object> updateUserProfession(int userId, String profession);
     HashMap<String, Object> updateUserPhone(int userId, String phone);
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
+
+    // 添加收藏
+    HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp);
+
+    // 取消收藏
+    HashMap<String, Object> deleteUserFavorite(int userId, int publicationId);
+
+    // 查看所有收藏
+    List<HashMap<String, Object>> viewAllFavorites(int userId);
+
+    // 添加浏览历史
+    HashMap<String, Object> addHistory(int userId, int publicationId, LocalDateTime timestamp);
+
+    // 退出登录
     HashMap<String, Object> logout(int userId);
+
+    // 查看所有历史记录
+    List<HashMap<String, Object>> viewAllHistory(int userId);
+
+    // 删除某条历史记录
+    HashMap<String, Object> deleteHistory(int userId, int publicationId);
+
+    // 清除所有历史记录
+    HashMap<String, Object> clearAllHistory(int userId);
 }

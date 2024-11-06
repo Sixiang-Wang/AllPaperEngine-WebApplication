@@ -14,7 +14,6 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import static com.example.scholar.config.SystemConst.tokenValidTime;
 
@@ -255,6 +254,74 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        int result = userMapper.addUserFavorite(userId, publicationId, timestamp);
+        if (result > 0) {
+            resultMap.put("msg", "收藏添加成功");
+        }
+        else {
+            resultMap.put("msg", "收藏添加失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> deleteUserFavorite(int userId, int publicationId) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        int result = userMapper.deleteUserFavorite(userId, publicationId);
+        if (result > 0) {
+            resultMap.put("msg", "收藏删除成功");
+        }
+        else {
+            resultMap.put("msg", "收藏删除失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public List<HashMap<String, Object>> viewAllFavorites(int userId) {
+        List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId);
+        return resultList;
+    }
+
+    @Override
+    public HashMap<String, Object> addHistory(int userId, int publicationId, LocalDateTime timestamp) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        int result;
+        System.out.println(timestamp);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        int isExist = userMapper.checkUserBrowserHistory(userId, publicationId);
+        if (isExist > 0) {// 如果已有相同浏览记录，就只更新时间戳
+            result = userMapper.updateUserBrowserHistoryTimestamp(userId, publicationId, timestamp);
+        } else {// 没有的话就直接添加
+            result = userMapper.addUserBrowserHistory(userId, publicationId, timestamp);
+        }
+        if (result > 0) {
+            resultMap.put("msg", "浏览历史添加成功");
+        }
+        else {
+            resultMap.put("msg", "浏览历史添加失败");
+        }
+        return resultMap;
+    }
+
+
+    @Override
     public HashMap<String, Object> logout(int userId) {
 
         User existingUser = userMapper.selectUserById(userId);
@@ -270,5 +337,45 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
+    @Override
+    public List<HashMap<String, Object>> viewAllHistory(int userId) {
+        List<HashMap<String, Object>> resultList = userMapper.selectUserBrowserHistory(userId);
+        return resultList;
+    }
+
+    @Override
+    public HashMap<String, Object> deleteHistory(int userId, int publicationId) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        int result = userMapper.deleteUserBrowserHistory(userId, publicationId);
+        if (result > 0) {
+            resultMap.put("msg", "浏览历史删除成功");
+        }
+        else {
+            resultMap.put("msg", "浏览历史删除失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> clearAllHistory(int userId) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        int result = userMapper.clearUserBrowserHistory(userId);
+        if (result > 0) {
+            resultMap.put("msg", "清空浏览历史成功");
+        } else {
+            resultMap.put("msg", "清空浏览历史失败");
+        }
+        return resultMap;
+    }
 
 }
