@@ -80,7 +80,7 @@
 
 ### ElasticSearch环境配置
 下载群里指定的三小只后（这里的elasticsearch缺失文件，请下载我发的新文件),解压
-![img.png](img.png)
+![img_7.png](img_7.png)
 在elasticsearch-8.15.3\bin目录下运行elasticsearch.bat可能会出现
 ```
 warning: ignoring JAVA_HOME=?; using bundled JDK
