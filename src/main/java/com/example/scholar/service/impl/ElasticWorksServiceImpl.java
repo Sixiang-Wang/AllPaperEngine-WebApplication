@@ -21,4 +21,16 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     public List<SearchHit<Works>> searchByTitle(String title) {
         return elasticSearchRepository.findByTitle(title);
     }
+
+    @Override
+    public List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm) {
+        return elasticSearchRepository.findByTitleOrKeywordsTextOrAbstract(searchTerm);
+    }
+
+    @Override
+    public List<SearchHit<Works>> fuzzyAutocomplete(String value, String fuzziness, boolean transpositions, int prefixLength) {
+        return elasticSearchRepository.fuzzyAutocomplete(value, fuzziness, transpositions, prefixLength);
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.scholar.domain.openalexElasticsearch;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -18,9 +19,11 @@ public class Works {
     private String doi;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String title;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String display_name;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Integer)
@@ -57,9 +60,11 @@ public class Works {
     private String keywords;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
-    private String keywords_text;
+    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
+    private String keywordsText;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String abstract_text;
 
 }

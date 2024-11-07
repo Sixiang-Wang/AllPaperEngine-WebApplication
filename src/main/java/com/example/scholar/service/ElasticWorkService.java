@@ -20,4 +20,8 @@ public interface ElasticWorkService {
     List<SearchHit<Works>> searchByTitle(String title);
 
 
+
+    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm);
+
+    List<SearchHit<Works>> fuzzyAutocomplete(String value, String fuzziness, boolean transpositions, int prefixLength);
 }

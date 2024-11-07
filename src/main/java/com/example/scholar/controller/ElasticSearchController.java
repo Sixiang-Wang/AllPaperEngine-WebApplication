@@ -26,4 +26,24 @@ public class ElasticSearchController {
         }
     }
 
+
+    @GetMapping(value="/works/getByTitleOrAbstractOrKeywords")
+    public R getByTitleOrAbstractOrKeywords(@RequestParam("searchterm") String searchterm){
+        try{
+            return R.ok().put("works",elasticWorkService.findByTitleOrKeywordsTextOrAbstract(searchterm));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+    @GetMapping(value="/works/searchAutocomplete")
+    public R searchAutocomplete(@RequestParam("value") String value ,@RequestParam("fuzziness")String fuzziness,@RequestParam("transpositions")boolean transposition, @RequestParam("prefixLength") int prefixLength){
+        try{
+            return R.ok().put("probability",elasticWorkService.fuzzyAutocomplete(value, fuzziness, transposition, prefixLength));
+        }catch (Throwable e){
+            return R.error(e.toString());
+        }
+    }
+
 }
