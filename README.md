@@ -78,6 +78,77 @@
 ### 后续
 
 
+### ElasticSearch环境配置
+下载群里指定的三小只后（这里的elasticsearch缺失文件，请下载我发的新文件),解压
+![img.png](img.png)
+在elasticsearch-8.15.3\bin目录下运行elasticsearch.bat可能会出现
+```
+warning: ignoring JAVA_HOME=?; using bundled JDK
+```
+如果enter后退出，这是因为es一般会检查环境变量中是否有jdk可用，而es一般会绑定一个对应的jdk版本，如果你的本地版本不同，就会出现上述问题
+解决方法：
+在elasticsearch-7.12.1-windows-x86_64\elasticsearch-7.12.1\bin路劲下打开elasticsearch-env.bat进行修改：
+![img_1.png](img_1.png)
+将这三个地方改成ES自带jdk就行，即elasticsearch-7.12.1-windows-x86_64\elasticsearch-7.12.1\jdk\bin路径下的java
+保存退出重新运行elasticsearch.bat，在浏览器中打开http://localhost:9200/，出现以下信息即成功
+![img_2.png](img_2.png)
+接下来在kibana-7.12.1-windows-x86_64\kibana-7.12.1-windows-x86_64\bin路径下运行kibana.bat
+![img_3.png](img_3.png)
+出现上图即成功，不成功的话，就在elasticsearch-env.bat运行界面多enter几下）
+接下来在网页端打开http://localhost:5601/,这是kibana的管理界面，搜索index到index Management界面
+下一步我们用logstash将数据库内容拉到es本地仓库中：
+首先，将在群里发送的mysql-connector-java-8.0.28复制到logstash-7.12.1-windows-x86_64\logstash-7.12.1\bin路径底下
+![img_4.png](img_4.png)
+然后在logstash-7.12.1-windows-x86_64\logstash-7.12.1\config路径下，新建一个xxx.conf(自己取名)
+在里面填上以下内容(注意将jdbc_driver_library项改成自己实际的地址):
+```
+input {
+  jdbc {
+    jdbc_driver_library => "E:\EngineerRelated\logstash-7.12.1-windows-x86_64\logstash-7.12.1\bin/mysql-connector-java-8.0.28.jar"
+    jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+    jdbc_connection_string => "jdbc:mysql://39.105.221.80:3306/scholar?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+    jdbc_user => "scholar"
+    jdbc_password => "scholar"
+    jdbc_paging_enabled => "true" #是否进行分页
+    jdbc_page_size => "50000"
+    # statement_filepath => "sql文件路径，与下面的执行语句二选1"
+    statement => "SELECT * FROM scholar.openalex_works"
+    # 设置监听间隔  各字段含义（由左至右）秒、分、时、天、月、年，全部为*默认含义为每分钟都更新
+    schedule => "* * * * * *"
+  }
+}
+output {
+  elasticsearch {
+    document_id => "%{id}"
+    index => "openalex_works_index"
+    hosts => ["localhost:9200"]
+  }
+  stdout{
+    codec => rubydebug
+  }
+}
+
+
+```
+保存后在控制台进入logstash-7.12.1-windows-x86_64\logstash-7.12.1\bin路径下，输入命令：
+```
+logstash -f ../config/xxx.conf
+```
+看到以下结果即为成功导入es索引库
+![img_6.png](img_6.png)
+导入ing（等待一段时间后直接ctrl+c退出程序即可，这里设置为每分钟导入一次，所以不会停下来)
+![img_5.png](img_5.png)
+出现索引喽（好耶）
+
+配置结束后需要记得maven重建一下，以导入es相关依赖
+
+
+
+
+
+
+
+
 
 
 可能还有别的注意项，之后再添加，希望大家开发顺利~🤪
