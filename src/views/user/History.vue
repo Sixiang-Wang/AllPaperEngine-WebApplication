@@ -64,8 +64,8 @@ onMounted(async () => {
 }
 .favorite-title {
   font-weight: 500;
-  font-size: 10px;
-  color: #009adc;
+  font-size: 14px;
+  color: #006994;
   cursor: pointer;
 }
 .favorite-title:hover {

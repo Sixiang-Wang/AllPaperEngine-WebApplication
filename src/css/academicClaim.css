@@ -30,7 +30,6 @@
 }
 :deep(.el-input__inner) {
     background-color: rgba(0, 0, 0, 0) !important;
-    color: #fff;
 }
 :deep(.el-input__inner::placeholder) {
     color: rgba(200, 200, 200, 0.7) !important;

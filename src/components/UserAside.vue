@@ -18,11 +18,11 @@
         <el-icon class="aside-icon"><Lock /></el-icon>
         <span class="fontStyle">安全隐私</span>
       </el-menu-item>
-      <el-menu-item index="/user/paper">
+      <el-menu-item index="/user/academicClaim">
         <el-icon class="aside-icon"><document /></el-icon>
-        <span class="fontStyle">论文管理</span>
+        <span class="fontStyle">成果管理</span>
       </el-menu-item>
-      <el-menu-item index="/user/statistics">
+      <el-menu-item index="/user/personalInfo">
         <el-icon class="aside-icon"><data-line/></el-icon>
         <span class="fontStyle">个人门户</span>
       </el-menu-item>

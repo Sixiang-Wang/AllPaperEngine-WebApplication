@@ -437,7 +437,13 @@ const toggleCollect = () => {
   color: #fadd21;
   background-color: #ffffff;
 }
-
+.author-link{
+  text-decoration: none;
+  color: #1F578F;
+}
+.author-link:hover{
+  text-decoration: underline;
+}
 .collect-button:hover{
   color: #fff14e;
   background-color: #ffffff;
