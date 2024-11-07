@@ -33,6 +33,7 @@ public class WorkServiceImpl implements WorkService {
         List<WorkResultDto> workResultDtos = new ArrayList<>();
         for(Work work: works){
             WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setId(work.getId());
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
             workResultDto.setPaperInformation("A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications");
@@ -97,6 +98,8 @@ public class WorkServiceImpl implements WorkService {
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
             workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setId(work.getId());
+            workResultDto.setPublicationDate(work.getPublicationDate());
             workResultDto.setPaperInformation(workService.ToMainInformation(work));
             //这里后续需要修改
             workResultDto.setGrants(work.getGrants());
@@ -189,6 +192,11 @@ public class WorkServiceImpl implements WorkService {
         }
 
         return workResultDtoList;
+    }
+
+    @Override
+    public int getWorkLengthByTitleWords(String word) {
+        return workMapper.getWorkLengthByTitle(word);
     }
 
     @Override

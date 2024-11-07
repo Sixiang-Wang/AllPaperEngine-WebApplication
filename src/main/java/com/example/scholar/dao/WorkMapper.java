@@ -23,7 +23,9 @@ public interface WorkMapper {
     List<Work> selectWorkByTitleAndPublicationYear(String word,int from,int to,int frompage,int topage);
     @Select("select * from openalex_works where match(keywords_text) against(#{word}) limit #{frompage},#{topage}")
     List<Work> selectWorkByKeywords(String word,int frompage,int topage);
-    @Update("update openalex_works set keywordsText = #{keywords},abstract=#{abstractText} where id = #{id}")
+    @Select("select count(*) from openalex_works where match(title) against(#{word})")
+    int getWorkLengthByTitle(String word);
+    @Update("update openalex_works set keywords_text = #{keywords},abstract=#{abstractText} where id = #{id}")
     void insertKeywordsAndAbstract(String id,String keywords,String abstractText);
 
 

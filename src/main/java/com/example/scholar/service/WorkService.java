@@ -18,4 +18,6 @@ public interface WorkService {
     List<WorkResultDto> getWorkByTitleAndPublicationYear(String word,int from,int to,int page);
     List<WorkResultDto> getWorkByKeywords(String word,int page);
     void updateKeywordsAndAbstract();
+
+    int getWorkLengthByTitleWords(String word);
 }

@@ -1,6 +1,7 @@
 package com.example.scholar.dao;
 
 import com.example.scholar.domain.UserToken;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -17,4 +18,7 @@ public interface UserTokenMapper {
     int ifUserToken(int id);
     @Update("update usertoken set token = #{token}, updatetime = now(), expiretime = now()+ interval 6 hour where userid = #{id}")
     void updateUserToken(String token, int id);
+    @Delete("DELETE FROM usertoken WHERE userid = #{userId}")
+    void deleteUserToken(int userId);
+
 }

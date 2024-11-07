@@ -16,4 +16,5 @@ public class WorkResultDto {
     private int cited;
     private String grants;
     private Map<String, Float> keywords;
+    private String publicationDate;
 }
