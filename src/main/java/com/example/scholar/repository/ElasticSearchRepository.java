@@ -60,13 +60,13 @@ public interface ElasticSearchRepository extends ElasticsearchRepository<Works, 
                     numberOfFragments = 0
             )
     )
-    //还有问题
-//    @Query("{\"bool\": " +
-//            "{\"should\": " +
-//            "[{\"match\": {\"title\": {\"query\":\"?0\",\"minimum_should_match\": \"5<80% 6<4\"}}}, " +
-//            "{\"match\": {\"keywordsText\": {\"query\":\"?0\",\"minimum_should_match\": \"5<80% 6<4\"}}}," +
-//            " {\"match\": {\"abstract\": {\"query\":\"?0\",\"minimum_should_match\": \"5<80% 6<4\"}}}]}}")
-//    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm);
+
+    @Query("{\"bool\": " +
+            "{\"should\": " +
+            "[{\"match\": {\"title\": {\"query\":\"?0\",\"minimum_should_match\": \"5<80% 6<4\"}}}, " +
+            "{\"match\": {\"keywordsText\": {\"query\":\"?0\",\"minimum_should_match\": \"5<80% 6<4\"}}}," +
+            " {\"match\": {\"abstract\": {\"query\":\"?0\",\"minimum_should_match\": \"5<80% 6<4\"}}}]}}")
+    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm);
 
 
 
@@ -91,7 +91,7 @@ public interface ElasticSearchRepository extends ElasticsearchRepository<Works, 
 //    List<SearchHit<Works>> fuzzyAutocomplete(String value, String fuzziness, boolean transpositions, int minLength, int prefixLength, boolean unicodeAware,int slop);
 //
 
-
+    //还有问题
     @Query("{\"bool\": " +
             "{\"should\": " +
             "[{\"fuzzy\": {\"title\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}, " +
