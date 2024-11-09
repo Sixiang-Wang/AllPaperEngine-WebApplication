@@ -62,8 +62,9 @@ onMounted(async () => {
               </el-table-column>
               <el-table-column prop="" label="收藏日期" width="180" />
               <el-table-column label="操作" #default="scope">
-                <el-button type="info" circle :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+                <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
               </el-table-column>
+
             </el-table>
           </div>
       </el-collapse-item>
@@ -117,5 +118,19 @@ onMounted(async () => {
 .custom-title {
   color: #03072c; /* 修改标题颜色 */
   font-size: 16px; /* 修改字体大小 */
+}
+
+.collect-button{
+  border: none;
+  color: #fff14e;
+  background-color: transparent;
+  font-size: 30px;
+}
+
+.collect-button:hover{
+  border: none;
+  color: #717171;
+  background-color: transparent;
+  font-size: 24px;
 }
 </style>

@@ -17,6 +17,8 @@ const citedByApiUrl = ref("")
 const publicationDate = ref("")
 const conceptList = ref([]);
 
+const tmp = ref("Storozhuk%20Mv");
+
 const citeNum = ref(0);
 const referenceNum = ref(0);
 const collectNum = ref(0);
@@ -34,7 +36,6 @@ const citeTotalLength = ref(0);
 const citeCurrentPage = ref(1);
 let workId = ref(0);
 
-const tmp = ref("<span style='color:red'>Effect</span> of Latrotoxin-Like Protein on Spontaneous Postsynaptic Activity in Hippocampal Cell Cultures\"");
 
 const updateReferencePageResults = () => {
   const start = (referenceCurrentPage.value - 1) * pageSize;
@@ -209,7 +210,7 @@ const toggleCollect = () => {
           <p>
             <span v-for="(author, index) in auth" :key="index">
               <a
-                  :href="'http://localhost:2221/authorInfo?id=' + author.id + '&citedByCount=' + author.citedByCount + '&worksCount=' + author.worksCount"
+                  :href="'http://localhost:2221/authorInfo?id=' + author.id + '&name=' + author.name + '&citedByCount=' + author.citedByCount + '&worksCount=' + author.worksCount"
                   target="_blank"
                   class="author-link"
               >
@@ -294,11 +295,14 @@ const toggleCollect = () => {
         <el-tabs v-model="activeName" class="down-tabs" type="card">
           <el-tab-pane label="参考文献" name="first">
             <div v-if="referenceResults.length!==0" style="display: flex;">
+
               <div>
+
                 <SingleResult style="max-width: 100%"
                               v-for="result in referencePageResults" :author="result.paperInformation" :content="result.abstractText"
-                              :title="result.title" :cited="result.cited" :id="result.id"
-                ></SingleResult>
+                              :title="result.title" :cited="result.cited" :id="result.id "
+                >
+                </SingleResult>
               </div>
             </div>
             <el-pagination
