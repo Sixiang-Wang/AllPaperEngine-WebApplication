@@ -16,4 +16,8 @@ public interface ScholarClaimMapper {
     void deleteClaimedWorks(int scholarId, String workId);
     @Select("select count(*) from user where userid = #{id} and role = 2")
     int checkIfScholar(int id);
+    @Select("select count(*) from user_claimed_work where work_id = #{workId}")
+    int checkIfClaimed(String workId);
+    @Select("select count(*) from openalex_works where id = #{workId}")
+    int checkIfWorkExist(String workId);
 }
