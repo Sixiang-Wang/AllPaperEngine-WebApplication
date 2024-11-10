@@ -17,14 +17,16 @@
     margin-left: 9%;
 }
 .hStyle{
-    font-size: 24px;
+    font-size: 20px;
     margin-left: 5%;
+    color:rgb(77, 76, 76);
 }
 .pStyle{
     font-size: 14px;
     font-weight: lighter;
     margin-left: 5%;
     margin-right: 5%;
+    color:grey;
 }
 .reset-button {
     border-radius: 0 4px 4px 0; 
