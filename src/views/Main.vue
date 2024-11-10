@@ -13,6 +13,9 @@ import cookieUtil from "@/utils/cookie.js"
     console.log(111);
     router.push({path: "/search", query: {input: searchInput.value, page: 1}});
   }
+  const advancedSearch = () => {
+    router.push({ path: "/advancedSearch" });
+  }
   onMounted(() => {
     let index = 0;
     let index2 = 0;
@@ -54,7 +57,8 @@ import cookieUtil from "@/utils/cookie.js"
     </template>
 
   </el-input>
-    <el-button :icon="Search" @click="search" class="search-button"  />
+  <el-button :icon="Search" @click="search" class="search-button"  />
+  <el-button @click="advancedSearch" class="advanced-search-button" type="text">高级检索 ></el-button>
   </div>
 </div>
 </template>
