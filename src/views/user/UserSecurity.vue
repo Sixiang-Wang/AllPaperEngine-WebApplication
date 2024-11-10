@@ -66,7 +66,7 @@ const tableData2 = [
       </el-card>
     </div>
     <div style="margin-left: 5%">
-      <Advertise/>
+<!--      <Advertise/>-->
     </div>
   </div>
 </template>

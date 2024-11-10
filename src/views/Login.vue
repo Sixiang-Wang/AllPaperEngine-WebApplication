@@ -15,7 +15,8 @@ const loginForm = ref({
 const loginFormRef=ref(null)
 const loginRule = ref({
   mail: [
-    { required: true, message: '请输入有效姓名', trigger: 'blur'}
+    { required: true, message: '请输入有效邮箱', trigger: 'blur'},
+    { type: 'email', message: '请输入有效的邮箱地址', trigger: ['blur', 'change'] }
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'}
@@ -100,7 +101,7 @@ const login =  async() => {
       <el-form-item label="用户账号"
                     prop="mail">
         <el-input v-model="loginForm.mail"
-                  placeholder="请输入账号"
+                  placeholder="请输入邮箱"
                   size="large"
                   clearable></el-input>
       </el-form-item>

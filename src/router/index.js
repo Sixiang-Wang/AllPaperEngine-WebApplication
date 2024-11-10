@@ -26,7 +26,27 @@ const router = createRouter({
                     path: '/user/paper',
                     name: 'userpaper',
                     component: () => import('@/views/user/PaperManager.vue')
-                }
+                },
+                {
+                    path: '/user/academicClaim',
+                    name: 'AcademicClaim',
+                    component: ()=> import('@/views/personalPortal/AcademicClaim.vue')
+                },
+                {
+                    path: '/user/favorite',
+                    name: 'favorite',
+                    component: () => import('@/views/user/Favorite.vue')
+                },
+                {
+                    path: '/user/history',
+                    name: 'history',
+                    component: () => import('@/views/user/History.vue')
+                },
+                {
+                    path: '/user/personalInfo',
+                    name: 'PersonalPortalInfo',
+                    component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
+                },
             ]
         },
         {
@@ -59,11 +79,15 @@ const router = createRouter({
             name: 'test',
             component: () => import('@/views/Test.vue')
         },
-
         {
             path: '/paper',
             name: 'paper',
             component: ()=> import('@/views/Paper/Paper.vue')
+        },
+        {
+            path: '/authorInfo',
+            name: 'authorInfo',
+            component: ()=> import('@/views/user/AuthorInfo.vue')
         },
         {
             path: '/personalportal',
@@ -71,16 +95,7 @@ const router = createRouter({
             component: () => import('@/views/personalPortal/PersonalPortal.vue'),
             redirect: '/personalportal/personalInfo',
             children: [
-                {
-                    path: '/personalportal/personalInfo',
-                    name: 'PersonalPortalInfo',
-                    component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
-                },
-                {
-                    path: '/personalportal/academicClaim',
-                    name: 'AcademicClaim',
-                    component: ()=> import('@/views/personalPortal/AcademicClaim.vue')
-                },
+
                 {
                     path: '/personalportal/otherService',
                     name: 'OtherService',

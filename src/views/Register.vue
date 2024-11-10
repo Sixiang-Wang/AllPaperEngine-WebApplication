@@ -43,7 +43,7 @@ const registerRule = ref({
 
 const countdown = ref(60);
 const isCounting = ref(false);
-const verificationCodeisValid = ref(false);
+let verificationCodeisValid = ref(false);
 
 const startCountdown = async () => {
   if (isCounting.value) return;
@@ -63,7 +63,7 @@ const startCountdown = async () => {
       }
     }, 1000);
   } catch (error) {
-    ElMessage.error(error.message || "发送验证码失败");
+    ElMessage.error("发送验证码失败");
   }
 }
 
@@ -94,7 +94,7 @@ const register = async () => {
       ElMessage.success("注册成功！");
       await router.push('/login');
     } else {
-      ElMessage.error(res.data.msg || "注册失败，请重试");
+      ElMessage.error("注册失败，请重试");
     }
   } catch (e) {
     console.error(e);
@@ -104,7 +104,7 @@ const register = async () => {
 </script>
 
 <template>
-  <div class="register-div component">
+  <div class="register-div component" style="margin-top: -50px;">
     <div class="component" style="display: flex; justify-content: center;">
       <span class="register-title">IScholar平台注册</span>
     </div>
@@ -113,9 +113,9 @@ const register = async () => {
              :rules="registerRule"
              ref="registerFormRef"
     >
-      <el-form-item label="用户账号" prop="account">
+      <el-form-item label="用户名" prop="account">
         <el-input v-model="registerForm.account"
-                  placeholder="请输入账号"
+                  placeholder="请输入用户名"
                   size="large"
                   clearable></el-input>
       </el-form-item>
@@ -138,8 +138,9 @@ const register = async () => {
           <el-input v-model="registerForm.mail"
                     placeholder="请输入邮箱"
                     size="large"
+                    style="width: 300px;"
                     clearable></el-input>
-          <el-button :disabled="isCounting" @click="startCountdown" size="small" style="margin-left: 10px;">
+          <el-button :disabled="isCounting" @click="startCountdown" style="margin-left: 15px" size="big">
             {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}
           </el-button>
         </div>
