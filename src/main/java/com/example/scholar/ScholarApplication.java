@@ -16,8 +16,8 @@ import java.util.Scanner;
 public class ScholarApplication {
 
     public static void main(String[] args) throws IOException {
-        String esHome = System.getenv("ES_HOM");
-        String kibanaHome = System.getenv("KIBANA_HOM");
+        String esHome = System.getenv("ES_HOME");
+        String kibanaHome = System.getenv("KIBANA_HOME");
         System.out.println(esHome);
         System.out.println(kibanaHome);
         // 启动 Elasticsearch 和 Kibana，并检查它们的启动状态
