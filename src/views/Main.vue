@@ -51,7 +51,7 @@ import cookieUtil from "@/utils/cookie.js"
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="篇名" value="1" />
-        <el-option label="主题" value="2" />
+        <el-option label="作者" value="2" />
         <el-option label="关键词" value="3" />
       </el-select>
 

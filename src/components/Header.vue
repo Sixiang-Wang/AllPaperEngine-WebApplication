@@ -73,6 +73,7 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
       <template #title>作者服务</template>
       <el-menu-item index="/user/personalInfo">个人门户</el-menu-item>
       <el-menu-item index="/user/academicClaim">学术成果认领</el-menu-item>
+      <el-menu-item index="/scholarIdentify">学者认证</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="4">热点分析</el-menu-item>
     <el-menu-item index="5">联系我们</el-menu-item>

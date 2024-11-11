@@ -62,7 +62,7 @@ onMounted(async () => {
       }
 
       break;
-    case 2://按主题查找
+    case 2://查找作者
   }
 
 });
