@@ -28,17 +28,25 @@ public interface UserMapper {
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
     int updateUserName(User user);
 
-    // 查看所有收藏记录
-    @Select("SELECT * FROM user_favorite WHERE userid = #{userId}")
-    List<HashMap<String, Object>> selectUserFavorite(int userId);
+    // 创建收藏夹
+    @Insert("INSERT INTO user_favorite_folder (userid, folder) VALUES (#{userId}, #{folder})")
+    int createFavoriteFolder(int userId, String folder);
 
-    // 添加一条收藏记录
-    @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp) VALUES (#{userId}, #{publicationId}, #{timestamp})")
-    int addUserFavorite(int userId, int publicationId, LocalDateTime timestamp);
+    // 检查是否有同名收藏夹
+    @Select("SELECT COUNT(*) FROM user_favorite_folder WHERE userid = #{userId} AND folder = #{folder}")
+    int checkFavoriteFolder(int userId, String folder);
 
-    // 删除一条收藏记录
-    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int deleteUserFavorite(int userId, int publicationId);
+    // 查看某个收藏夹所有收藏记录
+    @Select("SELECT * FROM user_favorite WHERE userid = #{userId} AND folder = #{folder}")
+    List<HashMap<String, Object>> selectUserFavorite(int userId, String folder);
+
+    // 在某个收藏夹添加一条收藏记录
+    @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp, folder) VALUES (#{userId}, #{publicationId}, #{timestamp}, #{folder})")
+    int addUserFavorite(int userId, int publicationId, LocalDateTime timestamp, String folder);
+
+    // 在某个收藏夹删除一条收藏记录
+    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND folder = #{folder}")
+    int deleteUserFavorite(int userId, int publicationId, String folder);
 
     // 查看所有历史记录
     @Select("SELECT * FROM user_browser_history WHERE userid = #{userId}")
@@ -63,4 +71,8 @@ public interface UserMapper {
     // 修改已有记录的时间戳
     @Update("UPDATE user_browser_history SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
     int updateUserBrowserHistoryTimestamp(int userId, int publicationId, LocalDateTime timestamp);
+
+    // 查看所有收藏夹
+    @Select("SELECT * FROM user_favorite_folder WHERE userid = #{userId}")
+    List<HashMap<String, Object>> selectUserFavoriteFolder(int userId);
 }

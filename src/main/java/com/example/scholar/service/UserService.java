@@ -22,14 +22,14 @@ public interface UserService {
     HashMap<String, Object> updateUserPhone(int userId, String phone);
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
 
-    // 添加收藏
-    HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp);
+    // 在某个收藏夹添加收藏
+    HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp, String folder);
 
-    // 取消收藏
-    HashMap<String, Object> deleteUserFavorite(int userId, int publicationId);
+    // 在某个收藏夹取消收藏
+    HashMap<String, Object> deleteUserFavorite(int userId, int publicationId, String folder);
 
-    // 查看所有收藏
-    List<HashMap<String, Object>> viewAllFavorites(int userId);
+    // 查看某个收藏夹所有收藏
+    List<HashMap<String, Object>> viewAllFavorites(int userId, String folder);
 
     // 添加浏览历史
     HashMap<String, Object> addHistory(int userId, int publicationId, LocalDateTime timestamp);
@@ -45,4 +45,10 @@ public interface UserService {
 
     // 清除所有历史记录
     HashMap<String, Object> clearAllHistory(int userId);
+
+    // 创建收藏夹
+    HashMap<String, Object> createFavoriteFolder(int userId, String folder);
+
+    // 查看所有收藏夹
+    List<HashMap<String, Object>> viewAllFolders(int userId);
 }

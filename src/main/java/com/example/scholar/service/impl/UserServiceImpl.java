@@ -254,14 +254,58 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp) {
+    public HashMap<String, Object> logout(int userId) {
+
+        User existingUser = userMapper.selectUserById(userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+
+        userTokenMapper.deleteUserToken(userId);
+        resultMap.put("msg", "退出登录成功");
+
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> createFavoriteFolder(int userId, String folder) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
         }
-        int result = userMapper.addUserFavorite(userId, publicationId, timestamp);
+        if (userMapper.checkFavoriteFolder(userId, folder) > 0) {// 如果收藏夹已存在，则返回
+            resultMap.put("msg", "收藏夹已存在");
+            return resultMap;
+        }
+
+        int result = userMapper.createFavoriteFolder(userId, folder);
+        if (result > 0) {
+            resultMap.put("msg", "收藏夹创建成功");
+        } else {
+            resultMap.put("msg", "收藏夹创建失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public List<HashMap<String, Object>> viewAllFolders(int userId) {
+        List<HashMap<String, Object>> resultList = userMapper.selectUserFavoriteFolder(userId);
+        return resultList;
+    }
+
+    @Override
+    public HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp, String folder) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        int result = userMapper.addUserFavorite(userId, publicationId, timestamp, folder);
         if (result > 0) {
             resultMap.put("msg", "收藏添加成功");
         }
@@ -272,14 +316,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> deleteUserFavorite(int userId, int publicationId) {
+    public HashMap<String, Object> deleteUserFavorite(int userId, int publicationId, String folder) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
         }
-        int result = userMapper.deleteUserFavorite(userId, publicationId);
+        int result = userMapper.deleteUserFavorite(userId, publicationId, folder);
         if (result > 0) {
             resultMap.put("msg", "收藏删除成功");
         }
@@ -290,8 +334,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<HashMap<String, Object>> viewAllFavorites(int userId) {
-        List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId);
+    public List<HashMap<String, Object>> viewAllFavorites(int userId, String folder) {
+        List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId, folder);
         return resultList;
     }
 
@@ -317,23 +361,6 @@ public class UserServiceImpl implements UserService {
         else {
             resultMap.put("msg", "浏览历史添加失败");
         }
-        return resultMap;
-    }
-
-
-    @Override
-    public HashMap<String, Object> logout(int userId) {
-
-        User existingUser = userMapper.selectUserById(userId);
-        HashMap<String, Object> resultMap = new HashMap<>();
-        if (existingUser == null) {
-            resultMap.put("msg", "User not found");
-            return resultMap;
-        }
-
-        userTokenMapper.deleteUserToken(userId);
-        resultMap.put("msg", "退出登录成功");
-
         return resultMap;
     }
 

@@ -195,15 +195,61 @@ public class UserController {
         }
     }
 
+    // 退出登录
+    @PostMapping(value = "/logout")
+    @ApiOperation("退出登录接口")
+    public R logout(@RequestParam int userId) {
+        try {
+            HashMap<String, Object> resultMap = userService.logout(userId);
+            return R.ok((String) resultMap.get("msg"));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 查看所有收藏夹
+    @GetMapping("/viewAllFolders")
+    @ApiOperation("查看所有收藏夹接口")
+    public R viewAllFolders(@RequestParam int userId) {
+        try {
+            List<HashMap<String, Object>> folders = userService.viewAllFolders(userId);
+            if (folders.isEmpty()) {
+                return R.error("No folders found for this user");
+            } else {
+                return R.ok().put("folders", folders);
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 创建新收藏夹
+    @PostMapping(value = "/createNewFolder")
+    @ApiOperation("创建新收藏夹接口")
+    public R createNewFolder(@RequestParam int userId,
+                             @RequestParam String folder) {
+        try {
+            HashMap<String, Object> resultMap = userService.createFavoriteFolder(userId, folder);
+            if ("收藏夹创建成功".equals(resultMap.get("msg"))) {
+                return R.ok("Folder created successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
     // 添加用户收藏
     @PostMapping(value = "/addUserFavorite")
     @ApiOperation("添加用户收藏接口")
     public R addUserFavorite(
             @RequestParam int userId,
             @RequestParam int publicationId,
-            @RequestParam LocalDateTime timestamp) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp,
+            @RequestParam String folder) {
         try {
-            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, timestamp);
+            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, timestamp, folder);
             if ("收藏添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite added successfully");
             } else {
@@ -214,14 +260,15 @@ public class UserController {
         }
     }
 
-    // 查看所有收藏
+    // 查看某个收藏夹下所有收藏
     @GetMapping("/viewAllFavorites")
-    @ApiOperation("查看所有收藏接口")
-    public R viewAllFavorites(@RequestParam int userId) {
+    @ApiOperation("查看某个收藏夹下所有收藏接口")
+    public R viewAllFavorites(@RequestParam int userId,
+                              @RequestParam String folder) {
         try {
-            List<HashMap<String, Object>> favoriteList = userService.viewAllFavorites(userId);
+            List<HashMap<String, Object>> favoriteList = userService.viewAllFavorites(userId, folder);
             if (favoriteList.isEmpty()) {
-                return R.error("No favorites found for this user");
+                return R.error("No favorites found for this folder");
             } else {
                 return R.ok().put("favoriteList", favoriteList);
             }
@@ -231,28 +278,17 @@ public class UserController {
     }
     // 删除用户收藏
     @DeleteMapping("/deleteUserFavorite")
-    @ApiOperation("删除用户收藏接口")
+    @ApiOperation("删除某个收藏夹下单一收藏接口")
     public R deleteUserFavorite(@RequestParam int userId,
-                                @RequestParam int publicationId) {
+                                @RequestParam int publicationId,
+                                @RequestParam String folder) {
         try {
-            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId);
+            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId, folder);
             if ("收藏删除成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite deleted successfully");
             } else {
                 return R.error((String) resultMap.get("msg"));
             }
-        } catch (Exception e) {
-            return R.error(e.toString());
-        }
-    }
-
-    // 退出登录
-    @PostMapping(value = "/logout")
-    @ApiOperation("退出登录接口")
-    public R logout(@RequestParam int userId) {
-        try {
-            HashMap<String, Object> resultMap = userService.logout(userId);
-            return R.ok((String) resultMap.get("msg"));
         } catch (Exception e) {
             return R.error(e.toString());
         }
