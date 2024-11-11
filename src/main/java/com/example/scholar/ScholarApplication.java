@@ -57,8 +57,8 @@ public class ScholarApplication {
     // 启动 Elasticsearch 和 Kibana，并等待其成功启动
     private static void startAndWaitForServices(String esHome, String kibanaHome) throws IOException {
         // 启动 Elasticsearch 和 Kibana 的 .bat 文件
-        Runtime.getRuntime().exec("cmd /c start "+esHome);
-        Runtime.getRuntime().exec("cmd /c start "+kibanaHome);
+        Runtime.getRuntime().exec("cmd /c "+esHome);
+        Runtime.getRuntime().exec("cmd /c "+kibanaHome);
 
         // 等待 Elasticsearch 启动
         waitForPort("localhost", 9200, "Elasticsearch");
@@ -71,7 +71,7 @@ public class ScholarApplication {
     private static void waitForPort(String host, int port, String serviceName) {
         System.out.println("Waiting for " + serviceName + " to start...");
         int attempts = 0;
-        while (attempts < 30) {  // 尝试 30 次，每次间隔 1 秒
+        while (attempts < 50) {  // 尝试 30 次，每次间隔 1 秒
             try (Socket socket = new Socket(host, port)) {
                 System.out.println(serviceName + " is up and running!");
                 return;
