@@ -157,7 +157,6 @@ onBeforeUnmount(() => {
       <arrow-right @click="openDialog" style="width: 25px; height: 25px; margin-left: 10px;margin-right: 3%;" />
     </div>
     <el-dialog v-model="dialogVisible" title="> 修改头像" style="width:520px">
-      <hr class="head-line">
       <el-row>
         <el-col span="12">
           <el-button type="text" class="alter-head-button">
