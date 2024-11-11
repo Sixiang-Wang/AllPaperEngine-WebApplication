@@ -70,6 +70,11 @@ const router = createRouter({
             component: ()=> import('@/views/Login.vue')
         },
         {
+          path: '/scholarIdentify',
+          name: 'ScholarIdentify',
+          component: () => import('@/views/ScholarIdentify.vue')
+        },
+        {
             path: '/register',
             name: 'register',
             component: ()=> import('@/views/Register.vue')
@@ -78,6 +83,11 @@ const router = createRouter({
             path: '/test',
             name: 'test',
             component: () => import('@/views/Test.vue')
+        },
+        {
+          path: '/pdf',
+          name: 'pdf',
+          component: ()=> import('@/views/Pdf.vue')
         },
         {
             path: '/paper',

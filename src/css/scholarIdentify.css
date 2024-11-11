@@ -1,0 +1,19 @@
+.scholar-identify-main {
+    margin-top: 5%;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.scholar-identify-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5%;
+    color: #7a7a7a;
+    width: 80%;
+}
+
+.el-input {
+    height: 36px;
+    width: 500px;
+}
