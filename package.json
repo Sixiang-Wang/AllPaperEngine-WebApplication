@@ -17,6 +17,7 @@
     "echarts": "^5.5.1",
     "element-plus": "^2.8.2",
     "save": "^2.9.0",
+    "scholar-frontend": "file:",
     "vue": "^3.4.37",
     "vue-pdf": "^4.3.0",
     "vue-router": "^4.4.4"

@@ -4,29 +4,26 @@ import router from "@/router/index.js";
 import {Plus,Minus} from '@element-plus/icons-vue'
 import cookieUtil from "@/utils/cookie.js"
 
-// 使用 ref 创建响应式数据
+//高级检索部分
 const searchRows = ref([
     { searchInput: '', searchType: '1', logicOperator: ''},
     { searchInput: '', searchType: '2', logicOperator: ''},
     { searchInput: '', searchType: '3', logicOperator: ''}
 ]);
 
-// 方法：删除搜索框
 const minusSearchBox = (index) => {
     if (searchRows.value.length > 1) {
         searchRows.value.splice(index, 1);
     }
 };
 
-// 方法：添加搜索框
 const addSearchBox = () => {
     searchRows.value.push({ searchInput: '', searchType: '1', logicOperator: ''});
 };
 
-// 监听搜索行变化（可选，用于处理搜索或其他逻辑）
+// 监听搜索行变化
 watch(searchRows, (newVal, oldVal) => {
     console.log('Search rows changed:', newVal);
-  // 可以在这里添加处理逻辑，比如发送搜索请求
 });
 
 const checked1 = ref(true)
