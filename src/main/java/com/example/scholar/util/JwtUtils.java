@@ -44,7 +44,7 @@ public class JwtUtils {
     }
 
     /**
-     * 生成jwt token
+     * 为指定的 username 创建一个有效期为一小时的 JWT
      * @param username
      * @return
      */

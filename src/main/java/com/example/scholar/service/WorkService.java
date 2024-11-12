@@ -12,6 +12,12 @@ public interface WorkService {
     List<WorkResultDto> getWorks();
     List<WorkResultDto> getWorksByPage(int page);
     WorkSpecificResultDto getWorkById(String workId);
-    List<WorkResultDto> getWorksByTitleWords(String word);
+    List<WorkResultDto> getWorksByTitleWords(String word,int page);
     String ToMainInformation(Work work);
+    List<WorkResultDto> getWorksByPublicationYear(int from,int to,int page);
+    List<WorkResultDto> getWorkByTitleAndPublicationYear(String word,int from,int to,int page);
+    List<WorkResultDto> getWorkByKeywords(String word,int page);
+    void updateKeywordsAndAbstract();
+
+    int getWorkLengthByTitleWords(String word);
 }

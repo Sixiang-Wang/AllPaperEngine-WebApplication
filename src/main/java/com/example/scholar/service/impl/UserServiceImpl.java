@@ -11,6 +11,7 @@ import com.example.scholar.util.Md5Utils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +83,51 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public HashMap<String, Object> setUserDetails(int userId, String avatar, LocalDate birthTime, String biography,
+                                                  String company, AcademicFieldType academicField, String profession,
+                                                  String phone) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "用户不存在");
+            return resultMap;
+        }
+
+        if (avatar != null && !avatar.isEmpty()) {
+            existingUser.setAvatar(avatar);
+        }
+        if (birthTime != null) {
+            existingUser.setBirthTime(birthTime);
+        }
+        if (biography != null && !biography.isEmpty()) {
+            existingUser.setBiography(biography);
+        }
+        if (company != null && !company.isEmpty()) {
+            existingUser.setCompany(company);
+        }
+        if (academicField != null) {
+            existingUser.setAcademicField(academicField);
+        }
+        if (profession != null && !profession.isEmpty()) {
+            existingUser.setProfession(profession);
+        }
+        if (phone != null && !phone.isEmpty()) {
+            existingUser.setPhone(phone);
+        }
+
+        // 更新用户信息
+        int result = userMapper.updateUser(existingUser);
+        if (result > 0) {
+            resultMap.put("msg", "用户详细信息更新成功");
+        } else {
+            resultMap.put("msg", "用户详细信息更新失败");
+        }
+
+        return resultMap;
+    }
+
+    @Override
     public HashMap<String, Object> updateUserName(int userId, String username) {
         User existingUser = userMapper.selectUserById(userId);
         HashMap<String, Object> resultMap = new HashMap<>();
@@ -102,29 +148,14 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
-    @Override
-    public HashMap<String, Object> updateUserAvatar(int userId, String avatar) {
-        User existingUser = userMapper.selectUserById(userId);
-        HashMap<String, Object> resultMap = new HashMap<>();
-        if (existingUser == null) {
-            resultMap.put("msg", "User not found");
-        }
-        if (avatar != null && !avatar.isEmpty()){
-            existingUser.setAvatar(avatar);
-        }
-        int result = userMapper.updateUser(existingUser);
-        if (result > 0) {
-            resultMap.put("msg", "用户名更新成功");
-        }
-        else{
-            resultMap.put("msg", "用户名更新失败");
-        }
 
-        return resultMap;
+    @Override
+    public Boolean updateUserAvatar(Integer userid, String avatar){
+        return userMapper.updateUserAvatar(userid.toString(),avatar)>0;
     }
 
     @Override
-    public HashMap<String, Object> updateUserBirthTime(int userId, LocalDateTime birthTime) {
+    public HashMap<String, Object> updateUserBirthTime(int userId, LocalDate birthTime) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {

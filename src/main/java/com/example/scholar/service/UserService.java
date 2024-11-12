@@ -4,6 +4,7 @@ import com.example.scholar.domain.User;
 import com.example.scholar.domain.myenum.AcademicFieldType;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,11 @@ import java.util.List;
 public interface UserService {
     HashMap<String, Object> login(String mail, String password);
     HashMap<String, Object> register(String name, String password, String mail);
-    //HashMap<String, Object> updateUserInfo(int userId, String name, String mail, String phone, String company, AcademicFieldType academicField, String profession);
+    HashMap<String, Object> setUserDetails(int userId, String avatar, LocalDate birthTime, String biography,
+                                           String company, AcademicFieldType academicField, String profession,
+                                           String phone);
     HashMap<String, Object> updateUserName(int userId, String username);
-    HashMap<String, Object> updateUserAvatar(int userId, String avatar);
-    HashMap<String, Object> updateUserBirthTime(int userId, LocalDateTime birthTime);
+    HashMap<String, Object> updateUserBirthTime(int userId, LocalDate birthTime);
     HashMap<String, Object> updateUserCompany(int userId, String company);
     HashMap<String, Object> updateUserAcademicField(int userId, AcademicFieldType academicField);
     HashMap<String, Object> updateUserProfession(int userId, String profession);
@@ -51,4 +53,7 @@ public interface UserService {
 
     // 查看所有收藏夹
     List<HashMap<String, Object>> viewAllFolders(int userId);
+
+    Boolean updateUserAvatar(Integer userid,String avatar);
+
 }
