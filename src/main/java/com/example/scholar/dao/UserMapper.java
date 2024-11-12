@@ -28,6 +28,10 @@ public interface UserMapper {
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
     int updateUserName(User user);
 
+    // 查看某个ID对应的标题
+    @Select("SELECT title FROM openalex_works WHERE id = #{publicationId}")
+    String selectPublicationTitle(String publicationId);
+
     // 创建收藏夹
     @Insert("INSERT INTO user_favorite_folder (userid, folder) VALUES (#{userId}, #{folder})")
     int createFavoriteFolder(int userId, String folder);
@@ -42,11 +46,11 @@ public interface UserMapper {
 
     // 在某个收藏夹添加一条收藏记录
     @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp, folder) VALUES (#{userId}, #{publicationId}, #{timestamp}, #{folder})")
-    int addUserFavorite(int userId, int publicationId, LocalDateTime timestamp, String folder);
+    int addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String folder);
 
     // 在某个收藏夹删除一条收藏记录
     @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND folder = #{folder}")
-    int deleteUserFavorite(int userId, int publicationId, String folder);
+    int deleteUserFavorite(int userId, String publicationId, String folder);
 
     // 查看所有历史记录
     @Select("SELECT * FROM user_browser_history WHERE userid = #{userId}")
@@ -54,11 +58,11 @@ public interface UserMapper {
 
     // 添加一条历史记录
     @Insert("INSERT INTO user_browser_history (userid, publicationid, timestamp) VALUES (#{userId}, #{publicationId}, #{timestamp})")
-    int addUserBrowserHistory(int userId, int publicationId, LocalDateTime timestamp);
+    int addUserBrowserHistory(int userId, String publicationId, LocalDateTime timestamp);
 
     // 删除一条历史记录
     @Delete("DELETE FROM user_browser_history WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int deleteUserBrowserHistory(int userId, int publicationId);
+    int deleteUserBrowserHistory(int userId, String publicationId);
 
     // 清空所有历史记录
     @Delete("DELETE FROM user_browser_history WHERE userid = #{userId}")
@@ -66,11 +70,11 @@ public interface UserMapper {
 
     // 检查是否有相同的历史记录
     @Select("SELECT COUNT(*) FROM user_browser_history WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int checkUserBrowserHistory(int userId, int publicationId);
+    int checkUserBrowserHistory(int userId, String publicationId);
 
     // 修改已有记录的时间戳
     @Update("UPDATE user_browser_history SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int updateUserBrowserHistoryTimestamp(int userId, int publicationId, LocalDateTime timestamp);
+    int updateUserBrowserHistoryTimestamp(int userId, String publicationId, LocalDateTime timestamp);
 
     // 查看所有收藏夹
     @Select("SELECT * FROM user_favorite_folder WHERE userid = #{userId}")

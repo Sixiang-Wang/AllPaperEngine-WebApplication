@@ -298,7 +298,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> addUserFavorite(int userId, int publicationId, LocalDateTime timestamp, String folder) {
+    public HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String folder) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
@@ -316,7 +316,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> deleteUserFavorite(int userId, int publicationId, String folder) {
+    public HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String folder) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
@@ -336,11 +336,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<HashMap<String, Object>> viewAllFavorites(int userId, String folder) {
         List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId, folder);
+        for (HashMap<String, Object> favorite : resultList) {
+            favorite.put("title", userMapper.selectPublicationTitle(favorite.get("publicationid").toString()));
+        }
         return resultList;
     }
 
     @Override
-    public HashMap<String, Object> addHistory(int userId, int publicationId, LocalDateTime timestamp) {
+    public HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         int result;
@@ -371,7 +374,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> deleteHistory(int userId, int publicationId) {
+    public HashMap<String, Object> deleteHistory(int userId, String publicationId) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {

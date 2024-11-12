@@ -8,5 +8,5 @@ import lombok.Data;
 @Data
 public class UserPublication {
     private int userid;
-    private int publicationid;
+    private String publicationid;
 }

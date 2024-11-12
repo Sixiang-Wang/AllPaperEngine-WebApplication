@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Data
 public class UserFavorite {
     private int userid;
-    private int publicationid;
+    private String publicationid;
     private LocalDateTime timestamp;
     private String folder;
 }

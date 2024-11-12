@@ -245,7 +245,7 @@ public class UserController {
     @ApiOperation("添加用户收藏接口")
     public R addUserFavorite(
             @RequestParam int userId,
-            @RequestParam int publicationId,
+            @RequestParam String publicationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp,
             @RequestParam String folder) {
         try {
@@ -280,7 +280,7 @@ public class UserController {
     @DeleteMapping("/deleteUserFavorite")
     @ApiOperation("删除某个收藏夹下单一收藏接口")
     public R deleteUserFavorite(@RequestParam int userId,
-                                @RequestParam int publicationId,
+                                @RequestParam String publicationId,
                                 @RequestParam String folder) {
         try {
             HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId, folder);
@@ -299,7 +299,7 @@ public class UserController {
     @ApiOperation("添加一条浏览历史接口")
     @DateTimeFormat
     public R addHistory(@RequestParam int userId,
-                        @RequestParam int publicationId,
+                        @RequestParam String publicationId,
                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
         try {
             HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, timestamp);
@@ -333,7 +333,7 @@ public class UserController {
     @DeleteMapping("/deleteHistory/{id}")
     @ApiOperation("删除某条浏览历史接口")
     public R deleteHistory(@RequestParam int userId,
-                           @RequestParam int publicationId) {
+                           @RequestParam String publicationId) {
         try {
             HashMap<String, Object> resultMap = userService.deleteHistory(userId, publicationId);
             if ("浏览历史删除成功".equals(resultMap.get("msg"))) {
