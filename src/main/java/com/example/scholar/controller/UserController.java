@@ -328,6 +328,22 @@ public class UserController {
         }
     }
 
+    // 删除收藏夹
+    @DeleteMapping("/deleteFolder")
+    @ApiOperation("删除收藏夹接口")
+    public R deleteFolder(@RequestParam int userId, @RequestParam String folder) {
+        try {
+            HashMap<String, Object> resultMap = userService.deleteFavoriteFolder(userId, folder);
+            if ("收藏夹删除成功".equals(resultMap.get("msg"))) {
+                return R.ok("Folder deleted successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
     // 添加用户收藏
     @PostMapping(value = "/addUserFavorite")
     @ApiOperation("添加用户收藏接口")

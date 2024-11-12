@@ -54,6 +54,8 @@ public interface UserService {
     // 查看所有收藏夹
     List<HashMap<String, Object>> viewAllFolders(int userId);
 
-    Boolean updateUserAvatar(Integer userid,String avatar);
+    // 删除收藏夹
+    HashMap<String, Object> deleteFavoriteFolder(int userId, String folder);
 
+    Boolean updateUserAvatar(Integer userid,String avatar);
 }

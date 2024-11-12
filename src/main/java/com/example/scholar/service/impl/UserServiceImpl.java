@@ -329,6 +329,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public HashMap<String, Object> deleteFavoriteFolder(int userId, String folder) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        User existingUser = userMapper.selectUserById(userId);
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+        if (userMapper.checkFolderNotEmpty(userId, folder) > 0) { // 如果收藏夹非空，要执行级联删除
+            if (userMapper.deleteAllFavoritesInFolder(userId, folder) <= 0) {
+                resultMap.put("msg", "收藏文章级联删除失败");
+            }
+        }
+        // 随后删除收藏夹
+        if (userMapper.deleteFavoriteFolder(userId, folder) > 0) {
+            resultMap.put("msg", "收藏夹删除成功");
+        } else {
+            resultMap.put("msg", "收藏夹删除失败");
+        }
+        return resultMap;
+    }
+
+    @Override
     public HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String folder) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);

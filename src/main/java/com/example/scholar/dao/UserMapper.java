@@ -81,4 +81,16 @@ public interface UserMapper {
     // 查看所有收藏夹
     @Select("SELECT * FROM user_favorite_folder WHERE userid = #{userId}")
     List<HashMap<String, Object>> selectUserFavoriteFolder(int userId);
+
+    // 检查某个收藏夹是否非空
+    @Select("SELECT COUNT(*) FROM user_favorite WHERE userid = #{userId} AND folder = #{folder}")
+    int checkFolderNotEmpty(int userId, String folder);
+
+    // 删除某个收藏夹下的所有收藏记录
+    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND folder = #{folder}")
+    int deleteAllFavoritesInFolder(int userId, String folder);
+
+    // 删除某个收藏夹
+    @Delete("DELETE FROM user_favorite_folder WHERE userid = #{userId} AND folder = #{folder}")
+    int deleteFavoriteFolder(int userId, String folder);
 }
