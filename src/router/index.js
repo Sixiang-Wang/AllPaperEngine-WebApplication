@@ -37,6 +37,7 @@ const router = createRouter({
                     name: 'favorite',
                     component: () => import('@/views/user/Favorite.vue')
                 },
+
                 {
                     path: '/user/history',
                     name: 'history',
@@ -48,6 +49,11 @@ const router = createRouter({
                     component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
                 },
             ]
+        },
+        {
+            path: '/hotpoint',
+            name: 'hotpoint',
+            component: () => import('@/views/Hotpoint.vue')
         },
         {
             path: '/main',
