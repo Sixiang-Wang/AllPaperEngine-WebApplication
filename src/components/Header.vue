@@ -32,7 +32,11 @@ const goToLogin = () => {
 onMounted(() =>{
   if(cookieUtil.getCookie("token")===null || cookieUtil.getCookie("token")===''){
     button_index.value = "登录";
+    user_name.value = cookieUtil.getCookie("username");
+
   }else{
+    user_name.value = cookieUtil.getCookie("username");
+    console.log(user_name.value);
     button_index.value = "退出";
   }
 })
@@ -74,16 +78,21 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
       <el-menu-item index="/user/personalInfo">个人门户</el-menu-item>
       <el-menu-item index="/user/academicClaim">学术成果认领</el-menu-item>
       <el-menu-item index="/scholarIdentify">学者认证</el-menu-item>
+      <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="4">热点分析</el-menu-item>
     <el-menu-item index="5">联系我们</el-menu-item>
     <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
-      <span :style="{color: textColor}" v-if="user_name.value===''">欢迎, {{ user_name }}</span>
+      <span :style="{color: textColor}" v-if="user_name!==''">欢迎, {{ user_name }}</span>
       <span :style="{color: textColor}" v-else>点此登录</span>
-      <el-button @click="goToLogin"
+      <el-button @click="goToLogin" v-if="user_name === ''"
                  style="margin-right: 30px;background-color: transparent">
-        {{ button_index }}
+        登录
+      </el-button>
+      <el-button @click="goToLogin" v-else
+                 style="margin-right: 30px;background-color: transparent">
+        退出
       </el-button>
     </div>
   </el-menu>
