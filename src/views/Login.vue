@@ -7,6 +7,10 @@ import cookieUtil from "@/utils/cookie.js";
 const identifyCode = ref('');
 const identifyCodes = '1234567890abcdefghijklmnopqrstuvwxyz'
 import http from "@/api/http.js"
+import {useTokenStore, useUserStore} from "@/store/store.js";
+const userStore = useUserStore();
+const tokenStore = useTokenStore()
+
 const loginForm = ref({
   mail: '',
   password: '',
@@ -15,7 +19,8 @@ const loginForm = ref({
 const loginFormRef=ref(null)
 const loginRule = ref({
   mail: [
-    { required: true, message: '请输入有效姓名', trigger: 'blur'}
+    { required: true, message: '请输入有效邮箱', trigger: 'blur'},
+    { type: 'email', message: '请输入有效的邮箱地址', trigger: ['blur', 'change'] }
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'}
@@ -66,15 +71,17 @@ onMounted(() => {
 const login =  async() => {
   if(loginForm.value.mail === "admin" && loginForm.value.password === "admin"){
     ElMessage.success("登陆成功！");
-    await router.push('/main');
+    await router.push('/main');f
   }else{
     try{
       const res = await http.post('/user/login',{
-        account: loginForm.value.mail,
+        mail: loginForm.value.mail,
         password: loginForm.value.password
       })
       if(res.data.msg === "login success") {
         ElMessage.success("登陆成功！");
+        userStore.setUsername(res.data.username)
+        tokenStore.setToken(res.data.token)
         cookieUtil.setCookie("token",res.data.token,0.25);
         cookieUtil.setCookie("username",res.data.username, 0.25);
         await router.push('/main');
@@ -85,6 +92,8 @@ const login =  async() => {
     }
   }
 }
+
+
 </script>
 
 <template>
@@ -100,7 +109,7 @@ const login =  async() => {
       <el-form-item label="用户账号"
                     prop="mail">
         <el-input v-model="loginForm.mail"
-                  placeholder="请输入账号"
+                  placeholder="请输入邮箱"
                   size="large"
                   clearable></el-input>
       </el-form-item>

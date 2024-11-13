@@ -4,11 +4,11 @@ import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
 import SingleResult from "@/components/SingleResult.vue";
 import router from "@/router/index.js";
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
 
 const searchInput = ref("");
-const searchType = ref("主题");
+const searchType = ref('1');
 const totalLength = ref(0);
 const searchResults = ref([]);
 const route = useRoute();
@@ -31,17 +31,49 @@ const updateSearchResults = async () => {
   console.log(res.data);
   searchResults.value = res.data.works;
 };
+const search =async () => {
+  switch (searchType.value) {
+    case '1'://按标题查找
+      //为方便测试，这里保留搜索所有结果的接口
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        console.log(res);
+        searchResults.value = res.data.works;
+        console.log(searchResults.value);
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+        console.log(totalLength.value);
+      }else {
+        const res = await httpUtil.get('/search/getWorkByTitleWord', {
+          page: currentPage.value,
+          word: route.query.input
+        })
+        console.log(res);
+        searchResults.value = res.data.works;
+        console.log(searchResults.value);
+        const res2 = await httpUtil.get('/search/getWorkLengthByTitle', {
+          word: route.query.input
+        });
+        totalLength.value = res2.data.leng;
+        console.log(totalLength.value);
+      }
 
-onMounted(async () => {
-  const res = await httpUtil.get('/openalex/get/page', {
-    page: currentPage.value
-  });
-  const res2 = await httpUtil.get('/openalex/get/length');
-  totalLength.value = res2.data.leng;
-  console.log(totalLength.value);
-  searchResults.value = res.data.works;
-});
+      break;
+    case 2://查找作者
+  }
 
+}
+onMounted(async ()=>{
+  searchType.value = route.query.type;
+  searchInput.value = route.query.input;
+  await search();
+}, );
+const mainSearch = ()=>{
+  router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value}});
+  // location.reload();
+}
 // 监听路由变化，以便更新 currentPage
 watch(route, (newRoute) => {
   currentPage.value = Number(newRoute.query.page) || 1;
@@ -63,7 +95,7 @@ watch(route, (newRoute) => {
               </el-select>
             </template>
           </el-input>
-          <el-button :icon="Search" @click="search" class="search-button"/>
+          <el-button :icon="Search" @click="mainSearch" class="search-button"/>
         </div>
       </div>
     </el-header>

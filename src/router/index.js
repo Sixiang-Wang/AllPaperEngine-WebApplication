@@ -26,8 +26,34 @@ const router = createRouter({
                     path: '/user/paper',
                     name: 'userpaper',
                     component: () => import('@/views/user/PaperManager.vue')
-                }
+                },
+                {
+                    path: '/user/academicClaim',
+                    name: 'AcademicClaim',
+                    component: ()=> import('@/views/personalPortal/AcademicClaim.vue')
+                },
+                {
+                    path: '/user/favorite',
+                    name: 'favorite',
+                    component: () => import('@/views/user/Favorite.vue')
+                },
+
+                {
+                    path: '/user/history',
+                    name: 'history',
+                    component: () => import('@/views/user/History.vue')
+                },
+                {
+                    path: '/user/personalInfo',
+                    name: 'PersonalPortalInfo',
+                    component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
+                },
             ]
+        },
+        {
+            path: '/hotpoint',
+            name: 'hotpoint',
+            component: () => import('@/views/Hotpoint.vue')
         },
         {
             path: '/main',
@@ -40,9 +66,19 @@ const router = createRouter({
             component: () => import('@/views/SearchResult.vue')
         },
         {
+            path: '/advancedSearch',
+            name: 'advancedSearch',
+            component: () => import('@/views/AdvancedSearch.vue')
+        },
+        {
             path: '/login',
             name: 'login',
             component: ()=> import('@/views/Login.vue')
+        },
+        {
+          path: '/scholarIdentify',
+          name: 'ScholarIdentify',
+          component: () => import('@/views/ScholarIdentify.vue')
         },
         {
             path: '/register',
@@ -54,11 +90,30 @@ const router = createRouter({
             name: 'test',
             component: () => import('@/views/Test.vue')
         },
-
+        {
+          path: '/pdf',
+          name: 'pdf',
+          component: ()=> import('@/views/Pdf.vue')
+        },
         {
             path: '/paper',
             name: 'paper',
             component: ()=> import('@/views/Paper/Paper.vue')
+        },
+        {
+          path: '/scholarAppeal',
+          name: 'ScholarAppeal',
+          component: ()=> import('@/views/ScholarAppeal.vue')
+        },
+        {
+            path: '/authorInfo',
+            name: 'authorInfo',
+            component: ()=> import('@/views/user/AuthorInfo.vue')
+        },
+        {
+            path: '/institutionInfo',
+            name: 'institutionInfo',
+            component: ()=> import('@/views/user/InstitutionInfo.vue')
         },
         {
             path: '/personalportal',
@@ -66,16 +121,7 @@ const router = createRouter({
             component: () => import('@/views/personalPortal/PersonalPortal.vue'),
             redirect: '/personalportal/personalInfo',
             children: [
-                {
-                    path: '/personalportal/personalInfo',
-                    name: 'PersonalPortalInfo',
-                    component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
-                },
-                {
-                    path: '/personalportal/academicClaim',
-                    name: 'AcademicClaim',
-                    component: ()=> import('@/views/personalPortal/AcademicClaim.vue')
-                },
+
                 {
                     path: '/personalportal/otherService',
                     name: 'OtherService',

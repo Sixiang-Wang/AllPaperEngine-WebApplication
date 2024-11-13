@@ -20,7 +20,7 @@
     <el-menu-item index="/personalportal/personalInfo">
       <span>个人主页</span>
     </el-menu-item>
-    <el-menu-item index="/personalportal/academicClaim">
+    <el-menu-item index="/user/academicClaim">
       <span>成果认领</span>
     </el-menu-item>
     <el-menu-item index="/personalportal/otherService">

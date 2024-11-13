@@ -6,13 +6,13 @@
     max-width: 80%;
 }
 
-.search-button {
+.claim-button {
     border-radius: 0 4px 4px 0; /* 使按钮圆角与输入框拼接 */
     height: 40px;
     background-color: transparent;
     border-left-width: 0;
 }
-.search-button:hover {
+.claim-button:hover {
     border: 1px solid #1F578F;
     border-left-width: 0;
     color: #1F578F;
@@ -30,7 +30,6 @@
 }
 :deep(.el-input__inner) {
     background-color: rgba(0, 0, 0, 0) !important;
-    color: #fff;
 }
 :deep(.el-input__inner::placeholder) {
     color: rgba(200, 200, 200, 0.7) !important;

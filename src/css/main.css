@@ -35,6 +35,17 @@
     color: rgba(0, 255, 234, 1);
     background-color: rgba(255, 255, 255, 0.05);
 }
+.advanced-search-button {
+    border-radius: 0 4px 4px 0; 
+    height: 40px; 
+    color: rgba(255, 255, 255, 0.8); 
+    background-color: transparent; 
+    border: none; /* 移除边框 */
+}
+.advanced-search-button:hover {
+    color: rgba(0, 255, 234, 1); 
+    background-color: rgba(255, 255, 255, 0.05); 
+}
 
 :deep(.el-input__wrapper){
     background-color:rgba(0,0,0,0) !important;
