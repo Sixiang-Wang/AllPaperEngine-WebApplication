@@ -100,6 +100,11 @@ const router = createRouter({
             component: ()=> import('@/views/user/AuthorInfo.vue')
         },
         {
+            path: '/institutionInfo',
+            name: 'institutionInfo',
+            component: ()=> import('@/views/user/InstitutionInfo.vue')
+        },
+        {
             path: '/personalportal',
             name: 'personalportal',
             component: () => import('@/views/personalPortal/PersonalPortal.vue'),
