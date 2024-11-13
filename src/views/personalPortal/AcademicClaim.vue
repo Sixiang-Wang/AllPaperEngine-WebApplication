@@ -103,7 +103,11 @@ const minusSearchBox = (index) => {
 };
 
 const addSearchBox = () => {
-    searchRows.value.push({ searchInput: '', searchType: '1', logicOperator: ''});
+    if (searchRows.value.length < 10) { // 最多可保持十行
+        searchRows.value.push({ searchInput: '', searchType: '1', logicOperator: ''});
+    } else {
+        console.log('最多只能添加10行搜索条件。');
+    }
 };
 
 // 监听搜索行变化
