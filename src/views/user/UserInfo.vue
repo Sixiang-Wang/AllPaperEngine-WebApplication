@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { onMounted, onBeforeUnmount, ref,reactive } from "vue";
 import { ArrowRight,Picture,Camera } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 
@@ -66,8 +66,9 @@ const tableData3 = ref([
 const activeRow = ref(null); // 用于跟踪当前活动行
 const allTables = [tableData, tableData2, tableData3]; // 方便遍历所有表格数据
 const saveConfirmVisible = ref(false);
-let originalData = [...allTables].map(table => [...table.value]);
-let changedData = null; // 存储被修改的数据
+let originalData = allTables.map(table => JSON.parse(JSON.stringify(table.value)));
+let changedData = [...allTables].map(table => [...table.value]);
+const dataChanged = ref(false);
 
 const updateEditable = (row) => {
   if (activeRow.value === row) {
@@ -77,6 +78,21 @@ const updateEditable = (row) => {
     row.editable = true; // 激活当前行
     activeRow.value = row; // 更新活动行
   }
+
+  // 检查当前行的数据是否已被修改
+  const originalRow = originalData.flat().find(origRow => origRow.feature === row.feature);
+  if (originalRow && originalRow.value !== row.value) {
+    // 如果找到原始行且值已更改，则更新 changedData
+    const tableIndex = allTables.findIndex(tableRef => tableRef.value.some(r => r.feature === row.feature));
+    if (tableIndex !== -1) {
+      const rowIndex = allTables[tableIndex].value.findIndex(r => r.feature === row.feature);
+      if (rowIndex !== -1) {
+        dataChanged.value = true;
+        // 更新 changedData 中对应行的数据
+        changedData[tableIndex][rowIndex] = { ...row }; // 复制当前行的数据
+      }
+    }
+  }
 };
 
 const handleClickOutside = (event) => {
@@ -85,19 +101,13 @@ const handleClickOutside = (event) => {
   if (isOutside && activeRow.value) {
     activeRow.value.editable = false; // 关闭编辑模式
     activeRow.value = null; // 重置活动行
-    const changedTables = allTables.map(tableRef => {
-      return tableRef.value.filter(
-        !(originalData.find(origTable => origTable.some(origRow => origRow.feature === row.feature)).find(origRow => origRow.feature === row.feature).value === row.value)
-      );
-    });
-    if (changedTables.flat().length > 0) {
+    console.log("在表格外点击了。");
+    if (dataChanged) {
       // 有数据被修改，弹出保存确认弹窗
       saveConfirmVisible.value = true;
-      changedData = changedTables; // 存储被修改的数据
-    } else {
-      // 没有数据被修改，重置原始数据
-      originalData = null;
-    }
+      console.log(originalData);
+      console.log(changedData);
+    } 
   }
 };
 
@@ -105,27 +115,16 @@ const handleSaveConfirm = (action) => {
   saveConfirmVisible.value = false;
   if (action === 'confirm') {
     // 用户选择保存
-    const newData = [...allTables];
-    changedData.forEach(tableChanges => {
-      tableChanges.forEach(change => {
-        const table = newData.find(t => t.some(row => row.feature === change.feature));
-        if (table) {
-          const index = table.findIndex(row => row.feature === change.feature);
-          if (index !== -1) {
-            table[index].value = change.value;
-          }
-        }
-      });
+    allTables.forEach((table, index) => {
+      table.value = changedData[index].map(rowData => allTables[index].value.find(row => row.feature === rowData.feature) || { ...rowData, editable: false });
     });
-    // 可以在这里发送保存请求到后端
-    ElMessage.success('保存成功');
-    originalData = null; // 重置原始数据
   } else {
     // 用户选择取消
-    allTables.forEach(table => {
-      table.value = JSON.parse(JSON.stringify((originalData.find(t => t === table) || [])));
+    allTables.forEach((table, index) => {
+      table.value = originalData[index].map(row => ({ ...row, editable: false }));
     });
     activeRow.value = null;
+    dataChanged.value = false;
   }
 };
 
@@ -259,10 +258,12 @@ onBeforeUnmount(() => {
   <el-dialog
     title="保存更改"
     v-model="saveConfirmVisible"
-    width="30%"
+    width="20%"
   >
-    <span>您确定要保存这些更改吗？</span>
-    <span slot="footer">
+    <el-row class="save-text">
+      <span>您确定要保存这些更改吗？</span>
+    </el-row>
+    <span slot="footer" style="margin-left: 25%">
       <el-button @click="handleSaveConfirm('cancel')">取消</el-button>
       <el-button type="primary" @click="handleSaveConfirm('confirm')">保存</el-button>
     </span>
@@ -308,6 +309,12 @@ onBeforeUnmount(() => {
   height:0.5px;
   background-color: rgb(154, 152, 152);
   border: none;
+}
+.save-text{
+  margin-top:20px;
+  margin-bottom: 40px;
+  font-size: 16px;
+  color: rgb(96, 95, 95);
 }
 
 </style>
