@@ -71,7 +71,7 @@ onMounted(() => {
 const login =  async() => {
   if(loginForm.value.mail === "admin" && loginForm.value.password === "admin"){
     ElMessage.success("登陆成功！");
-    await router.push('/main');
+    await router.push('/main');f
   }else{
     try{
       const res = await http.post('/user/login',{

@@ -216,7 +216,7 @@ const advancedSearch = () => {
             </el-select>
           </template>
         </el-input>
-        <el-button :icon="Search" @click="simpleSearch" class="search-button"/>
+        <el-button :icon="Search" @click="simpleSearch" class="claim-button"/>
         <el-checkbox-group v-model="simpleCheckList" style="margin-top: 2%">
           <el-checkbox label="期刊" value="1"/>
           <el-checkbox label="学位论文" value="2"/>
@@ -321,7 +321,65 @@ const advancedSearch = () => {
 <style scoped>
 @import "@/css/basic.css";
 @import "@/css/academicClaim.css";
-@import "@/css/advancedSearch.css";
+.search-input{
+  height: 40px;
+}
+.plus-minus-button{
+  color:rgb(105, 104, 104);
+  size:5px;
+}
+.head{
+  background-color: rgb(41, 154, 236);
+  width:100px;
+  height:35px;
+  color: white;
+  padding: 10px;
+  border-radius: 3px;
+  margin-top: 10px;
+  font-size: 24px;
+  margin-left: 9%;
+}
+.hStyle{
+  font-size: 20px;
+  margin-left: 5%;
+  color:rgb(77, 76, 76);
+}
+.pStyle{
+  font-size: 14px;
+  font-weight: lighter;
+  margin-left: 5%;
+  margin-right: 5%;
+  color:grey;
+}
+.reset-button {
+  border-radius: 0 4px 4px 0;
+  height: 40px;
+  color: rgba(0, 0, 0, 0.526);
+  background-color: transparent;
+  border: none;
+}
+.reset-button:hover {
+  color: rgb(78, 109, 210);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.search-button {
+  border-radius: 0 4px 4px 0;
+  height: 30px;
+  width:140px;
+  font-size: large;
+  color: white;
+  background-color: #f77605 ;
+}
+.search-button:hover {
+  color: white;
+  background-color: #cb6e1c;
+}
+.line{
+  border: none;
+  height: 0.5px;
+  width:90%;
+  background-color: grey;
+}
 .el-table__row:hover > td {
   background-color: transparent !important;
 }
