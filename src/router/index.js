@@ -101,6 +101,11 @@ const router = createRouter({
             component: ()=> import('@/views/Paper/Paper.vue')
         },
         {
+          path: '/scholarAppeal',
+          name: 'ScholarAppeal',
+          component: ()=> import('@/views/ScholarAppeal.vue')
+        },
+        {
             path: '/authorInfo',
             name: 'authorInfo',
             component: ()=> import('@/views/user/AuthorInfo.vue')

@@ -7,6 +7,10 @@ import cookieUtil from "@/utils/cookie.js";
 const identifyCode = ref('');
 const identifyCodes = '1234567890abcdefghijklmnopqrstuvwxyz'
 import http from "@/api/http.js"
+import {useTokenStore, useUserStore} from "@/store/store.js";
+const userStore = useUserStore();
+const tokenStore = useTokenStore()
+
 const loginForm = ref({
   mail: '',
   password: '',
@@ -67,15 +71,17 @@ onMounted(() => {
 const login =  async() => {
   if(loginForm.value.mail === "admin" && loginForm.value.password === "admin"){
     ElMessage.success("登陆成功！");
-    await router.push('/main');
+    await router.push('/main');f
   }else{
     try{
       const res = await http.post('/user/login',{
-        account: loginForm.value.mail,
+        mail: loginForm.value.mail,
         password: loginForm.value.password
       })
       if(res.data.msg === "login success") {
         ElMessage.success("登陆成功！");
+        userStore.setUsername(res.data.username)
+        tokenStore.setToken(res.data.token)
         cookieUtil.setCookie("token",res.data.token,0.25);
         cookieUtil.setCookie("username",res.data.username, 0.25);
         await router.push('/main');
@@ -86,6 +92,8 @@ const login =  async() => {
     }
   }
 }
+
+
 </script>
 
 <template>

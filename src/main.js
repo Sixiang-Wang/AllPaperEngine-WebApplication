@@ -4,6 +4,7 @@ import App from './App.vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import router from './router/index.js'
+import { createPinia } from 'pinia';
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 /* import font awesome icon component */
@@ -14,9 +15,13 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 /* add icons to the library */
 
-
+const pinia = createPinia();
 const app = createApp(App)
+
+app.use(pinia); // 使用 Pinia
 app.use(router)
 app.use(ElementPlus)
+
 app.mount('#app')
+
 

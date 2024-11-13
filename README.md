@@ -82,3 +82,57 @@ audio存放音频（暂定）
 
 
 
+## 全局变量的使用
+
+在store/store.js中
+
+定义示例：用户名和token
+
+```
+export const useUserStore = defineStore('user', {
+    state: () => ({
+        username: '', // 初始用户名为空
+    }),
+    actions: {
+        setUsername(name) {
+            this.username = name;
+        },
+    },
+});
+
+export const useTokenStore = defineStore('token', {
+    state: () => ({
+        token: '',
+    }),
+    actions: {
+        setToken(token) {
+            this.token = token;
+        },
+    },
+});
+```
+
+
+
+使用示例：
+
+```
+文件A:
+const userStore = useUserStore();
+const user_name = computed(() => userStore.username);
+
+文件B:
+const userStore = useUserStore();
+```
+
+效果：
+
+文件B中调用userStore.setUserName后
+
+文件A中user_name会改变
+
+
+
+实际样例：
+
+详情请见Header、Login中的使用方法。
