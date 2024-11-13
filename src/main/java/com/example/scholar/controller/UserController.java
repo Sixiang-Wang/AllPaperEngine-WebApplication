@@ -295,47 +295,31 @@ public class UserController {
             }
         }
 
-    // 查看所有收藏夹
-    @GetMapping("/viewAllFolders")
-    @ApiOperation("查看所有收藏夹接口")
-    public R viewAllFolders(@RequestParam int userId) {
+    // 查看所有标签
+    @GetMapping("/viewAllTags")
+    @ApiOperation("查看所有标签接口")
+    public R viewAllTags(@RequestParam int userId) {
         try {
-            List<HashMap<String, Object>> folders = userService.viewAllFolders(userId);
-            if (folders.isEmpty()) {
-                return R.error("No folders found for this user");
+            List<HashMap<String, Object>> tags = userService.viewAllTags(userId);
+            if (tags.isEmpty()) {
+                return R.error("No tags found for this user");
             } else {
-                return R.ok().put("folders", folders);
+                return R.ok().put("tags", tags);
             }
         } catch (Exception e) {
             return R.error(e.toString());
         }
     }
 
-    // 创建新收藏夹
-    @PostMapping(value = "/createNewFolder")
-    @ApiOperation("创建新收藏夹接口")
-    public R createNewFolder(@RequestParam int userId,
-                             @RequestParam String folder) {
+    // 创建新标签
+    @PostMapping(value = "/createNewTag")
+    @ApiOperation("创建新标签接口")
+    public R createNewTag(@RequestParam int userId,
+                             @RequestParam String tag) {
         try {
-            HashMap<String, Object> resultMap = userService.createFavoriteFolder(userId, folder);
-            if ("收藏夹创建成功".equals(resultMap.get("msg"))) {
-                return R.ok("Folder created successfully");
-            } else {
-                return R.error((String) resultMap.get("msg"));
-            }
-        } catch (Exception e) {
-            return R.error(e.toString());
-        }
-    }
-
-    // 删除收藏夹
-    @DeleteMapping("/deleteFolder")
-    @ApiOperation("删除收藏夹接口")
-    public R deleteFolder(@RequestParam int userId, @RequestParam String folder) {
-        try {
-            HashMap<String, Object> resultMap = userService.deleteFavoriteFolder(userId, folder);
-            if ("收藏夹删除成功".equals(resultMap.get("msg"))) {
-                return R.ok("Folder deleted successfully");
+            HashMap<String, Object> resultMap = userService.createFavoriteTag(userId, tag);
+            if ("标签创建成功".equals(resultMap.get("msg"))) {
+                return R.ok("Tag created successfully");
             } else {
                 return R.error((String) resultMap.get("msg"));
             }
@@ -344,16 +328,81 @@ public class UserController {
         }
     }
 
-    // 添加用户收藏
+    // 删除标签
+    @DeleteMapping("/deleteTag")
+    @ApiOperation("删除标签接口")
+    public R deleteTag(@RequestParam int userId, @RequestParam String tag) {
+        try {
+            HashMap<String, Object> resultMap = userService.deleteFavoriteTag(userId, tag);
+            if ("标签删除成功".equals(resultMap.get("msg"))) {
+                return R.ok("Tag deleted successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 查看用户所有收藏
+    @GetMapping("/viewAllFavoritesByUser")
+    @ApiOperation("查看用户所有收藏接口")
+    public R viewAllFavoritesByUser(@RequestParam int userId) {
+        try {
+            List<HashMap<String, Object>> favoriteList = userService.viewAllFavoritesByUser(userId);
+            if (favoriteList.isEmpty()) {
+                return R.error("No favorites found for this user");
+            } else {
+                return R.ok().put("favoriteList", favoriteList);
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 查用户带有指定标签的收藏(多选，并集，标签列表)
+    @GetMapping("/viewAllFavoritesWithTags")
+    @ApiOperation("查用户带有指定标签的收藏接口")
+    public R viewAllFavoritesWithTags(@RequestParam int userId,
+                                      @RequestParam List<String> tags) {
+        try {
+            List<HashMap<String, Object>> favoriteList = userService.viewAllFavoritesWithTags(userId, tags);
+            if (favoriteList.isEmpty()) {
+                return R.error("No favorites found with these tags");
+            } else {
+                return R.ok().put("favoriteList", favoriteList);
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+    
+    // 查询用户标签及其标记文章的数量
+    @GetMapping("/viewAllTagsAndCounts")
+    @ApiOperation("查询用户标签及其标记文章的数量接口")
+    public R viewAllTagsAndCounts(@RequestParam int userId) {
+        try {
+            List<HashMap<String, Object>> tagsAndCounts = userService.viewAllTagsAndCounts(userId);
+            if (tagsAndCounts.isEmpty()) {
+                return R.error("No tags found for this user");
+            } else {
+                return R.ok().put("tagsAndCounts", tagsAndCounts);
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    // 添加用户收藏(标签可多选)
     @PostMapping(value = "/addUserFavorite")
     @ApiOperation("添加用户收藏接口")
     public R addUserFavorite(
             @RequestParam int userId,
             @RequestParam String publicationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp,
-            @RequestParam String folder) {
+            @RequestParam List<String> tags) {
         try {
-            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, timestamp, folder);
+            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, timestamp, tags);
             if ("收藏添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite added successfully");
             } else {
@@ -364,30 +413,14 @@ public class UserController {
         }
     }
 
-    // 查看某个收藏夹下所有收藏
-    @GetMapping("/viewAllFavorites")
-    @ApiOperation("查看某个收藏夹下所有收藏接口")
-    public R viewAllFavorites(@RequestParam int userId,
-                              @RequestParam String folder) {
-        try {
-            List<HashMap<String, Object>> favoriteList = userService.viewAllFavorites(userId, folder);
-            if (favoriteList.isEmpty()) {
-                return R.error("No favorites found for this folder");
-            } else {
-                return R.ok().put("favoriteList", favoriteList);
-            }
-        } catch (Exception e) {
-            return R.error(e.toString());
-        }
-    }
     // 删除用户收藏
     @DeleteMapping("/deleteUserFavorite")
-    @ApiOperation("删除某个收藏夹下单一收藏接口")
+    @ApiOperation("删除某个标签下单一收藏接口")
     public R deleteUserFavorite(@RequestParam int userId,
                                 @RequestParam String publicationId,
-                                @RequestParam String folder) {
+                                @RequestParam String tag) {
         try {
-            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId, folder);
+            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId, tag);
             if ("收藏删除成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite deleted successfully");
             } else {

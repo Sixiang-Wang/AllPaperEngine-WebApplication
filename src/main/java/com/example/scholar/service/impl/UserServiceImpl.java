@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -301,82 +302,84 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> createFavoriteFolder(int userId, String folder) {
+    public HashMap<String, Object> createFavoriteTag(int userId, String tag) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
         }
-        if (userMapper.checkFavoriteFolder(userId, folder) > 0) {// 如果收藏夹已存在，则返回
-            resultMap.put("msg", "收藏夹已存在");
+        if (userMapper.checkFavoriteTag(userId, tag) > 0) {// 如果标签已存在，则返回
+            resultMap.put("msg", "标签已存在");
             return resultMap;
         }
 
-        int result = userMapper.createFavoriteFolder(userId, folder);
+        int result = userMapper.createFavoriteTag(userId, tag);
         if (result > 0) {
-            resultMap.put("msg", "收藏夹创建成功");
+            resultMap.put("msg", "标签创建成功");
         } else {
-            resultMap.put("msg", "收藏夹创建失败");
+            resultMap.put("msg", "标签创建失败");
         }
         return resultMap;
     }
 
     @Override
-    public List<HashMap<String, Object>> viewAllFolders(int userId) {
-        List<HashMap<String, Object>> resultList = userMapper.selectUserFavoriteFolder(userId);
+    public List<HashMap<String, Object>> viewAllTags(int userId) {
+        List<HashMap<String, Object>> resultList = userMapper.selectUserFavoriteTag(userId);
         return resultList;
     }
 
     @Override
-    public HashMap<String, Object> deleteFavoriteFolder(int userId, String folder) {
+    public HashMap<String, Object> deleteFavoriteTag(int userId, String tag) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
         }
-        if (userMapper.checkFolderNotEmpty(userId, folder) > 0) { // 如果收藏夹非空，要执行级联删除
-            if (userMapper.deleteAllFavoritesInFolder(userId, folder) <= 0) {
+        if (userMapper.checkTagNotEmpty(userId, tag) > 0) { // 如果标签非空，要执行级联删除
+            if (userMapper.deleteAllFavoritesInTag(userId, tag) <= 0) {
                 resultMap.put("msg", "收藏文章级联删除失败");
             }
         }
-        // 随后删除收藏夹
-        if (userMapper.deleteFavoriteFolder(userId, folder) > 0) {
-            resultMap.put("msg", "收藏夹删除成功");
+        // 随后删除标签
+        if (userMapper.deleteFavoriteTag(userId, tag) > 0) {
+            resultMap.put("msg", "标签删除成功");
         } else {
-            resultMap.put("msg", "收藏夹删除失败");
+            resultMap.put("msg", "标签删除失败");
         }
+        return resultMap;
+    }
+    @Override
+    public List<HashMap<String, Object>> viewAllTagsAndCounts(int userId) {
+        // 返回这个用户的所有tag，以及具有该tag的收藏数
+        return userMapper.findTagCountsByUserId(userId);
+    }
+
+    @Override
+    public HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, List<String> tags) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        for (String tag : tags) {
+            int result = userMapper.addUserFavorite(userId, publicationId, timestamp, tag);
+            if (result > 0) {
+                resultMap.put("msg", "收藏添加成功");
+            } else {
+                resultMap.put("msg", "收藏添加失败");
+            }
+        }
+        userMapper.updateUserFavoriteTimestamp(userId, publicationId, timestamp);
         return resultMap;
     }
 
     @Override
-    public HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String folder) {
+    public HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String tag) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
         }
-        int result = userMapper.addUserFavorite(userId, publicationId, timestamp, folder);
-        if (result > 0) {
-            resultMap.put("msg", "收藏添加成功");
-        }
-        else {
-            resultMap.put("msg", "收藏添加失败");
-        }
-        return resultMap;
-    }
-
-    @Override
-    public HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String folder) {
-        HashMap<String, Object> resultMap = new HashMap<>();
-        User existingUser = userMapper.selectUserById(userId);
-        if (existingUser == null) {
-            resultMap.put("msg", "User not found");
-            return resultMap;
-        }
-        int result = userMapper.deleteUserFavorite(userId, publicationId, folder);
+        int result = userMapper.deleteUserFavorite(userId, publicationId, tag);
         if (result > 0) {
             resultMap.put("msg", "收藏删除成功");
         }
@@ -386,9 +389,28 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
+//    弃用，要的是带有指定标签的收藏(多选，标签列表)，而不是单个标签的收藏
+//    @Override
+//    public List<HashMap<String, Object>> viewAllFavoritesByTag(int userId, String tag) {
+//        List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId, tag);
+//        for (HashMap<String, Object> favorite : resultList) {
+//            favorite.put("title", userMapper.selectPublicationTitle(favorite.get("publicationid").toString()));
+//        }
+//        return resultList;
+//    }
+
     @Override
-    public List<HashMap<String, Object>> viewAllFavorites(int userId, String folder) {
-        List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId, folder);
+    public List<HashMap<String, Object>> viewAllFavoritesByUser(int userId) {
+        List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId);
+        for (HashMap<String, Object> favorite : resultList) {
+            favorite.put("title", userMapper.selectPublicationTitle(favorite.get("publicationid").toString()));
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<HashMap<String, Object>> viewAllFavoritesWithTags(int userId, List<String> tags) {
+        List<HashMap<String, Object>> resultList = userMapper.findFavoritesWithAnyTags(userId, tags);
         for (HashMap<String, Object> favorite : resultList) {
             favorite.put("title", userMapper.selectPublicationTitle(favorite.get("publicationid").toString()));
         }

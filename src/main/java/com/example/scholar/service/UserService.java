@@ -24,14 +24,11 @@ public interface UserService {
     HashMap<String, Object> updateUserPhone(int userId, String phone);
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
 
-    // 在某个收藏夹添加收藏
-    HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String folder);
+    // 在某个标签添加收藏
+    HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, List<String> tags);
 
-    // 在某个收藏夹取消收藏
-    HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String folder);
-
-    // 查看某个收藏夹所有收藏
-    List<HashMap<String, Object>> viewAllFavorites(int userId, String folder);
+    // 在某个标签取消收藏
+    HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String tag);
 
     // 添加浏览历史
     HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
@@ -48,14 +45,23 @@ public interface UserService {
     // 清除所有历史记录
     HashMap<String, Object> clearAllHistory(int userId);
 
-    // 创建收藏夹
-    HashMap<String, Object> createFavoriteFolder(int userId, String folder);
+    // 创建标签
+    HashMap<String, Object> createFavoriteTag(int userId, String tag);
 
-    // 查看所有收藏夹
-    List<HashMap<String, Object>> viewAllFolders(int userId);
+    // 查看所有标签
+    List<HashMap<String, Object>> viewAllTags(int userId);
 
-    // 删除收藏夹
-    HashMap<String, Object> deleteFavoriteFolder(int userId, String folder);
+    // 删除标签
+    HashMap<String, Object> deleteFavoriteTag(int userId, String tag);
+
+    // 查看某个用户的所有收藏
+    List<HashMap<String, Object>> viewAllFavoritesByUser(int userId);
+
+    // 查看多个标签下的所有收藏
+    List<HashMap<String, Object>> viewAllFavoritesWithTags(int userId, List<String> tags);
+
+    // 查看所有收藏的所有标签和收藏数量
+    List<HashMap<String, Object>> viewAllTagsAndCounts(int userId);
 
     Boolean updateUserAvatar(Integer userid,String avatar);
 }

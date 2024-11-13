@@ -34,25 +34,39 @@ public interface UserMapper {
     @Select("SELECT title FROM openalex_works WHERE id = #{publicationId}")
     String selectPublicationTitle(String publicationId);
 
-    // 创建收藏夹
-    @Insert("INSERT INTO user_favorite_folder (userid, folder) VALUES (#{userId}, #{folder})")
-    int createFavoriteFolder(int userId, String folder);
+    // 创建标签
+    @Insert("INSERT INTO user_favorite_tag (userid, tag) VALUES (#{userId}, #{tag})")
+    int createFavoriteTag(int userId, String tag);
 
-    // 检查是否有同名收藏夹
-    @Select("SELECT COUNT(*) FROM user_favorite_folder WHERE userid = #{userId} AND folder = #{folder}")
-    int checkFavoriteFolder(int userId, String folder);
+    // 检查是否有同名标签
+    @Select("SELECT COUNT(*) FROM user_favorite_tag WHERE userid = #{userId} AND tag = #{tag}")
+    int checkFavoriteTag(int userId, String tag);
 
-    // 查看某个收藏夹所有收藏记录
-    @Select("SELECT * FROM user_favorite WHERE userid = #{userId} AND folder = #{folder}")
-    List<HashMap<String, Object>> selectUserFavorite(int userId, String folder);
+    // 查看用户所有收藏记录
+    @Select("<script>" +
+            "SELECT uf.publicationid, uf.timestamp, " +
+            "       (SELECT GROUP_CONCAT(tag SEPARATOR ',') " +
+            "        FROM user_favorite uf2 " +
+            "        WHERE uf2.publicationid = uf.publicationid " +
+            "          AND uf2.userid = uf.userid " +
+            "        GROUP BY uf2.publicationid) AS tags " +
+            "FROM user_favorite uf " +
+            "WHERE uf.userid = #{userId} " +
+            "GROUP BY uf.publicationid, uf.timestamp " +
+            "</script>")
+    List<HashMap<String, Object>> selectUserFavorite(int userId);
 
-    // 在某个收藏夹添加一条收藏记录
-    @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp, folder) VALUES (#{userId}, #{publicationId}, #{timestamp}, #{folder})")
-    int addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String folder);
+    // 在某个标签添加一条收藏记录
+    @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp, tag) VALUES (#{userId}, #{publicationId}, #{timestamp}, #{tag})")
+    int addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String tag);
 
-    // 在某个收藏夹删除一条收藏记录
-    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND folder = #{folder}")
-    int deleteUserFavorite(int userId, String publicationId, String folder);
+    // 在某个标签删除一条收藏记录
+    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND tag = #{tag}")
+    int deleteUserFavorite(int userId, String publicationId, String tag);
+
+    // 更新收藏记录的时间戳
+    @Update("UPDATE user_favorite SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
+    int updateUserFavoriteTimestamp(int userId, String publicationId, LocalDateTime timestamp);
 
     // 查看所有历史记录
     @Select("SELECT * FROM user_browser_history WHERE userid = #{userId}")
@@ -78,19 +92,48 @@ public interface UserMapper {
     @Update("UPDATE user_browser_history SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
     int updateUserBrowserHistoryTimestamp(int userId, String publicationId, LocalDateTime timestamp);
 
-    // 查看所有收藏夹
-    @Select("SELECT * FROM user_favorite_folder WHERE userid = #{userId}")
-    List<HashMap<String, Object>> selectUserFavoriteFolder(int userId);
+    // 查看所有标签
+    @Select("SELECT * FROM user_favorite_tag WHERE userid = #{userId}")
+    List<HashMap<String, Object>> selectUserFavoriteTag(int userId);
 
-    // 检查某个收藏夹是否非空
-    @Select("SELECT COUNT(*) FROM user_favorite WHERE userid = #{userId} AND folder = #{folder}")
-    int checkFolderNotEmpty(int userId, String folder);
+    // 检查某个标签是否非空
+    @Select("SELECT COUNT(*) FROM user_favorite WHERE userid = #{userId} AND tag = #{tag}")
+    int checkTagNotEmpty(int userId, String tag);
 
-    // 删除某个收藏夹下的所有收藏记录
-    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND folder = #{folder}")
-    int deleteAllFavoritesInFolder(int userId, String folder);
+    // 删除某个标签下的所有收藏记录
+    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND tag = #{tag}")
+    int deleteAllFavoritesInTag(int userId, String tag);
 
-    // 删除某个收藏夹
-    @Delete("DELETE FROM user_favorite_folder WHERE userid = #{userId} AND folder = #{folder}")
-    int deleteFavoriteFolder(int userId, String folder);
+    // 删除某个标签
+    @Delete("DELETE FROM user_favorite_tag WHERE userid = #{userId} AND tag = #{tag}")
+    int deleteFavoriteTag(int userId, String tag);
+
+    // 查询用户每个标签及其标记的文章数量
+    @Select("SELECT tag, COUNT(publicationid) AS number " +
+            "FROM user_favorite " +
+            "WHERE userid = #{userId} " +
+            "GROUP BY tag")
+    List<HashMap<String, Object>> findTagCountsByUserId(int userId);
+
+    // 查询用户多个标签的收藏交集
+    @Select("<script>" +
+            "SELECT uf.publicationid, uf.timestamp, " +
+            "       (SELECT GROUP_CONCAT(tag SEPARATOR ',') " +
+            "        FROM user_favorite uf2 " +
+            "        WHERE uf2.publicationid = uf.publicationid " +
+            "          AND uf2.userid = uf.userid " +
+            "        GROUP BY uf2.publicationid) AS tags " +
+            "FROM user_favorite uf " +
+            "WHERE uf.userid = #{userId} " +
+            "  AND uf.tag IN " +
+            "<foreach item='item' index='index' collection='tags' open='(' separator=',' close=')'>" +
+            "#{item}" +
+            "</foreach> " +
+            "GROUP BY uf.publicationid, uf.timestamp " +
+            "</script>")
+    List<HashMap<String, Object>> findFavoritesWithAnyTags(
+            @Param("userId") int userId,
+            @Param("tags") List<String> tags
+    );
+
 }
