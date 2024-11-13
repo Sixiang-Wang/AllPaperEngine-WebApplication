@@ -16,37 +16,37 @@ import java.util.Scanner;
 public class ScholarApplication {
 
     public static void main(String[] args) throws IOException {
-        String esHome = System.getenv("ES_HOME");
-        String kibanaHome = System.getenv("KIBANA_HOME");
-        System.out.println(esHome);
-        System.out.println(kibanaHome);
-        // 启动 Elasticsearch 和 Kibana，并检查它们的启动状态
-        //如果路径为空，可以手动输入。
-        if(esHome==null){
-            System.out.println("未从环境变量中读到ES_HOME,请输入elasticsearch.bat的路径：");
-            //D:\es\elasticsearch-7.12.1\bin\elasticsearch.bat
-            //D:\kibana\kibana-7.12.1-windows-x86_64\bin\kibana.bat
-            Scanner scanner = new Scanner(System.in);
-            esHome = scanner.nextLine();
-            if(esHome!=null){
-                System.out.println("读入成功！");
-            }else{
-                System.out.println("Something wrong...");
-                return;
-            }
-        }
-        if(kibanaHome==null){
-            System.out.println("未从环境变量中读到KIBANA_HOME,请输入kibana.bat的路径：");
-            Scanner scanner = new Scanner(System.in);
-            kibanaHome = scanner.nextLine();
-            if(kibanaHome!=null){
-                System.out.println("读入成功！");
-            }else{
-                System.out.println("Something wrong...");
-                return;
-            }
-        }
-        startAndWaitForServices(esHome,kibanaHome);
+//        String esHome = System.getenv("ES_HOME");
+//        String kibanaHome = System.getenv("KIBANA_HOME");
+//        System.out.println(esHome);
+//        System.out.println(kibanaHome);
+//        // 启动 Elasticsearch 和 Kibana，并检查它们的启动状态
+//        //如果路径为空，可以手动输入。
+//        if(esHome==null){
+//            System.out.println("未从环境变量中读到ES_HOME,请输入elasticsearch.bat的路径：");
+//            //D:\es\elasticsearch-7.12.1\bin\elasticsearch.bat
+//            //D:\kibana\kibana-7.12.1-windows-x86_64\bin\kibana.bat
+//            Scanner scanner = new Scanner(System.in);
+//            esHome = scanner.nextLine();
+//            if(esHome!=null){
+//                System.out.println("读入成功！");
+//            }else{
+//                System.out.println("Something wrong...");
+//                return;
+//            }
+//        }
+//        if(kibanaHome==null){
+//            System.out.println("未从环境变量中读到KIBANA_HOME,请输入kibana.bat的路径：");
+//            Scanner scanner = new Scanner(System.in);
+//            kibanaHome = scanner.nextLine();
+//            if(kibanaHome!=null){
+//                System.out.println("读入成功！");
+//            }else{
+//                System.out.println("Something wrong...");
+//                return;
+//            }
+//        }
+//        startAndWaitForServices(esHome,kibanaHome);
 
         // 继续执行 Spring Boot 应用启动
         System.out.println("System: " + PathConfig.os);

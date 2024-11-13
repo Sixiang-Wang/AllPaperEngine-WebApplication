@@ -1,4 +1,6 @@
 package com.example.scholar.controller;
+import com.example.scholar.config.annotation.TokenToUser;
+import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.CheckResult;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
@@ -17,6 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -47,6 +53,18 @@ public class UserController {
                 return R.error(e.toString());
             }
         }
+
+        @GetMapping(value="/preLogin")
+        @ApiOperation("自动登录接口")
+        public R preLogin(@TokenToUser User user){
+            try{
+                return R.ok("login success").put("username",user.getName());
+            }catch (Exception e){
+                return R.error(e.toString());
+            }
+        }
+
+
         @PostMapping(value = "/register")
         @ApiOperation("注册接口")
         public R register(@ApiParam(value="登录表单") @RequestBody RegistDto registDto) {
@@ -498,5 +516,6 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
 }
 
