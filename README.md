@@ -26,7 +26,7 @@
   return R.error().put("error",error);//返回code为414，“error"为error的json
   ```
 
-  如有其他问题请联系tpzzz（嘻嘻🥵
+  如有其他问题请联系头皮胀胀胀（嘻嘻🥵
 
 * `service`文件夹下包含接口以及`impl`包（对应的具体实现类）
 
