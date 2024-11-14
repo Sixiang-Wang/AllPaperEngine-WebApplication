@@ -8,7 +8,7 @@ import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
 
 const searchInput = ref("");
-const searchType = ref("主题");
+const searchType = ref('1');
 const totalLength = ref(0);
 const searchResults = ref([]);
 const route = useRoute();
@@ -31,12 +31,11 @@ const updateSearchResults = async () => {
   console.log(res.data);
   searchResults.value = res.data.works;
 };
-
-onMounted(async () => {
-  switch (route.query.type) {
+const search =async () => {
+  switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
-      if(route.query.input===null||route.query.input === ''){
+      if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
@@ -62,11 +61,19 @@ onMounted(async () => {
       }
 
       break;
-    case 2://按主题查找
+    case 2://查找作者
   }
 
-});
-
+}
+onMounted(async ()=>{
+  searchType.value = route.query.type;
+  searchInput.value = route.query.input;
+  await search();
+}, );
+const mainSearch = ()=>{
+  router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value}});
+  // location.reload();
+}
 // 监听路由变化，以便更新 currentPage
 watch(route, (newRoute) => {
   currentPage.value = Number(newRoute.query.page) || 1;
@@ -88,7 +95,7 @@ watch(route, (newRoute) => {
               </el-select>
             </template>
           </el-input>
-          <el-button :icon="Search" @click="search" class="search-button"/>
+          <el-button :icon="Search" @click="mainSearch" class="search-button"/>
         </div>
       </div>
     </el-header>

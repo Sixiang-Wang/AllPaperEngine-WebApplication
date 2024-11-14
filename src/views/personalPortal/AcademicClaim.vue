@@ -1,6 +1,6 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {Search} from "@element-plus/icons-vue";
+import {computed, onMounted, ref,watch} from "vue";
+import {Search,Plus,Minus} from "@element-plus/icons-vue";
 import httpUtil from "@/api/http.js"
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
@@ -88,6 +88,92 @@ const deleteClaimed = async (id )=>{
     ElMessage.error("删除失败，请稍后再试")
   }
 }
+
+//高级检索部分
+const searchRows = ref([
+    { searchInput: '', searchType: '1', logicOperator: ''},
+    { searchInput: '', searchType: '2', logicOperator: ''},
+    { searchInput: '', searchType: '3', logicOperator: ''}
+]);
+
+const minusSearchBox = (index) => {
+    if (searchRows.value.length > 1) {
+        searchRows.value.splice(index, 1);
+    }
+};
+
+const addSearchBox = () => {
+    if (searchRows.value.length < 10) { // 最多可保持十行
+        searchRows.value.push({ searchInput: '', searchType: '1', logicOperator: ''});
+    } else {
+        console.log('最多只能添加10行搜索条件。');
+    }
+};
+
+// 监听搜索行变化
+watch(searchRows, (newVal, oldVal) => {
+    console.log('Search rows changed:', newVal);
+});
+
+const checked1 = ref(true)
+const checked2 = ref(false)
+const checked3 = ref(false)
+const checked4 = ref(false)
+const checked5 = ref(false)
+const checked6 = ref(false)
+
+const timeRange = ref(null);
+
+const shortcuts = [
+{
+text: 'Last week',
+value: () => {
+    const end = new Date()
+    const start = new Date()
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+    return [start, end]
+},
+},
+{
+text: 'Last month',
+value: () => {
+    const end = new Date()
+    const start = new Date()
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+    return [start, end]
+},
+},
+{
+text: 'Last 3 months',
+value: () => {
+    const end = new Date()
+    const start = new Date()
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+    return [start, end]
+},
+},
+]
+
+// 方法：重置条件
+const resetConditions = () => {
+    searchRows.value = [
+        { searchInput: '', searchType: '1', logicOperator: '' },
+        { searchInput: '', searchType: '2', logicOperator: ''},
+        { searchInput: '', searchType: '3', logicOperator: ''}
+    ];
+    checked1.value = false;
+    checked2.value = false;
+    checked3.value = false;
+    checked4.value = false;
+    checked5.value = false;
+    checked6.value = false;
+    timeRange.value = null; // 重置日期选择器
+};
+
+const advancedSearch = () => {
+    console.log(111);
+    router.push({path: "/search", query: {input: searchRows.value[0].searchInput, page: 1}});
+}
 </script>
 
 <template>
@@ -134,7 +220,7 @@ const deleteClaimed = async (id )=>{
             </el-select>
           </template>
         </el-input>
-        <el-button :icon="Search" @click="simpleSearch" class="search-button"/>
+        <el-button :icon="Search" @click="simpleSearch" class="claim-button"/>
         <el-checkbox-group v-model="simpleCheckList" style="margin-top: 2%">
           <el-checkbox label="期刊" value="1"/>
           <el-checkbox label="学位论文" value="2"/>
@@ -162,7 +248,72 @@ const deleteClaimed = async (id )=>{
         </div>
       </el-tab-pane>
       <el-tab-pane label="高级检索">
+        <div :style="{height:'300px',overflowY: 'auto'}">
+            <el-row :gutter="10" v-for="(row, index) in searchRows" :key="index" style="margin: 20px;">                
+              <el-col :span="index === 0 ? 0 : 3">
+                  <el-select v-if="index !== 0" v-model="row.logicOperator" placeholder="AND">
+                      <el-option label="AND" value="AND" />
+                      <el-option label="OR" value="OR" />
+                      <el-option label="NOT" value="NOT" />
+                  </el-select>
+              </el-col>
+              <el-col :span="index === 0 ? 3 : 0"/>
+              <el-col :span="17">
+                  <el-input v-model="row.searchInput" :style="{width:'100%'}" placeholder="请输入搜索内容">
+                      <template #prepend>
+                      <el-select v-model="row.searchType" style="width: 115px" placeholder="主题">
+                        <el-option label="主题" value="1" />
+                        <el-option label="篇名" value="2" />
+                        <el-option label="关键词" value="3" />
+                        <el-option label="作者" value="4" />
+                        <el-option label="第一作者" value="5" />
+                        <el-option label="作者单位" value="6" />
+                        <el-option label="摘要" value="7" />
+                        <el-option label="DOI" value="8" />
+                        <el-option label="参考文献" value="9" />
+                        <el-option label="文献来源" value="10" />
+                      </el-select>
+                      </template>
+                  </el-input>
+              </el-col>
+              <el-col :span="index === 0 ? 0 : 2" v-if="index !== 0">
+                  <el-button type="text" :icon="Minus" class="plus-minus-button" @click="minusSearchBox(index)"  />
+              </el-col>
+              <el-col :span="2" v-if="index === searchRows.length - 1">
+                  <el-button type="text" :icon="Plus"  class="plus-minus-button" @click="addSearchBox"  />
+              </el-col>
+          </el-row>
+          <el-row style="margin: 20px;margin-left: 9%;">
+              <el-checkbox v-model="checked1" label="A类期刊会议" size="large" />
+              <el-checkbox v-model="checked2" label="网络首发" size="large" />
+              <el-checkbox v-model="checked3" label="免费" size="large" />
+              <el-checkbox v-model="checked4" label="基金文献" size="large" />
+              <el-checkbox v-model="checked5" label="中英文扩展" size="large" />
+              <el-checkbox v-model="checked6" label="同义词扩展" size="large" />
+          </el-row>
+          <el-row  type="flex" justify="center">
+              <div class="block">
+                  <span style="font-size: 14px;margin-right: 20px;margin-left: 20px;">发表时间范围:</span>
+                  <el-date-picker
+                      v-model="timeRange"
+                      type="daterange"
+                      unlink-panels
+                      range-separator="To"
+                      start-placeholder="Start date"
+                      end-placeholder="End date"
+                      :shortcuts="shortcuts"
+                      :size="size"
+                  />
+              </div>
+          </el-row>
+          <hr style="width:90%;height:0.5px;background-color: grey;margin-top: 20px;border:none">
+          <el-row type="flex" justify="center" style="margin-top:20px">
+              <el-button class="reset-button" @click="resetConditions">重置条件</el-button>
+              <el-button class="search-button"@click="advancedSearch">检索</el-button>
+          </el-row>
+        </div>
       </el-tab-pane>
+
     </el-tabs>
     <template #footer>
       <el-button @click="handleDialogChange" color="#1F578F" plain>返回</el-button>
@@ -174,6 +325,65 @@ const deleteClaimed = async (id )=>{
 <style scoped>
 @import "@/css/basic.css";
 @import "@/css/academicClaim.css";
+.search-input{
+  height: 40px;
+}
+.plus-minus-button{
+  color:rgb(105, 104, 104);
+  size:5px;
+}
+.head{
+  background-color: rgb(41, 154, 236);
+  width:100px;
+  height:35px;
+  color: white;
+  padding: 10px;
+  border-radius: 3px;
+  margin-top: 10px;
+  font-size: 24px;
+  margin-left: 9%;
+}
+.hStyle{
+  font-size: 20px;
+  margin-left: 5%;
+  color:rgb(77, 76, 76);
+}
+.pStyle{
+  font-size: 14px;
+  font-weight: lighter;
+  margin-left: 5%;
+  margin-right: 5%;
+  color:grey;
+}
+.reset-button {
+  border-radius: 0 4px 4px 0;
+  height: 40px;
+  color: rgba(0, 0, 0, 0.526);
+  background-color: transparent;
+  border: none;
+}
+.reset-button:hover {
+  color: rgb(78, 109, 210);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.search-button {
+  border-radius: 0 4px 4px 0;
+  height: 30px;
+  width:140px;
+  font-size: large;
+  color: white;
+  background-color: #f77605 ;
+}
+.search-button:hover {
+  color: white;
+  background-color: #cb6e1c;
+}
+.line{
+  border: none;
+  height: 0.5px;
+  width:90%;
+  background-color: grey;
+}
 .el-table__row:hover > td {
   background-color: transparent !important;
 }

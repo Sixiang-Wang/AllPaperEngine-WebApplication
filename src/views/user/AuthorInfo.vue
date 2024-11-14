@@ -2,17 +2,17 @@
   <el-card class="author-details" :body-style="{ padding: '20px' }">
     <div class="author-header" style="display: flex; justify-content: space-between; align-items: center;">
     <div class="author-left" style="display: flex; align-items: center;">
-      <el-avatar :src="author.avatar" :size="120" />
+      <el-avatar :src="avatar" :size="120" />
       <div class="author-info" style="margin-left: 20px;">
-        <h2>{{ author.name }}</h2>
-        <p class="description">{{ author.description }}</p>
+        <h2>{{ name }}</h2>
+        <p class="description">{{ description }}</p>
         <el-button type="primary" @click="followAuthor" class="follow-button">关注</el-button>
       </div>
     </div>
 
     <div class="author-right" style="flex: 1; text-align: center; padding-left: 40px;">
-      <p><strong>引用次数：{{ author.citations }}</strong></p>
-      <p><strong>成果总数：{{ author.publicationNum }}</strong></p>
+      <p><strong>引用次数：{{ citedByCount }}</strong></p>
+      <p><strong>成果总数：{{ worksCount }}</strong></p>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
       <h3>发表文章</h3>
       <el-timeline>
         <el-timeline-item
-          v-for="(publication, index) in author.publications"
+          v-for="(publication, index) in publications"
           :key="publication.id"
           :timestamp="publication.date"
           :color="index % 2 === 0 ? 'primary' : 'warning'"
@@ -49,34 +49,64 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'AuthorDetails',
   data() {
     return {
-      author: {
-        name: '王思翔',
-        description: '全栈工程师',
-        avatar: '',
-        citations: 10,
-        publicationNum: 10,
-        publications: [
-          { id: 1, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-          { id: 2, title: 'Ciallo～(∠・ω< )⌒☆', description: '柚子厨蒸鹅心', date: '2024-03-22', cited: 20 },
-          { id: 3, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-          { id: 4, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-          { id: 5, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-          { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-          { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
-        ],
-      },
+      id: '114514',
+      name: '王思翔',
+      description: '全栈工程师',
+      avatar: '',
+      citedByCount: 10,
+      worksCount: 20,
+      publications: [
+        { id: 1, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 2, title: 'Ciallo～(∠・ω< )⌒☆', description: '柚子厨蒸鹅心', date: '2024-03-22', cited: 20 },
+        { id: 3, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 4, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 5, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
+      ],
     };
   },
+  /*
+  created() {
+    this.fetchAuthorDetails();
+    this.fetchAuthorPublications();
+  },
+  */
   methods: {
     followAuthor() {
-      console.log(`Following author: ${this.author.name}`);
+      console.log(`Following author: ${this.name}`);
     },
     viewPublication(id) {
       console.log(`Viewing publication with ID: ${id}`);
+    },
+    fetchAuthorDetails() {
+      axios.get(`/api/author/${this.id}`) // 改后端接口
+        .then(response => {
+          const data = response.data;
+          this.name = data.name;
+          this.description = data.description;
+          this.avatar = data.avatar;
+          this.citedByCount = data.citedByCount;
+          this.worksCount = data.worksCount;
+        })
+        .catch(error => {
+          console.error('获取作者信息错误', error);
+        });
+    },
+    fetchAuthorPublications() {
+      axios.get(`/api/author/${this.id}/publications`) // 改后端接口
+        .then(response => {
+          this.publications = response.data;
+        })
+        .catch(error => {
+          console.error('获取作者作品信息错误', error);
+        });
     },
   },
 };

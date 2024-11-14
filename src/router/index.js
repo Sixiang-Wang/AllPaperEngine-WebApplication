@@ -37,6 +37,7 @@ const router = createRouter({
                     name: 'favorite',
                     component: () => import('@/views/user/Favorite.vue')
                 },
+
                 {
                     path: '/user/history',
                     name: 'history',
@@ -48,6 +49,11 @@ const router = createRouter({
                     component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
                 },
             ]
+        },
+        {
+            path: '/hotpoint',
+            name: 'hotpoint',
+            component: () => import('@/views/Hotpoint.vue')
         },
         {
             path: '/main',
@@ -70,6 +76,11 @@ const router = createRouter({
             component: ()=> import('@/views/Login.vue')
         },
         {
+          path: '/scholarIdentify',
+          name: 'ScholarIdentify',
+          component: () => import('@/views/ScholarIdentify.vue')
+        },
+        {
             path: '/register',
             name: 'register',
             component: ()=> import('@/views/Register.vue')
@@ -80,14 +91,29 @@ const router = createRouter({
             component: () => import('@/views/Test.vue')
         },
         {
+          path: '/pdf',
+          name: 'pdf',
+          component: ()=> import('@/views/Pdf.vue')
+        },
+        {
             path: '/paper',
             name: 'paper',
             component: ()=> import('@/views/Paper/Paper.vue')
         },
         {
+          path: '/scholarAppeal',
+          name: 'ScholarAppeal',
+          component: ()=> import('@/views/ScholarAppeal.vue')
+        },
+        {
             path: '/authorInfo',
             name: 'authorInfo',
             component: ()=> import('@/views/user/AuthorInfo.vue')
+        },
+        {
+            path: '/institutionInfo',
+            name: 'institutionInfo',
+            component: ()=> import('@/views/user/InstitutionInfo.vue')
         },
         {
             path: '/personalportal',

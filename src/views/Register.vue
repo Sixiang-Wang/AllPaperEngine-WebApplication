@@ -4,7 +4,7 @@ import { ElMessage } from "element-plus"
 import router from "@/router/index.js"
 import httpUtil from "@/api/http.js";
 const registerForm = ref({
-  account: '',
+  name: '',
   password: '',
   confirmPassword: '',
   mail: '',
@@ -14,7 +14,7 @@ const registerForm = ref({
 
 const registerFormRef = ref(null)
 const registerRule = ref({
-  account: [
+  name: [
     { required: true, message: '请输入用户名', trigger: 'blur' }
   ],
   password: [
@@ -78,14 +78,19 @@ const sendVerificationCode = async () => {
 }
 
 const register = async () => {
-  if (registerForm.value.verificationCode !== registerForm.value.sentCode || !verificationCodeisValid.value) {
+  if (registerForm.value.verificationCode !== registerForm.value.sentCode) {
     ElMessage.error("验证码不正确或已过期");
+    return;
+  }
+
+  if (!verificationCodeisValid.value) {
+    ElMessage.error("1111");
     return;
   }
   
   try {
-    const res = await httpUtil.get('/user/register', {
-      account: registerForm.value.account,
+    const res = await httpUtil.post('/user/register', {
+      name: registerForm.value.name,
       password: registerForm.value.password,
       mail: registerForm.value.mail,
     });
@@ -94,7 +99,7 @@ const register = async () => {
       ElMessage.success("注册成功！");
       await router.push('/login');
     } else {
-      ElMessage.error("注册失败，请重试");
+      ElMessage.error("注册失败，请重");
     }
   } catch (e) {
     console.error(e);
@@ -113,8 +118,8 @@ const register = async () => {
              :rules="registerRule"
              ref="registerFormRef"
     >
-      <el-form-item label="用户名" prop="account">
-        <el-input v-model="registerForm.account"
+      <el-form-item label="用户名" prop="name">
+        <el-input v-model="registerForm.name"
                   placeholder="请输入用户名"
                   size="large"
                   clearable></el-input>

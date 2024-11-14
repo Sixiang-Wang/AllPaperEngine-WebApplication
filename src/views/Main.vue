@@ -3,6 +3,10 @@ import {onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import {Search} from '@element-plus/icons-vue'
 import cookieUtil from "@/utils/cookie.js"
+import http from "@/api/http.js";
+import {useTokenStore, useUserStore} from "@/store/store.js";
+ const userStore = useUserStore();
+ const tokenStore = useTokenStore()
   const searchType = ref('1');
   const searchInput = ref("");
   const fullText = "llPaper Engine";
@@ -16,7 +20,15 @@ import cookieUtil from "@/utils/cookie.js"
   const advancedSearch = () => {
     router.push({ path: "/advancedSearch" });
   }
+const preLogin = async ()=>{
+  const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
+  console.log(res);
+  userStore.setUsername(res.data.username);
+  tokenStore.setToken(res.data.token);
+  cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
+  }
   onMounted(() => {
+    preLogin()
     let index = 0;
     let index2 = 0;
     const interval = setInterval(() => {
@@ -51,7 +63,7 @@ import cookieUtil from "@/utils/cookie.js"
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="篇名" value="1" />
-        <el-option label="主题" value="2" />
+        <el-option label="作者" value="2" />
         <el-option label="关键词" value="3" />
       </el-select>
 

@@ -4,8 +4,10 @@ import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
 import { useRoute } from 'vue-router';
 import cookieUtil from "@/utils/cookie.js"
+import {useUserStore} from "@/store/store.js";
 const button_index = ref("登录");
-const user_name = ref(cookieUtil.getCookie("username"));
+const userStore = useUserStore();
+const user_name = computed(() => userStore.username);
 const back = ()=> {
   router.push('/main');
 }
@@ -63,23 +65,21 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
     </div>
 
 
-    <el-sub-menu index="2">
-      <template #title>读者服务</template>
-      <el-menu-item index="2-1">item one</el-menu-item>
-      <el-menu-item index="2-2">item two</el-menu-item>
-      <el-menu-item index="2-3">item three</el-menu-item>
-    </el-sub-menu>
+
     <el-sub-menu index="3">
       <template #title>作者服务</template>
       <el-menu-item index="/user/personalInfo">个人门户</el-menu-item>
       <el-menu-item index="/user/academicClaim">学术成果认领</el-menu-item>
+      <el-menu-item index="/scholarIdentify">学者认证</el-menu-item>
+      <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="4">热点分析</el-menu-item>
     <el-menu-item index="5">联系我们</el-menu-item>
     <div class="header-menu-right" >
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
-      <span :style="{color: textColor}" v-if="user_name.value===''">欢迎, {{ user_name }}</span>
-      <span :style="{color: textColor}" v-else>点此登录</span>
+      <span :style="{ color: textColor }">
+        {{ user_name ? `欢迎, ${user_name}` : "点此登录" }}
+      </span>
       <el-button @click="goToLogin"
                  style="margin-right: 30px;background-color: transparent">
         {{ button_index }}
