@@ -37,11 +37,68 @@ public class ElasticSearchController {
     }
 
 
-    @GetMapping(value="/works/searchAutocomplete")
-    public R searchAutocomplete(@RequestParam("value") String value ,@RequestParam("fuzziness")String fuzziness,@RequestParam("transpositions")boolean transposition, @RequestParam("prefixLength") int prefixLength){
+//    @GetMapping(value="/works/searchAutocomplete")
+//    public R searchAutocomplete(@RequestParam("value") String value ,@RequestParam("fuzziness")String fuzziness,@RequestParam("transpositions")boolean transposition, @RequestParam("prefixLength") int prefixLength){
+//        try{
+//            return R.ok().put("probability",elasticWorkService.fuzzyAutocomplete(value, fuzziness, transposition, prefixLength));
+//        }catch (Throwable e){
+//            return R.error(e.toString());
+//        }
+//    }
+
+
+
+//    @GetMapping(value = "/works/autoCompletionWithSuggester")
+//    public R searchAutoCompleteWithSuggester(@RequestParam("searchContent") String searchContent){
+//        try{
+//            return R.ok().put("works",elasticWorkService.AutoCompleteWithSuggester("openalex_works_index_addingcompletion",searchContent));
+//        }catch (Exception e){
+//            return R.error(e.toString());
+//        }
+//    }
+
+
+    @GetMapping(value = "/works/autoCompletionWithCompletionSuggester")
+    public R searchAutoCompleteWithCompletionSuggester(@RequestParam("searchContent") String searchContent){
         try{
-            return R.ok().put("probability",elasticWorkService.fuzzyAutocomplete(value, fuzziness, transposition, prefixLength));
-        }catch (Throwable e){
+            return R.ok().put("suggestions",elasticWorkService.AutoCompleteWithCompletionSuggester(searchContent));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/autoCompleteTitleWithCompletionSuggester")
+    public R autoCompleteTitleWithCompletionSuggester(@RequestParam("searchContent") String searchContent){
+        try{
+            return R.ok().put("suggestions",elasticWorkService.AutoCompleteTitleWithCompletionSuggester(searchContent));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/autoCompleteAbstractWithCompletionSuggester")
+    public R autoCompleteAbstractWithCompletionSuggester(@RequestParam("searchContent") String searchContent){
+        try{
+            return R.ok().put("suggestions",elasticWorkService.AutoCompleteAbstractWithCompletionSuggester(searchContent));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/autoCompleteKeywordsWithCompletionSuggester")
+    public R autoCompleteKeywordsWithCompletionSuggester(@RequestParam("searchContent") String searchContent){
+        try{
+            return R.ok().put("suggestions",elasticWorkService.AutoCompleteKeywordsWithCompletionSuggester(searchContent));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/autoFixSuggester")
+    public R autoFixSuggester(@RequestParam("searchContent") String searchContent){
+        try{
+            return R.ok().put("suggestions",elasticWorkService.AutoFixSuggester(searchContent));
+        }catch (Exception e){
             return R.error(e.toString());
         }
     }

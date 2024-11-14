@@ -145,7 +145,7 @@ logstash -f ../config/xxx.conf
 
 
 
-### 2024.11.10 最新更新
+### 2024.11.10 
 在启动类中加入了脚本的启动，在执行bat脚本后对本机的对应端口进行监听，确认es/kibana服务启动后再执行。
 **注意：在ScholarApplication中我使用的是环境变量⚠️⚠️，大家注意要设置自己的环境变量。**
 启用效果：
@@ -169,3 +169,202 @@ logstash -f ../config/xxx.conf
 考虑到可能会有点麻烦，程序会检测是否已配置环境变量。如果没配置可以控制台手动输入。
 ![img_12.png](docs/img_12.png)
 可能还有别的注意项，之后再添加，希望大家开发顺利~🤪
+
+
+
+### 2024.11.14 最新更新-添加ik分词器插件
+首先解压群发的文件ik.zip将文件挪到elasticsearch-7.12.1-windows-x86_64\elasticsearch-7.12.1\plugins目录底下
+，然后依次运行elasticsearch.bat,kibana.bat，
+进入http://localhost:5601 kibana控制主页,进入dev-tool调试工具界面
+![img_13.png](docs/img13.png)
+输入以下命令：
+命令一：创建新的索引（其中为abstract、title、keywords等添加completion field，用于自动补充）
+```
+PUT /openalex_works_index_addingcompletion1
+{
+  "mappings": 
+    {
+      "properties" : {
+        "@timestamp" : {
+          "type" : "date"
+        },
+        "@version" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "abstract" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            },
+            "suggest_field": {
+              "type": "completion",
+              "analyzer":"ik_smart"
+            }
+          }
+        },
+        "abstract_inverted_index" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "best_oa_location" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "cited_by_api_url" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "cited_by_count" : {
+          "type" : "long"
+        },
+        "display_name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            },
+            "suggest_field": {
+              "type": "completion",
+               "analyzer":"ik_smart"
+            }
+          }
+        },
+        "doi" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "grants" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "id" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "is_paratext" : {
+          "type" : "boolean"
+        },
+        "is_retracted" : {
+          "type" : "boolean"
+        },
+        "keywords" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "keywordstext" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            },
+            "suggest_field": {
+              "type": "completion",
+               "analyzer":"ik_smart"
+            }
+          }
+        },
+        "language" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "publication_date" : {
+          "type" : "date"
+        },
+        "publication_year" : {
+          "type" : "long"
+        },
+        "title" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            },
+            "suggest_field": {
+              "type": "completion",
+               "analyzer":"ik_smart"
+            }
+          }
+        },
+        "type" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+      }
+    }
+}
+
+```
+运行命令（点击播放按键）； 
+
+命令二：复制当前索引数据到目的索引
+```
+POST _reindex
+{
+  "source": {
+    "index": "openalex_works_index"
+  },
+  "dest": {
+    "index": "openalex_works_index_addingcompletion1"
+  }
+}
+```
+
+运行命令（点击播放按键）
+
+end   0w0

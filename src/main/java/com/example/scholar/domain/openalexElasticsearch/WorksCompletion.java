@@ -7,9 +7,9 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "openalex_works_index")
+@Document(indexName = "openalex_works_index_addingcompletion")
 @Data
-public class Works {
+public class WorksCompletion {
 
     @Id
     @Field(store = true,index = false,type = FieldType.Text)
@@ -19,10 +19,12 @@ public class Works {
     private String doi;
 
 
-    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    //    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    @CompletionField
     private String title;
 
-    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    //    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    @CompletionField
     private String display_name;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Integer)
@@ -58,10 +60,12 @@ public class Works {
     @Field(index=false,store = true,type = FieldType.Text)
     private String keywords;
 
-    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+//    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
+    @CompletionField
     private String keywordsText;
 
-    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
+    @CompletionField
     private String abstractText;
+
 
 }
