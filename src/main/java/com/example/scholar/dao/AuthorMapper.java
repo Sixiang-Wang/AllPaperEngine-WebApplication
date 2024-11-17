@@ -18,5 +18,4 @@ public interface AuthorMapper {
     String getAuthorIdByAuthorName(String authorName);
     @Select("SELECT work_id FROM openalex_works_authorships WHERE author_id = #{authorId}")
     List<String> getWorkIdsByAuthorId(String authorId);
-
 }
