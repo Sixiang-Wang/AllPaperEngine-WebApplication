@@ -13,7 +13,10 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
+import org.elasticsearch.search.suggest.completion.FuzzyOptions;
+import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -218,8 +221,17 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
             // 添加title_suggest
             CompletionSuggestionBuilder titleSuggestion = SuggestBuilders.completionSuggestion("title.suggest_field")
-                    .prefix(searchContent)
-                    .size(10);
+                    .prefix(searchContent,(new FuzzyOptions.Builder()
+                            .setFuzziness(1) // 设置模糊度为1
+                            .setFuzzyMinLength(3) // 设置最小长度为3
+                            .setFuzzyPrefixLength(1) // 设置前缀长度为1
+                            .setTranspositions(true)// 允许转置
+                            .build()))
+                    .size(10)
+                    .skipDuplicates(true)
+                    .analyzer("ik_smart");
+
+
             suggestBuilder.addSuggestion("title_suggest", titleSuggestion);
 
 
@@ -274,8 +286,15 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
             // 添加abstractSuggest
             CompletionSuggestionBuilder abstractSuggestion = SuggestBuilders.completionSuggestion("abstract.suggest_field")
-                    .prefix(searchContent)
-                    .size(10);
+                    .prefix(searchContent,(new FuzzyOptions.Builder()
+                            .setFuzziness(1) // 设置模糊度为1
+                            .setFuzzyMinLength(3) // 设置最小长度为3
+                            .setFuzzyPrefixLength(1) // 设置前缀长度为1
+                            .setTranspositions(true)// 允许转置
+                            .build()))
+                    .size(10)
+                    .skipDuplicates(true)
+                    .analyzer("ik_smart");
             suggestBuilder.addSuggestion("abstractSuggest", abstractSuggestion);
 
 
@@ -328,8 +347,15 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
             // 添加keywordstextSuggest
             CompletionSuggestionBuilder keywordsTextSuggestion = SuggestBuilders.completionSuggestion("keywordstext.suggest_field")
-                    .prefix(searchContent)
-                    .size(10);
+                    .prefix(searchContent,(new FuzzyOptions.Builder()
+                            .setFuzziness(1) // 设置模糊度为1
+                            .setFuzzyMinLength(3) // 设置最小长度为3
+                            .setFuzzyPrefixLength(1) // 设置前缀长度为1
+                            .setTranspositions(true)// 允许转置
+                            .build()))
+                    .size(10)
+                    .skipDuplicates(true)
+                    .analyzer("ik_smart");
             suggestBuilder.addSuggestion("keywordstextSuggest", keywordsTextSuggestion);
 
             // 设置SuggestBuilder到SearchSourceBuilder
@@ -342,8 +368,10 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
 
+
             // 处理搜索结果
             Suggest suggest = searchResponse.getSuggest();
+
 
 
             return new Json(suggest.toString());

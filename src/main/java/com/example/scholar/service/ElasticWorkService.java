@@ -44,4 +44,11 @@ public interface ElasticWorkService {
     Json AutoFixKeywordsSuggester(String searchContent) throws IOException;
 
 
+
+
+
+
+
+
+
 }
