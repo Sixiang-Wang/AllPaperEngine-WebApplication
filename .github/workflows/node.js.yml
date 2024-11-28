@@ -22,15 +22,37 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-
-    # 清理旧的 node_modules 和 package-lock.json 文件
     - run: rm -rf node_modules package-lock.json
-
-    # 使用 npm install 安装依赖，确保一致性
     - run: npm install
-
-    # 构建项目
     - run: npm run build --if-present
-
-    # 取消测试步骤，如果需要可以重新启用
     # - run: npm test
+    # 登录Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+    #build镜像并push到中央仓库中
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        context: ./
+        file: ./Dockerfile
+        push: true
+        tags: ${{secrets.DOCKER_HUB_USERNAME}}/front:latest
+
+      # push后，用ssh连接服务器执行脚本
+    - name: SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{secrets.SERVER_HOST}}
+        username: ${{secrets.SERVER_USERNAME}}
+        port: ${{secrets.SERVER_PORT }}
+        # key: ${{secrets.SERVER_PRIVATE_KEY}}
+        password: ${{secrets.SERVER_PASSWORD}}
+        script:
+          sh /develop/work/scholar-front/start.sh
