@@ -26,8 +26,8 @@ jobs:
     # 清理旧的 node_modules 和 package-lock.json 文件
     - run: rm -rf node_modules package-lock.json
 
-    # 使用 npm ci 安装依赖，确保一致性
-    - run: npm ci
+    # 使用 npm install 安装依赖，确保一致性
+    - run: npm install
 
     # 构建项目
     - run: npm run build --if-present
