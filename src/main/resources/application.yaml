@@ -6,11 +6,17 @@ spring:
   mail:
     host: smtp.qq.com
     username: 2562187628@qq.com
-    password: dyefvbpkaqqpdiff
-    port: 587
-    protocol: smtp
+    password: xtkjjggvfxdcdija
+    port: 465
+    protocol: smtps
     default-encoding: utf-8
     from: 2562187628@qq.com
+    smtp:
+      auth: true
+      starttls:
+        enable: true
+      socketFactory:
+        class: javax.net.ssl.SSLSocketFactory
 server:
   port: 1145
 mybatis:
