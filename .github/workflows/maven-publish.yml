@@ -26,7 +26,7 @@ jobs:
         pass: ${{ secrets.SERVER_PASSWORD }}
         port: 22
         scp: |
-          ./target/springboot.jar => /home/
+          ./target/springboot.jar => /home/backend
         last_ssh: |
           JAR_NAME="springboot.jar"; PID=$(ps aux | grep "$JAR_NAME" | grep -v grep | awk '{print $2}'); if [ -n "$PID" ]; then kill -9 $PID && echo "进程 $PID 已被杀死"; else echo "未找到与 $JAR_NAME 相关的进程"; fi
-          /usr/bin/java -jar -Xmx1024M -Xms256M  /home/springboot.jar &
+          /www/server/java/jdk-17.0.8/bin/java -jar -Xmx1024M -Xms256M  /home/springboot.jar &
