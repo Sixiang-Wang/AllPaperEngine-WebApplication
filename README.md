@@ -65,7 +65,7 @@
 博客链接：[Github CI/CD 部署SpringBoot项目](https://blog.csdn.net/weixin_46294086/article/details/133967079)
 
 ### 论文部分数据结构介绍
-![img.png](论文数据库结构.png)
+![img.png](docs/论文数据库结构.png)
 
 * 有关数据导入的部分（目前是手动导入）包括每个work(论文)对应的authors,concepts以及每个author对应的institutions部分，导入python程序为insert.py
 

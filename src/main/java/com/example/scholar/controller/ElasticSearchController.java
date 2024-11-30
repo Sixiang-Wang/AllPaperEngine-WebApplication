@@ -28,7 +28,7 @@ public class ElasticSearchController {
 
 
     @GetMapping(value="/works/getByTitleOrAbstractOrKeywords")
-    public R getByTitleOrAbstractOrKeywords(@RequestParam("searchterm") String searchterm){
+    public R getByTitleOrAbstractOrKeywords(@RequestParam("word") String searchterm){
         try{
             return R.ok().put("works",elasticWorkService.findByTitleOrKeywordsTextOrAbstract(searchterm));
         }catch (Exception e){
