@@ -27,7 +27,7 @@ jobs:
             host: ${{ secrets.SERVER_HOST }}
             user: ${{ secrets.SERVER_USERNAME }}
             pass: ${{ secrets.SERVER_PASSWORD }}
-            port: 22
+            port: ${{ secrets.SERVER_PORT }}
             scp: |
                 './dist.zip' => /home/frontend
             last_ssh: |
