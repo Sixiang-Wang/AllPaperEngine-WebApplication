@@ -367,4 +367,8 @@ POST _reindex
 
 运行命令（点击播放按键）
 
+### 2024.11.30更新
+项目已部署在服务器，已用`github action`实现了自动部署。参考博客：https://blog.csdn.net/Mo_0214/article/details/135522553
+![img_13.png](docs/img_13.png)
+
 end   0w0
