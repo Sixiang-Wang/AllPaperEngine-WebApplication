@@ -34,3 +34,4 @@ jobs:
             cd /home/frontend/
             rm -rf dist/ || true
             unzip dist.zip
+
