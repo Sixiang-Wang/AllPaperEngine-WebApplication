@@ -16,7 +16,7 @@ jobs:
         run: yarn 
 
       - name: Build project
-        run: yarn generate 
+        run: yarn build
       - name: zip dist
         run: zip -r dist.zip dist/
 
