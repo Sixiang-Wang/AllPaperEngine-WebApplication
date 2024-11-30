@@ -16,7 +16,7 @@ jobs:
         run: yarn
 
       - name: Build project
-        run: yarn generate
+        run: yarn build
       - name: zip dist
         run: zip -r dist.zip dist/
 
@@ -24,14 +24,13 @@ jobs:
       - name: Deploy 🚀
         uses: cross-the-world/ssh-scp-ssh-pipelines@latest
         with:
-          host: ${{ secrets.HOST }}
-          user: ${{ secrets.USERNAME }}
-          pass: ${{ secrets.PASSWORD }}
-          port: 22
+          host: ${{ secrets.SERVER_HOST }}
+          user: ${{ secrets.SERVER_USERNAME }}
+          pass: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
           scp: |
-            './dist.zip' => /home
+            './dist.zip' => /home/frontend
           last_ssh: |
-            cd /home/
+            cd /home/frontend/
             rm -rf dist/ || true
             unzip dist.zip
-
