@@ -1,58 +1,37 @@
-name: Node.js CI
-
+name: Deploy to Server
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.13.1]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+  deploy:
+    runs-on: ubuntu-latest 
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: rm -rf node_modules package-lock.json
-    - run: npm install
-    - run: npm run build --if-present
-    # - run: npm test
-    # 登录Docker Hub
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-    - name: Set up Docker Buildx
-      id: buildx
-      uses: docker/setup-buildx-action@v1
-    #build镜像并push到中央仓库中
-    - name: Build and push
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: ./
-        file: ./Dockerfile
-        push: true
-        tags: ${{secrets.DOCKER_HUB_USERNAME}}/front:latest
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-      # push后，用ssh连接服务器执行脚本
-    - name: SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{secrets.SERVER_HOST}}
-        username: ${{secrets.SERVER_USERNAME}}
-        port: ${{secrets.SERVER_PORT }}
-        # key: ${{secrets.SERVER_PRIVATE_KEY}}
-        password: ${{secrets.SERVER_PASSWORD}}
-        script:
-          sh /develop/work/scholar-front/start.sh
+      - name: Install dependencies
+        run: yarn 
+
+      - name: Build project
+        run: yarn generate 
+      - name: zip dist
+        run: zip -r dist.zip dist/
+
+        # 部署到服务器
+      - name: Deploy 🚀
+        uses: cross-the-world/ssh-scp-ssh-pipelines@latest
+        with:
+            host: ${{ secrets.SERVER_HOST }}
+            user: ${{ secrets.SERVER_USERNAME }}
+            pass: ${{ secrets.SERVER_PASSWORD }}
+            port: 22
+            scp: |
+                './dist.zip' => /home/frontend
+            last_ssh: |
+                cd /home/frontend/
+                rm -rf dist/ || true
+                unzip dist.zip
+
