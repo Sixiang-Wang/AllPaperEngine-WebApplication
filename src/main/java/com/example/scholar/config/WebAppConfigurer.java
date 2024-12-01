@@ -25,8 +25,8 @@ tokenToUserMethodArgumentResolver 注解处理方法
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowCredentials(true)
                 .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE","OPTIONS")
+                .allowCredentials(false)
                 .maxAge(3600);
     }
     @Override
