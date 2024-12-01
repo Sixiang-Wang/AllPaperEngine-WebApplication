@@ -43,8 +43,7 @@ const deleteVisible = ref(false);
 const deleteComment = async()=>{
   try{
     const res = await httpUtil.get('/comment/delete',{
-      workId: props.workId,
-      commentIndex: props.commentIndex
+      commentId: props.commentId
     },{ Authorization: cookieUtil.getCookie("token")});
     if(res.data.msg === 'delete success'){
       ElMessage.success("删除成功！");
