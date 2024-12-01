@@ -545,13 +545,30 @@ public class UserController {
     }
 
     @PostMapping("/setRole")
-    @ApiOperation("获取用户")
+    @ApiOperation("设置用户权限")
     public R setUserRole(@RequestParam int userId,@RequestParam int role){
         try {
             User user = userMapper.selectUserById(userId);
             if(user!=null){
                 user.setRole(role);
                 userMapper.updateUserRole(user);
+                return R.ok("success").put("user",user);
+            }else {
+                return R.error("get user failed");
+            }
+        }catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping("/setNameReal")
+    @ApiOperation("设置用户真名")
+    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal){
+        try {
+            User user = userMapper.selectUserById(userId);
+            if(user!=null){
+                user.setNameReal(nameReal);
+                userMapper.updateUserNameReal(user);
                 return R.ok("success").put("user",user);
             }else {
                 return R.error("get user failed");
