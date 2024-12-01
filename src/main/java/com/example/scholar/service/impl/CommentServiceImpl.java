@@ -38,4 +38,21 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.deleteUserComment(userId, workId, commentIndex);
         return 0;
     }
+
+    @Override
+    public int solveLike(int userId, int commentId) {
+        int ifCommentLike = commentMapper.ifUserLiked(userId, commentId);
+        if(ifCommentLike == 0){
+            //未被点赞过
+            commentMapper.likeComment(userId, commentId);
+            return 1;
+        }else if(ifCommentLike == 1){
+            //已被点赞，取消点赞
+            commentMapper.deleteCommentLike(userId, commentId);
+            return 0;
+        }else{
+            //有问题
+            return -1;
+        }
+    }
 }

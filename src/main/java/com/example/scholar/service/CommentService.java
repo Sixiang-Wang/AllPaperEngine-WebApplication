@@ -9,4 +9,6 @@ public interface CommentService {
 
     List<Comment> getComments(String workId);
     int deleteComment(int userId, String workId, String commentIndex);
+
+    int solveLike(int userId, int commentId);
 }
