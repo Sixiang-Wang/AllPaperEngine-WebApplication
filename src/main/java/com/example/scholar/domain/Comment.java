@@ -15,6 +15,7 @@ public class Comment {
     private String userName;
     private String commentIndex;
     private Date date;
+    private int likes;
 }
 
 

@@ -34,8 +34,31 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int deleteComment(int userId, String workId, String commentIndex) {
-        commentMapper.deleteUserComment(userId, workId, commentIndex);
-        return 0;
+    public int deleteComment(int userId,int commentId) {
+        //检测该comment是否是该user发的
+        Comment comment = commentMapper.selectCommentById(commentId);
+        if(comment.getUserId() == userId) {
+            commentMapper.deleteUserComment(commentId);
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+
+    @Override
+    public int solveLike(int userId, int commentId) {
+        int ifCommentLike = commentMapper.ifUserLiked(userId, commentId);
+        if(ifCommentLike == 0){
+            //未被点赞过
+            commentMapper.likeComment(userId, commentId);
+            return 1;
+        }else if(ifCommentLike == 1){
+            //已被点赞，取消点赞
+            commentMapper.deleteCommentLike(userId, commentId);
+            return 0;
+        }else{
+            //有问题
+            return -1;
+        }
     }
 }
