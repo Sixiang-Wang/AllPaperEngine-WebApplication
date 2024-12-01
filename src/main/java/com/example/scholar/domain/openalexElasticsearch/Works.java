@@ -18,12 +18,11 @@ public class Works {
     @Field(index=false,store = true,type = FieldType.Text)
     private String doi;
 
+
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
-    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String title;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
-    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String display_name;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Integer)
@@ -60,11 +59,9 @@ public class Works {
     private String keywords;
 
     @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
-    @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String keywordsText;
 
-    @Field(index=true,analyzer="ik_smart",store=true,searchAnalyzer="ik_smart",type = FieldType.Text)
     @CompletionField(analyzer = "ik_smart", searchAnalyzer = "ik_smart")
-    private String abstract_text;
+    private String abstractText;
 
 }

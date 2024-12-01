@@ -1,6 +1,11 @@
 spring:
   datasource:
-    url: jdbc:mysql://39.105.221.80:3306/scholar?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: scholar
+    url: jdbc:mysql://116.204.112.5:3306/scholar?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
     password: scholar
     driver-class-name: com.mysql.cj.jdbc.Driver
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+      connection-timeout: 1s
+      read-timeout: 30s
