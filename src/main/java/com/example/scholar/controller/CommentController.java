@@ -36,10 +36,14 @@ public class CommentController {
         }
     }
     @GetMapping(value="/delete")
-    public R deleteComment(@RequestParam("workId")String workId, @TokenToUser User user, @RequestParam("commentIndex")String commentIndex){
+    public R deleteComment(@RequestParam("commentId")int commentId, @TokenToUser User user){
         try{
-            commentService.deleteComment(user.getUserid(), workId, commentIndex);
-            return R.ok("delete success");
+            int res = commentService.deleteComment(user.getUserid(), commentId);
+            if(res == 1) {
+                return R.ok("delete success");
+            }else{
+                return R.error("something wrong");
+            }
         }catch (Exception e){
             return R.error(e.toString());
         }

@@ -8,7 +8,7 @@ public interface CommentService {
     void insertComment(String comment, int userId, String workId);
 
     List<Comment> getComments(String workId);
-    int deleteComment(int userId, String workId, String commentIndex);
+    int deleteComment(int userId,int commentId);
 
     int solveLike(int userId, int commentId);
 }
