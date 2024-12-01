@@ -26,8 +26,9 @@ public class ScholarApplication {
             System.out.println("未从环境变量中读到ES_HOME,请输入elasticsearch.bat的路径：");
             //D:\es\elasticsearch-7.12.1\bin\elasticsearch.bat
             //D:\kibana\kibana-7.12.1-windows-x86_64\bin\kibana.bat
-            Scanner scanner = new Scanner(System.in);
-            esHome = scanner.nextLine();
+//            Scanner scanner = new Scanner(System.in);
+//            esHome = scanner.nextLine();
+            esHome = "/Users/xiaobing/Downloads/elasticsearch-7.12.1/bin/elasticsearch";
             if(esHome!=null){
                 System.out.println("读入成功！");
             }else{
@@ -37,8 +38,9 @@ public class ScholarApplication {
         }
         if(kibanaHome==null){
             System.out.println("未从环境变量中读到KIBANA_HOME,请输入kibana.bat的路径：");
-            Scanner scanner = new Scanner(System.in);
-            kibanaHome = scanner.nextLine();
+//            Scanner scanner = new Scanner(System.in);
+//            kibanaHome = scanner.nextLine();
+            kibanaHome = "/Users/xiaobing/Downloads/kibana-7.12.1-darwin-x86_64/bin/kibana";
             if(kibanaHome!=null){
                 System.out.println("读入成功！");
             }else{
@@ -55,10 +57,22 @@ public class ScholarApplication {
     }
 
     // 启动 Elasticsearch 和 Kibana，并等待其成功启动
+//    private static void startAndWaitForServices(String esHome, String kibanaHome) throws IOException {
+//        // 启动 Elasticsearch 和 Kibana 的 .bat 文件
+//        Runtime.getRuntime().exec("cmd /c "+esHome);
+//        Runtime.getRuntime().exec("cmd /c "+kibanaHome);
+//
+//        // 等待 Elasticsearch 启动
+//        waitForPort("localhost", 9200, "Elasticsearch");
+//
+//        // 等待 Kibana 启动
+//        waitForPort("localhost", 5601, "Kibana");
+//    }
+
     private static void startAndWaitForServices(String esHome, String kibanaHome) throws IOException {
-        // 启动 Elasticsearch 和 Kibana 的 .bat 文件
-        Runtime.getRuntime().exec("cmd /c "+esHome);
-        Runtime.getRuntime().exec("cmd /c "+kibanaHome);
+        // 启动 macOS/Linux 的 Elasticsearch 和 Kibana
+        Runtime.getRuntime().exec(esHome);
+        Runtime.getRuntime().exec(kibanaHome);
 
         // 等待 Elasticsearch 启动
         waitForPort("localhost", 9200, "Elasticsearch");
