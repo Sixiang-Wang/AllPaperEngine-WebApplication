@@ -4,3 +4,9 @@ spring:
     username: root
     password: BjMfWi6CFkrW3556
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+      connection-timeout: 1s
+      read-timeout: 30s
