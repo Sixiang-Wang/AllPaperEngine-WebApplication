@@ -27,7 +27,6 @@ tokenToUserMethodArgumentResolver 注解处理方法
                 .allowedOrigins("*")
                 .allowCredentials(true)
                 .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE","OPTIONS")
-                .allowCredentials(false)
                 .maxAge(3600);
     }
     @Override
