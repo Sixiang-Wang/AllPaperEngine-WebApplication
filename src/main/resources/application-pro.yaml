@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://39.105.221.80:3306/scholar?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: scholar
-    password: scholar
+    url: jdbc:mysql://116.204.112.5:3306/scholar?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: BjMfWi6CFkrW3556
     driver-class-name: com.mysql.cj.jdbc.Driver
