@@ -1,5 +1,6 @@
 package com.example.scholar.controller;
 import com.example.scholar.config.annotation.TokenToUser;
+import com.example.scholar.dao.UserMapper;
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.CheckResult;
 import com.example.scholar.domain.constant.R;
@@ -37,6 +38,8 @@ public class UserController {
         private UserService userService;
         @Resource
         private UserTokenService userTokenService;
+        @Resource
+        private UserMapper userMapper;
         @Resource
         private FileService fileService;
         @PostMapping(value = "/login")
@@ -403,7 +406,7 @@ public class UserController {
             return R.error(e.toString());
         }
     }
-    
+
     // 查询用户标签及其标记文章的数量
     @GetMapping("/viewAllTagsAndCounts")
     @ApiOperation("查询用户标签及其标记文章的数量接口")
@@ -525,6 +528,39 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
+    @GetMapping("/getById")
+    @ApiOperation("获取用户")
+    public R getUserById(@RequestParam int userId){
+        try {
+            User user = userMapper.selectUserById(userId);
+            if(user!=null){
+                return R.ok("success").put("user",user);
+            }else {
+                return R.error("get user failed");
+            }
+        }catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @PostMapping("/setRole")
+    @ApiOperation("获取用户")
+    public R setUserRole(@RequestParam int userId,@RequestParam int role){
+        try {
+            User user = userMapper.selectUserById(userId);
+            if(user!=null){
+                user.setRole(role);
+                userMapper.updateUserRole(user);
+                return R.ok("success").put("user",user);
+            }else {
+                return R.error("get user failed");
+            }
+        }catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 
 }
 
