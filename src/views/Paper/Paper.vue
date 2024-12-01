@@ -2,16 +2,18 @@
 
 import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plus/icons-vue";
 import {computed, onMounted, ref} from "vue";
-import { useTransition } from '@vueuse/core'
+import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
 import SingleResult from "@/components/SingleResult.vue";
 import httpUtil from "@/api/http.js";
 import * as urlParams from "@/api/http.js";
 import {useRoute} from "vue-router";
+import SingleComment from "@/components/SingleComment.vue";
+import * as cookieUtil from "@/utils/cookie.js";
 
 const title = ref("");
 const auth = ref([]);
-const doi =ref("Loading...");
+const doi = ref("Loading...");
 const abstract = ref("")
 const citedByApiUrl = ref("")
 const publicationDate = ref("")
@@ -81,10 +83,12 @@ const getWork = async (workId) => {
       const citedByCount = authorDto.authorResultDto.citedByCount;
       const worksCount = authorDto.authorResultDto.worksCount;
 
-      auth.value.push({ name: authorName,
+      auth.value.push({
+        name: authorName,
         id: authorId,
-        citedByCount:citedByCount,
-        worksCount:worksCount});
+        citedByCount: citedByCount,
+        worksCount: worksCount
+      });
     });
     /**
      * Doi
@@ -94,47 +98,55 @@ const getWork = async (workId) => {
       doi.value = data.doi.replace(/^https?:\/\//, "");
     }
 
-    if(data.abstractText){
+    if (data.abstractText) {
       abstract.value = data.abstractText;
     }
 
-    if(data.citedByCount){
+    if (data.citedByCount) {
       citeNum.value = data.citedByCount;
     }
 
-    if(data.citedByApiUrl){
+    if (data.citedByApiUrl) {
       citedByApiUrl.value = data.citedByApiUrl;
     }
 
     conceptList.value = data.worksConceptsList.map(item => item.displayName);
 
-    if(data.publicationDate){
+    if (data.publicationDate) {
       publicationDate.value = data.publicationDate;
     }
-  }catch (error){
+  } catch (error) {
     console.error("Failed to fetch data:", error);
     title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
 
   }
 };
 
-onMounted(async()=>{
-  const route = useRoute();
+onMounted(async () => {
+      const route = useRoute();
 
-  // 从查询参数中获取 id
-  workId = route.query.id;
-  console.log(workId);
-  const res = await httpUtil.get('/openalex/getall');
-  referenceTotalLength.value = res.data.works.length;
-  referenceResults.value = res.data.works;
+      // 从查询参数中获取 id
+      workId = route.query.id;
+      console.log(workId);
+      const res = await httpUtil.get('/openalex/getall');
+      referenceTotalLength.value = res.data.works.length;
+      referenceResults.value = res.data.works;
 
-  citeTotalLength.value = res.data.works.length;
-  citeResults.value = res.data.works;
+      citeTotalLength.value = res.data.works.length;
+      citeResults.value = res.data.works;
 
-  updateReferencePageResults();
-  updateCitePageResults();
-    getWork(workId);
-  }
+      updateReferencePageResults();
+      updateCitePageResults();
+      getWork(workId);
+
+      //获取评论
+      console.log(workId);
+      const resComments = await httpUtil.get('/comment/get', {
+        workId: workId
+      })
+      console.log(resComments.data);
+      comments.value = resComments.data.comments;
+    }
 )
 
 let citeNumChange = useTransition(citeNum, {
@@ -160,19 +172,19 @@ isCollected.value = false
 
 const question = ref("")
 
-const submitQuestion = ()=> {
+const submitQuestion = () => {
   console.log("Question submitted:", question);
-      // Handle the form submission logic
+  // Handle the form submission logic
 }
 
 const collectContent = computed(() =>
     isCollected.value ? '取消收藏' : '添加到收藏'
 );
 
-const toggleDownload = ()=>{
+const toggleDownload = () => {
 
 }
-const toggleShare = ()=>{
+const toggleShare = () => {
   const currentUrl = window.location.href;  // 获取当前网址
   navigator.clipboard.writeText(currentUrl)  // 将网址复制到剪切板
   ElMessage({
@@ -180,21 +192,47 @@ const toggleShare = ()=>{
     type: 'success',
   })
 }
-const toggleCite = ()=>{
+const commentIndex = ref("");
+const toggleCite = () => {
 
 }
-
+const submitComment = async () => {
+  try {
+    const res = await httpUtil.get('/comment/insert', {
+      workId: workId,
+      commentIndex: commentIndex.value
+    }, {
+      Authorization: cookieUtil.getCookie("token")
+    })
+    console.log(res.data);
+    if (res.data.msg === 'insert comment success') {
+      ElMessage.success("评论成功！");
+      location.reload();
+    } else {
+      ElMessage.warning("发送失败");
+    }
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("发送失败");
+  }
+}
 
 const toggleCollect = () => {
-  if(isCollected.value){
+  if (isCollected.value) {
     collectNum.value--;
-  }else {
+  } else {
     collectNum.value++;
   }
   isCollected.value = !isCollected.value;
 }
 
-
+const comments = ref([
+  {
+    username: "王思翔",
+    date: "2024-11-32",
+    commentIndex: "非常好鸡堡，使我的血压飙升"
+  }
+]);
 
 
 </script>
@@ -202,10 +240,10 @@ const toggleCollect = () => {
 <template>
   <div id="app" class="container">
     <div class="main-part">
-      <div class = "left-part">
+      <div class="left-part">
         <!-- Header Section -->
         <div class="header">
-          <h1>{{title}}</h1>
+          <h1>{{ title }}</h1>
 
           <p>
             <span v-for="(author, index) in auth" :key="index">
@@ -218,7 +256,7 @@ const toggleCollect = () => {
               </a>
               <span v-if="index < auth.length - 1">, </span>
             </span>
-            • Published in Biomedicines {{publicationDate}}
+            • Published in Biomedicines {{ publicationDate }}
           </p>
 
           <p>
@@ -230,7 +268,7 @@ const toggleCollect = () => {
           </p>
 
           <p>
-            <strong>DOI:</strong> {{doi}}</p>
+            <strong>DOI:</strong> {{ doi }}</p>
 
         </div>
 
@@ -238,16 +276,16 @@ const toggleCollect = () => {
         <div class="abstract">
           <strong>Abstract:</strong>
           <br>
-          {{abstract}}
+          {{ abstract }}
         </div>
-        <div class="option-part" >
+        <div class="option-part">
 
 
           <el-button
               class="download-button"
               :icon="Download"
               type="danger"
-              @click = "toggleDownload"
+              @click="toggleDownload"
           >
             下载PDF
           </el-button>
@@ -260,7 +298,7 @@ const toggleCollect = () => {
                 :icon="Share"
                 class="share-button"
                 circle
-                @click = "toggleShare"
+                @click="toggleShare"
             >
             </el-button>
           </el-tooltip>
@@ -272,23 +310,22 @@ const toggleCollect = () => {
                 :icon="Paperclip"
                 class="cite-button"
                 circle
-                @click = "toggleCite"
+                @click="toggleCite"
             >
             </el-button>
           </el-tooltip>
 
 
-
           <el-tooltip
               effect="dark"
               :content="collectContent">
-          <el-button
-              :icon="isCollected? StarFilled:Star"
-              :class="['collect-button', { 'collect-button-collected': isCollected }]"
-              circle
-              @click = "toggleCollect"
-          >
-          </el-button>
+            <el-button
+                :icon="isCollected? StarFilled:Star"
+                :class="['collect-button', { 'collect-button-collected': isCollected }]"
+                circle
+                @click="toggleCollect"
+            >
+            </el-button>
           </el-tooltip>
         </div>
 
@@ -299,7 +336,8 @@ const toggleCollect = () => {
               <div>
 
                 <SingleResult style="max-width: 100%"
-                              v-for="result in referencePageResults" :author="result.paperInformation" :content="result.abstractText"
+                              v-for="result in referencePageResults" :author="result.paperInformation"
+                              :content="result.abstractText"
                               :title="result.title" :cited="result.cited" :id="result.id "
                 >
                 </SingleResult>
@@ -319,7 +357,8 @@ const toggleCollect = () => {
             <div v-if="citeResults.length!==0" style="display: flex;">
               <div>
                 <SingleResult style="max-width: 100%"
-                              v-for="result in citePageResults" :author="result.paperInformation" :content="result.abstractText"
+                              v-for="result in citePageResults" :author="result.paperInformation"
+                              :content="result.abstractText"
                               :title="result.title" :cited="result.cited" :id="result.id"
                 ></SingleResult>
               </div>
@@ -334,14 +373,30 @@ const toggleCollect = () => {
                 :current-page="citeCurrentPage"
             />
           </el-tab-pane>
+          <el-tab-pane label="评论" name="third">
+            <div style="margin-left:3%;margin-bottom: 1%">
+              <el-input placeholder="在这留下你的高见~" style="width: 80%; height: 35px;" v-model="commentIndex">
+              </el-input>
+              <el-button @click="submitComment" style="height: 35px;">发送</el-button>
+
+            </div>
+            <SingleComment v-for="comment in comments" :key="comment.id"
+                           :comment-index="comment.commentIndex"
+                           :user-name="comment.userName"
+                           :comment-id="comment.id"
+                           :work-id="workId"
+                           :likes="comment.likes"
+                           :date="comment.date"
+                           :user-id="comment.userId"/>
+          </el-tab-pane>
         </el-tabs>
 
       </div>
       <div class="side">
-        <el-card class="stat-part"  shadow="always">
+        <el-card class="stat-part" shadow="always">
           <el-row style="margin-bottom: 15px">
             <el-col :span="12" style="padding-left: 12px">
-              <el-statistic title="被引用次数" :value="citeNumChange" :value-style="{ color: '#132fc1' }" />
+              <el-statistic title="被引用次数" :value="citeNumChange" :value-style="{ color: '#132fc1' }"/>
             </el-col>
             <el-col :span="12" style="padding-left: 12px">
               <el-statistic title="参考文献数" :value="referenceNumChange" :value-style="{ color: '#45a801' }"/>
@@ -374,7 +429,7 @@ const toggleCollect = () => {
                      type="info"
                      circle
                      class="search-button"
-                     @click = "submitQuestion"
+                     @click="submitQuestion"
           />
         </div>
       </div>
@@ -382,7 +437,6 @@ const toggleCollect = () => {
 
   </div>
 </template>
-
 
 
 <style scoped>
@@ -413,65 +467,70 @@ const toggleCollect = () => {
 }
 
 
-
 .left-part {
   flex: 800px; /* Take more space for the main section */
   padding: 20px;
   margin: 0;
 }
 
-.option-part{
+.option-part {
   flex: 800px;
   display: flex;
   align-items: center;
 }
 
-.download-button{
+.download-button {
   background: #e10000;
 }
-.download-button:hover{
+
+.download-button:hover {
   background: #ec5454;
 }
 
-.collect-button{
+.collect-button {
   color: #7a7a7a;
   background-color: #ffffff;
 }
-.collect-button-collected{
+
+.collect-button-collected {
   color: #fadd21;
   background-color: #ffffff;
 }
-.author-link{
+
+.author-link {
   text-decoration: none;
   color: #1F578F;
 }
-.author-link:hover{
+
+.author-link:hover {
   text-decoration: underline;
 }
-.collect-button:hover{
+
+.collect-button:hover {
   color: #fff14e;
   background-color: #ffffff;
 }
 
-:deep(.collect-button .el-icon){
+:deep(.collect-button .el-icon) {
   font-size: 28px;
 }
 
-.share-button{
+.share-button {
   color: #FFFFFF;
   background-color: #ff5892;
 }
 
-.share-button:hover{
+.share-button:hover {
   color: #ffe595;
   background-color: #ff7ca9;
 }
 
-.cite-button{
+.cite-button {
   color: #ffffff;
   background: #006eff;
 }
-.cite-button:hover{
+
+.cite-button:hover {
   color: rgb(255, 255, 255);
   background: #338aff;
 }
@@ -488,7 +547,7 @@ const toggleCollect = () => {
   padding: 50px 20px 20px 20px;
 }
 
-.stat-part{
+.stat-part {
   width: 320px;
   margin-bottom: 30px;
 }
@@ -513,6 +572,7 @@ const toggleCollect = () => {
 .reference {
   margin: 20px 0;
 }
+
 .ai-assistant {
   background-color: rgba(240, 240, 240, 0.5);
   padding: 5px 20px 20px 20px;
@@ -547,6 +607,7 @@ button:hover {
   background-color: rgba(255, 255, 255, 0.5);
   border: 1px solid #656565;
 }
+
 .search-button:hover {
   color: rgb(255, 255, 255);
   background-color: rgb(14, 136, 255);
