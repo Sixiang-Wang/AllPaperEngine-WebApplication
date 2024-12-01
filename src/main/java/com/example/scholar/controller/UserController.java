@@ -64,6 +64,15 @@ public class UserController {
             }
         }
 
+        @GetMapping(value="/validation")
+        @ApiOperation("验证token与id是否相等（评论用）")
+        public R tokenEqualId(@TokenToUser User user, @RequestParam("userId")int userId){
+            try{
+                return user.getUserid() == userId ? R.ok("equal") : R.ok("not equal");
+            }catch (Exception e){
+                return R.error(e.toString());
+            }
+        }
 
         @PostMapping(value = "/register")
         @ApiOperation("注册接口")
