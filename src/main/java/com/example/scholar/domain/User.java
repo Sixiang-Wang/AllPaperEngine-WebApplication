@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 
-//用户类，属性中包含用户的个人信息
 @Component
 @Data
 public class User {
@@ -32,5 +31,5 @@ public class User {
     private String password;
     private String phone; //手机号
 
-    private int role; //用户角色 0: 初始游客（？）1: 普通用户 2: 学者 3: 管理员
+    private int role; //用户角色
 }
