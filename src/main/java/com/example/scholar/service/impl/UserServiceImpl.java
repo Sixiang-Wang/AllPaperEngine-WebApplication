@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
                 }
                 map.put("token",jwtToken);
                 map.put("username",user.getName());
+                map.put("userId",user.getUserid());
                 return map;
             }else{
                 map.put("msg","wrong password");
@@ -337,6 +338,22 @@ public class UserServiceImpl implements UserService {
         userTokenMapper.deleteUserToken(userId);
         resultMap.put("msg", "退出登录成功");
 
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> delete(int userId) {
+
+        int res = userMapper.deleteUser(userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        if (res > 0) {
+
+
+            resultMap.put("msg", "删除用户成功");
+            return resultMap;
+        }
+
+        resultMap.put("msg", "User not found");
         return resultMap;
     }
 

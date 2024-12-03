@@ -147,6 +147,8 @@ public interface UserMapper {
             @Param("tags") List<String> tags
     );
 
+    @Delete("DELETE FROM user WHERE userid = #{userId}")
+    int deleteUser(int userId);
 
 
 }

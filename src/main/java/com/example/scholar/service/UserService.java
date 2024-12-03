@@ -38,6 +38,7 @@ public interface UserService {
     // 退出登录
     HashMap<String, Object> logout(int userId);
 
+    HashMap<String, Object> delete(int userId);
     // 查看所有历史记录
     List<HashMap<String, Object>> viewAllHistory(int userId);
 
