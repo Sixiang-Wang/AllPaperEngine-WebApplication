@@ -7,11 +7,16 @@ import router from "@/router/index.js";
 import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
 
-const searchInput = ref("");
-const searchType = ref('1');
+
+
+let searchInput = ref("");
+let searchType = ref('1');
 const totalLength = ref(0);
-const searchResults = ref([]);
+let searchResults = ref([]);
+let suggestions = ref([]);
+let showAutoComplete = ref(false);
 const route = useRoute();
+let hoveredIndex = ref(null);
 const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取
 
 const pageSize = computed(() => Math.ceil(totalLength.value / 20));
@@ -31,10 +36,12 @@ const updateSearchResults = async () => {
   console.log(res.data);
   searchResults.value = res.data.works;
 };
-const search =async () => {
+
+const search = async () => {
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
+      console.log(1)
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
@@ -50,18 +57,79 @@ const search =async () => {
           page: currentPage.value,
           word: route.query.input
         })
-        console.log(res);
         searchResults.value = res.data.works;
-        console.log(searchResults.value);
+        // console.log(searchResults.value);
         const res2 = await httpUtil.get('/search/getWorkLengthByTitle', {
           word: route.query.input
         });
         totalLength.value = res2.data.leng;
-        console.log(totalLength.value);
+        // console.log(totalLength.value);
       }
 
       break;
-    case 2://查找作者
+    case '2'://查找篇名
+      console.log(2)
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        // console.log(res);
+        searchResults.value = res.data.works;
+        // console.log(searchResults.value);
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+        // console.log(totalLength.value);
+      }else {
+        // console.log(searchInput.value)
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords',{
+          searchterm: searchInput.value
+        });
+        console.log(res);
+      }
+      break;
+
+    case '3'://查找关键词
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        // console.log(res);
+        searchResults.value = res.data.works;
+        // console.log(searchResults.value);
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+        // console.log(totalLength.value);
+      }else {
+        // console.log(searchInput.value)
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords',{
+          searchterm: searchInput.value
+        });
+        console.log(res);
+      }
+      break;
+    case '4'://查找摘要
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        // console.log(res);
+        searchResults.value = res.data.works;
+        // console.log(searchResults.value);
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+        // console.log(totalLength.value);
+      }else {
+        // console.log(searchInput.value)
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords',{
+          searchterm: searchInput.value
+        });
+        console.log(res);
+      }
+      //searchResults = res;
+      break;
+
+    
+      
   }
 
 }
@@ -79,6 +147,92 @@ watch(route, (newRoute) => {
   currentPage.value = Number(newRoute.query.page) || 1;
   updateSearchResults();
 });
+
+const handleInputChange = async () => {
+  if (searchInput.value.length > 0) {
+    let res = null;
+    switch (searchType.value){
+      case '1':
+        //主题
+        res = await httpUtil.get('/elasticSearch/works/autoCompletionWithCompletionSuggester', {
+          searchContent: searchInput.value 
+        });
+        // autoCompletion.value = res.data;
+        // showAutoComplete = true;
+        // console.log(res);
+
+
+        break;
+      case '2':
+        //篇名
+        res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
+          searchContent: searchInput.value 
+        });
+        const titleSuggest = res.data.suggestions.suggest.title_suggest;
+        if(titleSuggest && titleSuggest.length>0){
+          console.log(titleSuggest);
+          suggestions  = titleSuggest[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
+
+
+        break;
+      case '3':
+        //关键词
+        res = await httpUtil.get('/elasticSearch/works/autoCompleteKeywordsWithCompletionSuggester', {
+          searchContent: searchInput.value 
+        });
+        const keywordstextSuggest = res.data.suggestions.suggest.keywordstextSuggest;
+        if(keywordstextSuggest && keywordstextSuggest.length>0){
+          console.log(keywordstextSuggest);
+          suggestions  = keywordstextSuggest[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
+        break;
+      case '4':
+        //摘要
+        res = await httpUtil.get('/elasticSearch/works/autoCompleteAbstractWithCompletionSuggester', {
+          searchContent: searchInput.value 
+        });
+        const abstractSuggest = res.data.suggestions.suggest.abstractSuggest;
+        if(abstractSuggest && abstractSuggest.length>0){
+          console.log(abstractSuggest);
+          suggestions  = abstractSuggest[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
+
+
+        break;
+    }
+    
+  } else {
+    autocompleteSuggestions.value = [];
+    showAutoComplete = false;
+  }
+};
+
+const selectSuggestion = (suggestion) => {
+  searchInput.value = suggestion;
+  showAutoComplete = false;
+  console.log(showAutoComplete)
+  // mainSearch();
+};
+
+const hoverSuggestion = (index) => {
+  hoveredIndex.value = index;
+};
+
+const leaveSuggestion = () => {
+  hoveredIndex.value = -1;
+};
+
+
 </script>
 
 <template>
@@ -86,16 +240,31 @@ watch(route, (newRoute) => {
     <el-header>
       <div>
         <div style="background-color: transparent !important;">
-          <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容">
+          <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容"  @input="handleInputChange">
             <template #prepend>
               <el-select v-model="searchType" style="width: 115px; background-color:#FFFFFF;">
                 <el-option label="主题" value="1"/>
                 <el-option label="篇名" value="2"/>
                 <el-option label="关键词" value="3"/>
+                <el-option label="摘要" value="4"/>
               </el-select>
             </template>
           </el-input>
           <el-button :icon="Search" @click="mainSearch" class="search-button"/>
+        </div>
+        <div v-if="showAutoComplete" class="autocomplete-container">
+          <div 
+                v-for="(suggestion, index) in suggestions" 
+                :key="index" 
+                class="autocomplete-item" 
+                @click="selectSuggestion(suggestion)"
+                @mouseenter="hoverSuggestion(index)"
+                @mouseleave="leaveSuggestion(index)"
+                :class="{'hovered': hoveredIndex === index}"
+            >
+                <!-- 显示序号和 text -->
+                {{ `${index + 1}. ${suggestion}` }}
+            </div>
         </div>
       </div>
     </el-header>
@@ -156,5 +325,41 @@ watch(route, (newRoute) => {
 
 .el-aside::-webkit-scrollbar {
   display: none;
+}
+
+
+
+
+.autocomplete-container {
+  position: absolute; 
+  z-index: 1000; 
+  width: 40.5%;
+  background-color: #fff; 
+  border: 1px solid #ccc; 
+  border-top: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+  max-height: 200px; 
+  overflow-y: auto; 
+}
+
+
+.autocomplete-item {
+  padding: 8px 10px; 
+  cursor: pointer; 
+}
+
+/* 悬停样式 */
+.autocomplete-item.hovered {
+  background-color: #f5f5f5; 
+}
+
+
+.search-input {
+  position: relative; 
+}
+
+/* 添加一些过渡效果，使悬停和点击更加平滑 */
+.autocomplete-item {
+  transition: background-color 0.2s ease;
 }
 </style>
