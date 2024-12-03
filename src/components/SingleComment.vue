@@ -89,7 +89,7 @@ const handleLike = async()=>{
   <div class="comment-first-line">
     <el-avatar :src="avatar.url" ></el-avatar>
     <div style="display: flex; flex-direction: column;margin-left: 2%">
-      <div style="margin-left: 2%;  color: #0f3357;  font-size: 16px;font-weight: normal;">{{ userName }}</div>
+      <div style="margin-left: 2%;  color: #0f3357;  font-size: 16px;font-weight: normal; white-space: nowrap">{{ userName }}</div>
       <div style="font-weight: normal;  font-size: 15px;">{{ date }}</div>
     </div>
   </div>
