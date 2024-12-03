@@ -61,22 +61,24 @@ const wordCloudRef = ref(null);
 const showChart = ref(''); // 默认不显示任何图表
 
 // 图表数据
+
 const barChartData = ref({
-  labels: ['AI', 'Machine Learning', 'Deep Learning', 'Cloud Computing', 'Blockchain'],
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度',
-    data: [100, 90, 80, 70, 60],
+    data: wordCloudData.value.map(item => item.size),
     backgroundColor: 'rgba(54, 162, 235, 0.2)',
     borderColor: 'rgba(54, 162, 235, 1)',
     borderWidth: 1
   }]
 });
 
+
 const lineChartData = ref({
-  labels: ['AI', 'Machine Learning', 'Deep Learning', 'Cloud Computing', 'Blockchain'],
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度趋势',
-    data: [60, 70, 80, 90, 100],
+    data: wordCloudData.value.map(item => item.size),
     fill: false,
     borderColor: 'rgba(75, 192, 192, 1)',
     tension: 0.1
@@ -84,13 +86,25 @@ const lineChartData = ref({
 });
 
 const pieChartData = ref({
-  labels: ['AI', 'Machine Learning', 'Deep Learning', 'Cloud Computing', 'Blockchain'],
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
-    data: [100, 90, 80, 70, 60],
-    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-    hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+    data: wordCloudData.value.map(item => item.size),
+    backgroundColor: generateColors(50),
+    hoverBackgroundColor: generateColors(50)
   }]
 });
+
+function generateColors(count) {
+  const colors = [];
+  const hueStep = 360 / count;  // 每个色相间隔
+  for (let i = 0; i < count; i++) {
+    let j = Math.floor(Math.random() * 85) + 1;
+    const hue = j * hueStep;  // 通过色相进行分离
+    const color = `hsl(${hue}, 70%, 60%)`; // 高饱和度，适中亮度的颜色
+    colors.push(color);
+  }
+  return colors;
+}
 
 // 渲染词云
 const renderWordCloud = () => {
