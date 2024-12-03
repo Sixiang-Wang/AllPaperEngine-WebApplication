@@ -50,7 +50,7 @@ public class UserController {
                 if("no such user".equals(res.get("msg"))|| "wrong password".equals(res.get("msg"))){
                     return R.ok((String) res.get("msg"));
                 }else {
-                    return R.ok("login success").put("token", res.get("token")).put("username",res.get("username"));
+                    return R.ok("login success").put("token", res.get("token")).put("username",res.get("username")).put("userId",res.get("userId"));
                 }
             }catch (Exception e){
                 return R.error(e.toString());
@@ -61,7 +61,9 @@ public class UserController {
         @ApiOperation("自动登录接口")
         public R preLogin(@TokenToUser User user){
             try{
-                return R.ok("login success").put("username",user.getName());
+                return R.ok("login success").
+                        put("username",user.getName())
+                        .put("userId",user.getUserid());
             }catch (Exception e){
                 return R.error(e.toString());
             }
@@ -315,6 +317,23 @@ public class UserController {
             }
         }
 
+    @RequestMapping(value = "/updatePassword")
+    @ApiOperation("后台强制修改密码接口")
+    public R updatePassword(
+            @RequestParam int userId,
+            @RequestParam String newPassword) {
+        try {
+            HashMap<String, Object> res = userService.updatePassword(userId, newPassword);
+            if ("密码修改成功".equals(res.get("msg"))) {
+                return R.ok("Password changed successfully");
+            } else {
+                return R.error((String) res.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
         @PostMapping(value = "/logout")
         @ApiOperation("退出登录接口")
         public R logout(@RequestParam int userId) {
@@ -325,6 +344,18 @@ public class UserController {
                 return R.error(e.toString());
             }
         }
+
+    @GetMapping(value = "/delete")
+    @ApiOperation("删除用户")
+    public R delete(@RequestParam int userId) {
+        try {
+            HashMap<String, Object> resultMap = userService.delete(userId);
+            return R.ok((String) resultMap.get("msg"));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 
     // 查看所有标签
     @GetMapping("/viewAllTags")
@@ -571,6 +602,36 @@ public class UserController {
                 user.setNameReal(nameReal);
                 userMapper.updateUserNameReal(user);
                 return R.ok("success").put("user",user);
+            }else {
+                return R.error("get user failed");
+            }
+        }catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping("/getAll")
+    @ApiOperation("获取全部用户")
+    public R getAll(){
+        try {
+            List<User> userList = userMapper.getAll();
+            if(userList!=null){
+                return R.ok("success").put("userList",userList);
+            }else {
+                return R.error("get user failed");
+            }
+        }catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping("/getCount")
+    @ApiOperation("获取用户总数")
+    public R getCount(){
+        try {
+            int count = userMapper.getCount();
+            if(count>=0){
+                return R.ok("success").put("count",count);
             }else {
                 return R.error("get user failed");
             }

@@ -25,6 +25,17 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Resource
     private UserTokenMapper userTokenMapper;
+
+    @Override
+    public List<User> getAll() {
+        return userMapper.getAll();
+    }
+
+    @Override
+    public int getCount() {
+        return userMapper.getCount();
+    }
+
     @Override
     public HashMap<String, Object> login(String mail, String password) {
         User user = userMapper.selectUserByMail(mail);
@@ -43,6 +54,7 @@ public class UserServiceImpl implements UserService {
                 }
                 map.put("token",jwtToken);
                 map.put("username",user.getName());
+                map.put("userId",user.getUserid());
                 return map;
             }else{
                 map.put("msg","wrong password");
@@ -148,6 +160,7 @@ public class UserServiceImpl implements UserService {
 
         return resultMap;
     }
+
 
 
     @Override
@@ -286,6 +299,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public HashMap<String, Object> updatePassword(int userId, String newPassword) {
+        User existingUser = userMapper.selectUserById(userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+
+        if(newPassword != null && !newPassword.isEmpty())
+        {
+
+            String password = Md5Utils.agenerate(newPassword);
+            int result = userMapper.updatePassword(userId,password);
+            if (result > 0) {
+                resultMap.put("msg", "密码修改成功");
+            } else {
+                resultMap.put("msg", "密码修改失败");
+            }
+        }else {
+            resultMap.put("msg", "新密码不能为空");
+        }
+
+        return resultMap;
+    }
+
+    @Override
     public HashMap<String, Object> logout(int userId) {
 
         User existingUser = userMapper.selectUserById(userId);
@@ -298,6 +338,22 @@ public class UserServiceImpl implements UserService {
         userTokenMapper.deleteUserToken(userId);
         resultMap.put("msg", "退出登录成功");
 
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> delete(int userId) {
+
+        int res = userMapper.deleteUser(userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        if (res > 0) {
+
+
+            resultMap.put("msg", "删除用户成功");
+            return resultMap;
+        }
+
+        resultMap.put("msg", "User not found");
         return resultMap;
     }
 
