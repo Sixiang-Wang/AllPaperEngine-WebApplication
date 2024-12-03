@@ -2,15 +2,15 @@ spring:
   application:
     name: scholar
   profiles:
-    active: dev # 在这里切换项目环境，dev为开发环境（本地数据库），pro为生产环境（已连接服务器数据库）
+    active: pro # 在这里切换项目环境，dev为开发环境（本地数据库），pro为生产环境（已连接服务器数据库）
   mail:
     host: smtp.qq.com
-    username: 2142703200@qq.com
-    password: ipgwufiyupnlfaag
+    username: 2562187628@qq.com
+    password: xtkjjggvfxdcdija
     port: 465
     protocol: smtps
     default-encoding: utf-8
-    from: 2142703200@qq.com
+    from: 2562187628@qq.com
     smtp:
       auth: true
       starttls:
