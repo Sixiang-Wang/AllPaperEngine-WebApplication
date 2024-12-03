@@ -24,9 +24,9 @@ public interface ElasticWorkService {
      */
     List<SearchHit<Works>> searchByTitle(String title);
 
+    int getLenthOfFindTitleOrKeywordsTextOrAbstract(String searchTerm);
 
-
-    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm);
+    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm,int pageIndex);
 
     Json AutoCompleteWithCompletionSuggester(String searchContent) throws IOException;
     Json AutoFixSuggester(String searchContent) throws IOException;

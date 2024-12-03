@@ -92,10 +92,10 @@ public interface ElasticSearchRepository extends ElasticsearchRepository<Works, 
 //
 
     //还有问题
-    @Query("{\"bool\": " +
-            "{\"should\": " +
-            "[{\"fuzzy\": {\"title\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}, " +
-            "{\"fuzzy\": {\"keywordsText\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}, " +
-            "{\"fuzzy\": {\"abstract\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}]}}")
-    List<SearchHit<Works>> fuzzyAutocomplete(String value, String fuzziness, boolean transpositions, int prefixLength);
+//    @Query("{\"bool\": " +
+//            "{\"should\": " +
+//            "[{\"fuzzy\": {\"title\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}, " +
+//            "{\"fuzzy\": {\"keywordsText\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}, " +
+//            "{\"fuzzy\": {\"abstract\": {\"value\":\"?0\",\"fuzziness\": \"?1\",\"transpositions\": \"?2\",\"prefix_length\": \"?3\"}}}]}}")
+//    List<SearchHit<Works>> fuzzyAutocomplete(String value, String fuzziness, boolean transpositions, int prefixLength);
 }
