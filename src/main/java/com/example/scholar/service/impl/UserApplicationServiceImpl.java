@@ -64,17 +64,13 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                     userApplication.setApplicationDate(new Timestamp(System.currentTimeMillis()));
                     userApplication.setStatus(0);
                     userApplication.setMessage(code);
+                    userApplicationMapper.addScholar(userApplication);
                     resultMap.put("msg", "学者认证申请已提交，请等待管理员审核");
                     return resultMap;
                 }
             }
         }
         return resultMap;
-    }
-
-    @Override
-    public int cancelScholar(int userId) {
-        return 0;
     }
 
 }
