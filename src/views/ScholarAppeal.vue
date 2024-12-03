@@ -128,7 +128,29 @@ const backToMain = ()=>{
 const simpleSearchInput = ref("");
 const simpleSearchType = ref('1');
 const simpleCheckList = ref(["1", "2"])
-
+const reasonForm = ref({
+  appealReason: '',
+  otherReason: '',
+  addtionReason: ''
+});
+const defaultReasons = ref([
+  { value: 'unfairReview', label: '同行评审不公' },
+  { value: 'plagiarismAccusation', label: '学术不端行为指控错误' },
+  { value: 'paperRejection', label: '论文退稿理由不充分' },
+  { value: 'misclassification', label: '论文被误分类或拒绝' },
+  { value: 'editorProcess', label: '编辑处理过程不透明' },
+  { value: 'other', label: '其他' },
+]);
+const otherReason = ref("");
+const additionReason = ref("");
+const submitForm = ()=>{
+  currentStep.value = '4';
+}
+const reasonRules = ref({
+  appealReason: [
+    { required: true, message: '请选择原因！', trigger: 'blur' }
+  ]
+})
 </script>
 
 <template>
@@ -139,12 +161,12 @@ const simpleCheckList = ref(["1", "2"])
           <el-steps style="width: 600px; margin-top: 3%;" :active="currentStep" finish-status="success">
             <el-step title="填写申诉人信息" :icon="Edit"/>
             <el-step title="填写被申诉论文信息" :icon="Edit"/>
-            <el-step title="个人门户设置" :icon="Setting"/>
+            <el-step title="填写申诉原因" :icon="Setting"/>
             <el-step title="等待审批" :icon="SuccessFilled"/>
           </el-steps>
         </div>
         <div class="scholar-identify-input" v-if="currentStep === '1'">
-          <el-form :model="form" :rules="rules" ref="scholarForm" label-width="100px">
+          <el-form :model="form" :rules="rules" ref="scholarForm" rules="reasonRules" label-width="100px" >
             <el-form-item label="真实姓名" prop="name">
               <el-input v-model="form.name" placeholder="请输入真实姓名"></el-input>
             </el-form-item>
@@ -154,15 +176,15 @@ const simpleCheckList = ref(["1", "2"])
             <el-form-item label="工作邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入研究领域"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱验证" prop="verificationCode">
-              <el-input v-model="form.verificationCode" placeholder="请输入邮箱">
-                <template #append>
-                  <el-button :disabled="isCounting" @click="startCountdown" style="width: 130px">
-                    {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}
-                  </el-button>
-                </template>
-              </el-input>
-            </el-form-item>
+<!--            <el-form-item label="邮箱验证" prop="verificationCode">-->
+<!--              <el-input v-model="form.verificationCode" placeholder="请输入邮箱">-->
+<!--                <template #append>-->
+<!--                  <el-button :disabled="isCounting" @click="startCountdown" style="width: 130px" class="no-modify-button">-->
+<!--                    {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}-->
+<!--                  </el-button>-->
+<!--                </template>-->
+<!--              </el-input>-->
+<!--            </el-form-item>-->
           </el-form>
           <div style="display: flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="oneToTwo">点击提交</el-button>
@@ -210,16 +232,45 @@ const simpleCheckList = ref(["1", "2"])
             </div>
           </div>
           <div style="display: flex; margin-top: 5%">
+
             <el-button style="width: 125px; height: 36px" @click="adminTwoToOne">上一步</el-button>
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="twoToThree">下一步</el-button>
           </div>
         </div>
-        <div v-if="currentStep === '3'" class="scholar-identify-input">
+        <div v-else-if="currentStep === '3'" class="scholar-identify-input">
+          <el-form :model="reasonForm" label-width="120px" :rules="reasonRules">
+            <!-- 第一项：选择申诉原因 -->
+            <el-form-item label="申诉原因">
+              <el-select v-model="reasonForm.appealReason" placeholder="请选择申诉原因" size="large" style="width: 440px">
+                <el-option v-for="item in defaultReasons" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+
+            <!-- 第二项：其他原因 -->
+            <el-form-item label="其他原因" v-if="reasonForm.appealReason === 'other'">
+              <el-input v-model="reasonForm.otherReason" placeholder="请输入其他原因" size="large" style="width: 440px" />
+            </el-form-item>
+
+            <!-- 第三项：补充说明 -->
+            <el-form-item label="补充说明">
+              <el-input type="textarea" v-model="reasonForm.addtionReason" placeholder="请输入补充说明" size="large" style="width: 440px" rows="4" />
+            </el-form-item>
+
+            <!-- 提交按钮 -->
+            <el-form-item>
+              <el-button style="width: 125px; height: 36px" @click="adminTwoToOne" >上一步</el-button>
+              <el-button type="primary" @click="submitForm" style="width: 125px; height: 36px" color="#1F578F">提交申诉</el-button>
+
+            </el-form-item>
+          </el-form>
+
+        </div>
+        <div v-if="currentStep === '4'" style="display:flex;flex-direction: column;align-items: center">
           <img src="@/assets/image/identifySuccess.png">
           <h1 style="color:#7a7a7a">恭喜。您已提交成功！请耐心等待审核</h1>
           <div style="display:flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="backToMain">返回主页</el-button>
-            <el-button style="width: 125px; height: 36px" @click="threeToTwo">开发专用！</el-button>
+            <el-button style="width: 125px; height: 36px" @click="currentStep = '1'">开发专用！</el-button>
           </div>
         </div>
       </div>
@@ -231,4 +282,9 @@ const simpleCheckList = ref(["1", "2"])
 @import "@/css/basic.css";
 @import "@/css/scholarIdentify.css";
 @import "@/css/academicClaim.css";
+.no-modify-button {
+  background-color: transparent !important;  /* 避免被 .el-button 样式覆盖 */
+  border-radius: 4px !important;
+  color: inherit !important;
+}
 </style>

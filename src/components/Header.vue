@@ -5,6 +5,9 @@ import defaultAvatar from "@/assets/image/user.gif";
 import { useRoute } from 'vue-router';
 import cookieUtil from "@/utils/cookie.js"
 import {useUserStore} from "@/store/store.js";
+import {ElMessage} from "element-plus";
+import MessageCenter from "@/views/MessageCenter.vue";
+import * as httpUtil from "@/api/http.js";
 const button_index = ref("登录");
 const userStore = useUserStore();
 const user_name = computed(() => userStore.username);
@@ -31,17 +34,38 @@ const goToLogin = () => {
     location.reload();
   }
 }
-onMounted(() =>{
+const goToMessage = ()=>{
+  if(cookieUtil.getCookie("token")===null||cookieUtil.getCookie("token")===''){
+    ElMessage.warning("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+  }else{
+    router.push('/message');
+  }
+}
+const isRedPoint = ref(false);
+onMounted(async() =>{
   if(cookieUtil.getCookie("token")===null || cookieUtil.getCookie("token")===''){
     button_index.value = "登录";
   }else{
     button_index.value = "退出";
+  }
+  try{
+    const res = await httpUtil.get('/message/isRedPoint',{},{Authorization: cookieUtil.getCookie("token")});
+    isRedPoint.value = res.data.isRed;
+  }catch (e){
+    console.error(e);
   }
 })
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
 })
+const drawer = ref(false);
+const handleDrawer = ()=>{
+  drawer.value = !drawer.value;
+}
 </script>
 
 <template>
@@ -76,6 +100,15 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
     <el-menu-item index="4">热点分析</el-menu-item>
     <el-menu-item index="5">联系我们</el-menu-item>
     <div class="header-menu-right" >
+      <div class="message-icon-container">
+        <div>
+          <el-tooltip class="box-item" effect="light" content="消息中心" placement="bottom">
+          <img src="@/assets/svg/message.svg" style="width: 22px" class="box-item" alt="消息中心" @click="handleDrawer"/>
+          </el-tooltip>
+        </div>
+        <!-- 红色原点 -->
+        <div class="sss" v-if="isRedPoint"></div>
+      </div>
       <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
       <span :style="{ color: textColor }">
         {{ user_name ? `欢迎, ${user_name}` : "点此登录" }}
@@ -86,6 +119,9 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
       </el-button>
     </div>
   </el-menu>
+  <el-drawer v-model="drawer" title="消息中心" direction="rtl" :before-close="handleDrawer">
+    <MessageCenter/>
+  </el-drawer>
   <div class="h-6"/>
 </template>
 
@@ -95,5 +131,21 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
 .el-menu--horizontal > .el-menu-item:nth-child(5) {
   margin-right: auto;
 }
+.message-icon-container {
+  position: relative; /* 设置相对定位，作为红点的参考位置 */
+}
 
+.sss {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: red; /* 红色圆点 */
+  border-radius: 50%; /* 圆形 */
+  border: 2px solid white; /* 白色边框，使其更加突出 */
+}
+.box-item :hover{
+  cursor: pointer;
+}
 </style>

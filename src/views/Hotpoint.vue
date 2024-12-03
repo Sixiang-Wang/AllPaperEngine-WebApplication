@@ -1,11 +1,14 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 import Aside from "@/components/HotspotAside.vue";
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 // 示例词云数据
-const words = [
+const wordCloudData = ref([
   {text: "AI", size: 2},
   {text: "Machine Learning", size: 3},
   {text: "Vue", size: 10},
@@ -51,67 +54,200 @@ const words = [
   {text: "Blockchain Development", size: 55},
   {text: "Digital Transformation", size: 33},
   {text: "Robotic Process Automation", size: 42}
-];
+]);
 
 // 用于绑定到 DOM 元素的 ref
 const wordCloudRef = ref(null);
+const showChart = ref(''); // 默认不显示任何图表
+
+// 图表数据
+const barChartData = ref({
+  labels: ['AI', 'Machine Learning', 'Deep Learning', 'Cloud Computing', 'Blockchain'],
+  datasets: [{
+    label: '技术热度',
+    data: [100, 90, 80, 70, 60],
+    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+    borderColor: 'rgba(54, 162, 235, 1)',
+    borderWidth: 1
+  }]
+});
+
+const lineChartData = ref({
+  labels: ['AI', 'Machine Learning', 'Deep Learning', 'Cloud Computing', 'Blockchain'],
+  datasets: [{
+    label: '技术热度趋势',
+    data: [60, 70, 80, 90, 100],
+    fill: false,
+    borderColor: 'rgba(75, 192, 192, 1)',
+    tension: 0.1
+  }]
+});
+
+const pieChartData = ref({
+  labels: ['AI', 'Machine Learning', 'Deep Learning', 'Cloud Computing', 'Blockchain'],
+  datasets: [{
+    data: [100, 90, 80, 70, 60],
+    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+    hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+  }]
+});
 
 // 渲染词云
-onMounted(() => {
+const renderWordCloud = () => {
   const layout = cloud()
-      .size([window.innerWidth * 0.8, window.innerHeight * 0.8])
-      .words(words)
-      .font("Impact")
-      .fontSize(d => Math.pow(d.size, 1.2))
-      .rotate(() => Math.floor(Math.random() * 181) - 90)
-      .on("end", drawCloud);
+    .size([window.innerWidth * 0.6, window.innerHeight * 0.6])
+    .words(wordCloudData.value.map(word => ({ text: word.text, size: word.size })))
+    .font("Impact")
+    .fontSize(d => Math.pow(d.size, 1.2))
+    .rotate(() => Math.floor(Math.random() * 181) - 90)
+    .on("end", drawCloud);
 
   layout.start();
 
   // 绘制词云
   function drawCloud(words) {
     d3.select(wordCloudRef.value)
-        .append("svg")
-        .attr("width", layout.size()[0])
-        .attr("height", layout.size()[1])
-        .append("g")
-        .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-        .selectAll("text")
-        .data(words)
-        .enter()
-        .append("text")
-        .style("font-size", d => d.size + "px")
-        .style("font-family", "Impact")
-        .style("fill", "steelblue")
-        .attr("text-anchor", "middle")
-        .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
-        .text(d => d.text)
-        .on("mouseover", function (event, d) {
-          d3.select(this).style("fill", "orange");
-        })
-        .on("mouseout", function (event, d) {
-          d3.select(this).style("fill", "steelblue");
-        })
-        .on("click", function (event, d) {
-          alert("你点击了: " + d.text); // 可根据需求实现跳转
-        });
+      .append("svg")
+      .attr("width", layout.size()[0])
+      .attr("height", layout.size()[1])
+      .append("g")
+      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+      .selectAll("text")
+      .data(words)
+      .enter()
+      .append("text")
+      .style("font-size", d => d.size + "px")
+      .style("font-family", "Impact")
+      .style("fill", "steelblue")
+      .attr("text-anchor", "middle")
+      .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
+      .text(d => d.text)
+      .on("mouseover", function (event, d) {
+        d3.select(this).style("fill", "orange");
+      })
+      .on("mouseout", function (event, d) {
+        d3.select(this).style("fill", "steelblue");
+      })
+      .on("click", function (event, d) {
+        alert("你点击了: " + d.text); // 可根据需求实现跳转
+      });
   }
-});
+};
+
+// 渲染柱状图
+const renderBarChart = () => {
+  const barChartCanvas = document.getElementById('barChartCanvas');
+  const barCtx = barChartCanvas.getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: barChartData.value,
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+};
+
+// 渲染折线图
+const renderLineChart = () => {
+  const lineChartCanvas = document.getElementById('lineChartCanvas');
+  const lineCtx = lineChartCanvas.getContext('2d');
+  new Chart(lineCtx, {
+    type: 'line',
+    data: lineChartData.value,
+    options: {
+      responsive: true
+    }
+  });
+};
+
+// 渲染饼图
+const renderPieChart = () => {
+  const pieChartCanvas = document.getElementById('pieChartCanvas');
+  const pieCtx = pieChartCanvas.getContext('2d');
+  new Chart(pieCtx, {
+    type: 'pie',
+    data: pieChartData.value,
+    options: {
+      responsive: true
+    }
+  });
+};
+
+// 切换图表类型
+const toggleChart = (chartType) => {
+  // 如果当前图表已经是目标图表，且是词云，则切换为空（即隐藏词云）
+  if (showChart.value === chartType) {
+    showChart.value = ''; // 如果是已显示的图表，再次点击时隐藏
+  } else {
+    showChart.value = chartType;
+    if (chartType === 'wordcloud') {
+      nextTick(() => {
+        renderWordCloud();
+      });
+    } else if (chartType === 'bar') {
+      nextTick(() => {
+        renderBarChart();
+      });
+    } else if (chartType === 'line') {
+      nextTick(() => {
+        renderLineChart();
+      });
+    } else if (chartType === 'pie') {
+      nextTick(() => {
+        renderPieChart();
+      });
+    }
+  }
+};
+
+// 导出为 Excel
+const exportToExcel = () => {
+  console.log('导出为 Excel');
+};
+
+// 导出为 PDF
+const exportToPDF = () => {
+  console.log('导出为 PDF');
+};
 </script>
 
 <template>
   <el-container>
-    <el-header>
+    <el-header style="margin-bottom: 20px;">
       <h1>热点领域分析</h1>
       <p>以下是技术领域中的一些关键技术与概念的词云，词语的大小代表其相关性或热度。</p>
     </el-header>
     <el-container>
       <el-aside>
-        <Aside/>
+        <Aside />
       </el-aside>
       <el-main>
-        <!-- 用于显示词云的容器 -->
-        <div ref="wordCloudRef"></div>
+        <!-- 图表展示按钮 -->
+        <div class="chart-buttons">
+          <el-button @click="toggleChart('wordcloud')">词云</el-button>
+          <el-button @click="toggleChart('bar')">柱状图</el-button>
+          <el-button @click="toggleChart('line')">折线图</el-button>
+          <el-button @click="toggleChart('pie')">饼状图</el-button>
+          <el-button @click="exportToExcel">导出为 Excel</el-button>
+          <el-button @click="exportToPDF">导出为 PDF</el-button>
+        </div>
+
+        <!-- 图表展示区域 -->
+        <div v-if="showChart === 'wordcloud'" ref="wordCloudRef"></div>
+        <div v-if="showChart === 'bar'" class="chart-container">
+          <canvas id="barChartCanvas"></canvas>
+        </div>
+        <div v-if="showChart === 'line'" class="chart-container">
+          <canvas id="lineChartCanvas"></canvas>
+        </div>
+        <div v-if="showChart === 'pie'" class="chart-container">
+          <canvas id="pieChartCanvas"></canvas>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -130,7 +266,14 @@ el-main {
   padding: 20px;
 }
 
-div {
+.chart-container {
   margin: 20px;
+  width: 80%;
+  max-width: 900px;
+  height: 450px;
+}
+
+.chart-buttons {
+  margin-bottom: 20px;
 }
 </style>
