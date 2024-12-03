@@ -10,7 +10,7 @@ import java.sql.Date;
 import java.util.List;
 
 public interface CommentMapper {
-    @Select("select * from user_comment where work_id = #{workId} order by date desc")
+    @Select("select * from user_comment where work_id = #{workId} order by update_time desc")
     List<Comment> selectCommentsById(String workId);
     @Insert("insert into user_comment (user_id, work_id, date, comment_index) VALUES (#{userId}, #{workId}, #{date}, #{commentIndex})")
     void insertComments(int userId, String workId, Date date, String commentIndex);
