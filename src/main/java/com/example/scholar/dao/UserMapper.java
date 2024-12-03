@@ -9,6 +9,10 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
+    @Select("select * from user")
+    List<User> getAll();
+    @Select("select count(*) from user")
+    int getCount();
     @Select("select * from user where userid = #{userId}")
     User selectUserById(int userId);
 
@@ -29,9 +33,13 @@ public interface UserMapper {
 
     @Update("UPDATE user SET role=#{role} WHERE userid = #{userid}")
     int updateUserRole(User user);
+    @Update("UPDATE user SET name_real=#{nameReal} WHERE userid = #{userid}")
+    int updateUserNameReal(User user);
 
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
     int updateUserName(User user);
+    @Update("UPDATE user SET password = #{password} WHERE userid = #{userId}")
+    int updatePassword(int userId,String password);
 
     // 查看某个ID对应的标题
     @Select("SELECT title FROM openalex_works WHERE id = #{publicationId}")
@@ -138,5 +146,7 @@ public interface UserMapper {
             @Param("userId") int userId,
             @Param("tags") List<String> tags
     );
+
+
 
 }

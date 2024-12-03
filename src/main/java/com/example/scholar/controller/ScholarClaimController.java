@@ -1,7 +1,7 @@
 package com.example.scholar.controller;
 
 import com.example.scholar.domain.constant.R;
-import com.example.scholar.domain.openalex.Work;
+import com.example.scholar.dto.ClaimResultDto;
 import com.example.scholar.dto.WorkResultDto;
 import com.example.scholar.service.ClaimWorkService;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/scholar/claim")
+@RequestMapping(value = "/claim")
 public class ScholarClaimController {
     @Resource
     private ClaimWorkService claimWorkService;
@@ -28,10 +28,25 @@ public class ScholarClaimController {
             return R.error(e.toString());
         }
     }
-    @GetMapping(value = "/add")
-    public R claimWork(@RequestParam("scholarId")int scholarId, @RequestParam("workId")String workId){
+
+    @GetMapping(value="/getAllUnavailable")
+    public R getAllUnavailable(){
         try{
-            int res = claimWorkService.claimWork(scholarId, workId);
+            List<ClaimResultDto> claimList = claimWorkService.allClaimUnavailable();
+            if(claimList == null){
+                return R.error("something went wrong");
+            }else{
+                return R.ok("success").put("claimList",claimList);
+            }
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/add")
+    public R claimWork(@RequestParam("userId")int userId, @RequestParam("workId")String workId){
+        try{
+            int res = claimWorkService.claimWork(userId, workId);
             if(res == 0){
                 return R.error("invalid user");
             }else if(res == -1){
@@ -48,11 +63,39 @@ public class ScholarClaimController {
         }
     }
     @GetMapping(value = "/delete")
-    public R deleteClaimedWork(@RequestParam("scholarId")int scholarId, @RequestParam("workId")String workId){
+    public R deleteClaimedWork(@RequestParam("id")int id){
         try{
-            int res = claimWorkService.deleteClaimedWork(scholarId, workId);
+            int res = claimWorkService.deleteClaimedWork(id);
             if(res == 1){
                 return R.ok("delete success");
+            }else{
+                return R.error("something went wrong");
+            }
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/able")
+    public R ableClaim(@RequestParam("id")int id){
+        try{
+            int res = claimWorkService.ableClaim(id);
+            if(res == 1){
+                return R.ok("able success");
+            }else{
+                return R.error("something went wrong");
+            }
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/disable")
+    public R disableClaim(@RequestParam("id")int id){
+        try{
+            int res = claimWorkService.disableClaim(id);
+            if(res == 1){
+                return R.ok("able success");
             }else{
                 return R.error("something went wrong");
             }

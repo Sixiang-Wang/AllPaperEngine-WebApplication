@@ -11,6 +11,8 @@ import java.util.List;
 
 @Component
 public interface UserService {
+    List<User> getAll();
+    int getCount();
     HashMap<String, Object> login(String mail, String password);
     HashMap<String, Object> register(String name, String password, String mail);
     HashMap<String, Object> setUserDetails(int userId, String avatar, LocalDate birthTime, String biography,
@@ -23,7 +25,7 @@ public interface UserService {
     HashMap<String, Object> updateUserProfession(int userId, String profession);
     HashMap<String, Object> updateUserPhone(int userId, String phone);
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
-
+    public HashMap<String, Object> updatePassword(int userId, String newPassword);
     // 在某个标签添加收藏
     HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, List<String> tags);
 

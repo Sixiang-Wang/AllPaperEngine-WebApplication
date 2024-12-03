@@ -32,4 +32,5 @@ public class User {
     private String phone; //手机号
 
     private int role; //用户角色
+    private String nameReal;
 }

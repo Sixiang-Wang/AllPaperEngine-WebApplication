@@ -25,6 +25,17 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Resource
     private UserTokenMapper userTokenMapper;
+
+    @Override
+    public List<User> getAll() {
+        return userMapper.getAll();
+    }
+
+    @Override
+    public int getCount() {
+        return userMapper.getCount();
+    }
+
     @Override
     public HashMap<String, Object> login(String mail, String password) {
         User user = userMapper.selectUserByMail(mail);
@@ -148,6 +159,7 @@ public class UserServiceImpl implements UserService {
 
         return resultMap;
     }
+
 
 
     @Override
@@ -280,6 +292,33 @@ public class UserServiceImpl implements UserService {
             }
         }else {
             resultMap.put("msg", "旧密码不正确");
+        }
+
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> updatePassword(int userId, String newPassword) {
+        User existingUser = userMapper.selectUserById(userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        if (existingUser == null) {
+            resultMap.put("msg", "User not found");
+            return resultMap;
+        }
+
+        if(newPassword != null && !newPassword.isEmpty())
+        {
+
+            String password = Md5Utils.agenerate(newPassword);
+            int result = userMapper.updatePassword(userId,password);
+            if (result > 0) {
+                resultMap.put("msg", "密码修改成功");
+            } else {
+                resultMap.put("msg", "密码修改失败");
+            }
+        }else {
+            resultMap.put("msg", "新密码不能为空");
         }
 
         return resultMap;
