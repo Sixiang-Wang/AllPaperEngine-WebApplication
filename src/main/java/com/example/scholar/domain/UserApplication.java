@@ -16,8 +16,8 @@ public class UserApplication {
     private String company;
     private AcademicFieldType academicFieldType;
     private Timestamp applicationDate;
-    private int status; // 申请状态 0:待审核 1:已通过 2:已拒绝
+    private int status = 0; // 申请状态 0:待审核 1:已通过 2:已拒绝
     private String mail;
-    private String message;
-    private String reason; // 审核原因
+    private String message = "";
+    private String reason = ""; // 审核原因
 }

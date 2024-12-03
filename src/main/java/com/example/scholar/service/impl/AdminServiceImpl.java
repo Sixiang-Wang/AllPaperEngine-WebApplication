@@ -6,11 +6,13 @@ import com.example.scholar.domain.User;
 import com.example.scholar.domain.UserApplication;
 import com.example.scholar.service.AdminService;
 import com.example.scholar.service.UserApplicationService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 
+@Service("adminService")
 public class AdminServiceImpl implements AdminService {
     @Resource
     private UserApplicationMapper userApplicationMapper;

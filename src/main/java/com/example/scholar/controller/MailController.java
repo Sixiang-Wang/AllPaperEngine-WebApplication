@@ -17,7 +17,7 @@ public class MailController {
     @Resource
     private MailService mailService;
 
-    @RequestMapping(value = "/sendMail", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendMail", method = RequestMethod.POST)
     public JSONObject sendMail(@RequestParam("to") String to) {
         JSONObject jsonObject = new JSONObject();
         Object verifyCode = mailService.sendMail(to);

@@ -41,22 +41,12 @@ public class UserApplicationController {
              HashMap<String, Object> resultMap = userApplicationService.certifyScholar(userId, name, company, academicFieldType, mail, code);
 
             String msg = (String) resultMap.get("msg");
-            if ("用户不存在".equals(msg)) {
-                return R.error("用户不存在");
-            } else if ("当前用户已经是学者".equals(msg)) {
-                return R.error("当前用户已经是学者");
-            } else if ("信息填写不完整".equals(msg)) {
-                return R.error("信息填写不完整");
-            } else if ("验证码不存在".equals(msg)) {
-                return R.error("验证码不存在");
-            } else if ("验证码已过期".equals(msg)) {
-                return R.error("验证码已过期");
-            } else if ("验证码错误，请重新输入".equals(msg)) {
-                return R.error("验证码错误，请重新输入");
-            } else if ("学者认证申请已提交，请等待管理员审核".equals(msg)) {
+            if ("学者认证申请已提交，请等待管理员审核".equals(msg)) {
                 return R.ok(msg).put("user", resultMap.get("user"));
             }
-            return R.error("学者认证申请出错");
+            else {
+                return R.error(msg);
+            }
         } catch (Exception e) {
             return R.error(e.toString());
         }

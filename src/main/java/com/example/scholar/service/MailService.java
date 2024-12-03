@@ -10,6 +10,6 @@ import java.util.Map;
 
 @Component
 public interface MailService {
-    public Object sendMail(String to);
-    public JSONObject verifyCode(String to, String verifyCode);
+    Object sendMail(String to);
+    JSONObject verifyCode(String to, String verifyCode);
 }
