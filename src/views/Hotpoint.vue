@@ -4,6 +4,9 @@ import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 import Aside from "@/components/HotspotAside.vue";
 import { Chart, registerables } from 'chart.js';
+import * as XLSX from 'xlsx';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 Chart.register(...registerables);
 
@@ -194,9 +197,8 @@ const renderPieChart = () => {
 
 // 切换图表类型
 const toggleChart = (chartType) => {
-  // 如果当前图表已经是目标图表，且是词云，则切换为空（即隐藏词云）
   if (showChart.value === chartType) {
-    showChart.value = ''; // 如果是已显示的图表，再次点击时隐藏
+    showChart.value = '';
   } else {
     showChart.value = chartType;
     if (chartType === 'wordcloud') {
@@ -221,13 +223,70 @@ const toggleChart = (chartType) => {
 
 // 导出为 Excel
 const exportToExcel = () => {
+  const tableData = getTableData();
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(tableData);
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  XLSX.writeFile(wb, 'table_data.xlsx');
   console.log('导出为 Excel');
 };
 
-// 导出为 PDF
-const exportToPDF = () => {
-  console.log('导出为 PDF');
+// 确保 getTableData 函数是通过 ref 或者直接暴露的
+const getTableData = () => {
+  return wordCloudData.value.map(item => ({
+    技术名词: item.text,
+    热度: item.size
+  }));
 };
+
+const exportToPDF = () => {
+  let exportContent;
+
+  // 根据选中的图表类型获取对应的图表元素
+  if (showChart.value === 'bar') {
+    exportContent = document.getElementById('barChartCanvas');
+  } else if (showChart.value === 'line') {
+    exportContent = document.getElementById('lineChartCanvas');
+  } else if (showChart.value === 'pie') {
+    exportContent = document.getElementById('pieChartCanvas');
+  } else {
+    // 如果没有选择任何图表，则提示用户
+    alert("请先选择一个图表类型！");
+    return;
+  }
+
+  // 使用 html2canvas 将图表渲染为图片
+  if (!exportContent) {
+    console.error('未找到需要导出的内容');
+    return;
+  }
+
+  html2canvas(exportContent).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+
+    // 获取图片的属性（如宽度和高度）
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    // 根据PDF尺寸调整图片大小和位置，确保图片居中显示且保持比例
+    const margin = 10; // 设置边距为10mm
+    const scaledWidth = pdfWidth - 2 * margin; // 计算缩放后的图片宽度
+    const scaledHeight = (imgProps.height * scaledWidth) / imgProps.width; // 保持图片比例计算高度
+    const xPosition = margin; // 图片在PDF中的x坐标
+    const yPosition = (pdf.internal.pageSize.getHeight() - scaledHeight) / 2; // 图片在PDF中居中显示的y坐标
+
+    // 将图片添加到PDF中，并保持比例
+    pdf.addImage(imgData, 'PNG', xPosition, yPosition, scaledWidth, scaledHeight);
+    pdf.save('chart.pdf');
+    console.log('成功导出为 PDF');
+  }).catch(error => {
+    console.error('导出PDF时发生错误:', error);
+  });
+};
+
+
 </script>
 
 <template>
@@ -247,8 +306,8 @@ const exportToPDF = () => {
           <el-button @click="toggleChart('bar')">柱状图</el-button>
           <el-button @click="toggleChart('line')">折线图</el-button>
           <el-button @click="toggleChart('pie')">饼状图</el-button>
-          <el-button @click="exportToExcel">导出为 Excel</el-button>
-          <el-button @click="exportToPDF">导出为 PDF</el-button>
+          <el-button @click="exportToExcel()">导出为 Excel</el-button>
+          <el-button @click="exportToPDF()">导出为 PDF</el-button>
         </div>
 
         <!-- 图表展示区域 -->
