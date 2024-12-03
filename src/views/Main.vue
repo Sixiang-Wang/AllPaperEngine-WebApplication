@@ -4,9 +4,10 @@ import router from "@/router/index.js";
 import {Search} from '@element-plus/icons-vue'
 import cookieUtil from "@/utils/cookie.js"
 import http from "@/api/http.js";
-import {useTokenStore, useUserStore} from "@/store/store.js";
+import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
  const userStore = useUserStore();
  const tokenStore = useTokenStore()
+const userIdStore = useUserIdStore()
   const searchType = ref('1');
   const searchInput = ref("");
   const fullText = "llPaper Engine";
@@ -25,6 +26,7 @@ const preLogin = async ()=>{
   console.log(res);
   userStore.setUsername(res.data.username);
   tokenStore.setToken(res.data.token);
+  userIdStore.setUserId(res.data.userId);
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
   }
   onMounted(() => {
