@@ -54,11 +54,6 @@ setup() {
         { name: 'ccc', fields: '生物医学', citations: 950 },
         { name: 'ddd', fields: '物理学', citations: 1200 },
         { name: 'eee', fields: '数据科学', citations: 1800 },
-        { name: 'aaa', fields: '计算机科学', citations: 1500 },
-        { name: 'bbb', fields: '人工智能', citations: 2000 },
-        { name: 'ccc', fields: '生物医学', citations: 950 },
-        { name: 'ddd', fields: '物理学', citations: 1200 },
-        { name: 'eee', fields: '数据科学', citations: 1800 }
       ]);
 
     const getTagType = (index) => {
@@ -96,74 +91,96 @@ setup() {
 
 <style scoped>
 .institution-info {
-padding: 20px;
+  padding: 20px;
+  background: linear-gradient(45deg, #f3f4f6, #e8e9ec);
+  border-radius: 8px;
 }
 
 .institution-card {
-margin-bottom: 20px;
-padding: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .institution-card h2 {
-font-size: 24px;
-margin-bottom: 10px;
+  font-size: 26px;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .institution-card p {
-color: #666;
+  color: #666;
 }
 
 .scholars-list {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
 
 .scholar-item {
-padding: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.scholar-item:hover {
+  transform: translateY(-5px);
 }
 
 .scholar-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .scholar-item h3 {
-margin: 0;
-font-size: 20px;
+  font-size: 22px;
+  color: #409eff;
+  font-weight: bold;
+  margin: 0;
 }
 
 .scholar-item p {
-margin-top: 10px;
-}
-
-.el-tag {
-font-size: 14px;
-padding: 3px 8px;
-}
-
-.el-divider {
-margin-top: 10px;
-margin-bottom: 10px;
+  margin-top: 10px;
+  font-size: 16px;
 }
 
 .scholar-name {
-font-size: 18px;
-font-weight: bold;
-text-decoration: none;
-color: #409eff;
+  font-size: 18px;
+  color: #409eff;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .scholar-name:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
-.even-column {
-background-color: #f9f9f9; /* 偶数列背景颜色 */
+.scholar-stats {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #666;
 }
 
-.odd-column {
-background-color: #e6f7ff; /* 奇数列背景颜色 */
+.citation-icon {
+  color: #409eff;
+}
+
+.el-tag {
+  font-size: 14px;
+  padding: 3px 8px;
+}
+
+.el-divider {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 </style>
