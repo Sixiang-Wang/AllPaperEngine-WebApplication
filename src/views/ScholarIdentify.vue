@@ -122,10 +122,10 @@ const backToMain = ()=>{
               <el-input v-model="form.researchField" placeholder="请输入研究领域"></el-input>
             </el-form-item>
             <el-form-item label="工作邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入研究领域"></el-input>
+              <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
             </el-form-item>
             <el-form-item label="邮箱验证" prop="verificationCode">
-              <el-input v-model="form.verificationCode" placeholder="请输入邮箱">
+              <el-input v-model="form.verificationCode" placeholder="请输入验证码">
                 <template #append>
                   <el-button :disabled="isCounting" @click="startCountdown" style="width: 130px">
                     {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}

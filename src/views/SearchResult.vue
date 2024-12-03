@@ -36,7 +36,8 @@ const updateSearchResults = async () => {
   console.log(res.data);
   searchResults.value = res.data.works;
 };
-const search =async () => {
+
+const search = async () => {
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
