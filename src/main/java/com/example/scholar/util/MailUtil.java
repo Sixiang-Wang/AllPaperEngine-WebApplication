@@ -15,7 +15,7 @@ import java.util.Random;
 public class MailUtil {
     private final Random random = new Random();
 
-    private final String myMailAddress = "2142703200@qq.com";
+    private final String myMailAddress = "2562187628@qq.com";
 
     @Resource
     private JavaMailSender javaMailSender;

@@ -1,8 +1,11 @@
 package com.example.scholar.controller;
 
+import com.example.scholar.config.annotation.TokenToUser;
 import com.example.scholar.domain.Authentication;
+import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.service.AuthenticationService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -48,6 +51,20 @@ public class AuthenticationController {
     public R putAuthentication(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal,@RequestParam("workplace")String workplace,@RequestParam("field")String field,@RequestParam("mail")String mail){
         try {
             int result = authenticationService.putAuthentication(userId,nameReal,workplace,field,mail);
+            if(result == -1){
+                return R.error("something went wrong");
+            }else{
+                return R.ok("success");
+            }
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+    @GetMapping(value = "/put/token")
+    @ApiOperation("添加个人门户token版")
+    public R putAuthentication(@TokenToUser User user, @RequestParam("nameReal")String nameReal, @RequestParam("workplace")String workplace, @RequestParam("field")String field, @RequestParam("mail")String mail){
+        try {
+            int result = authenticationService.putAuthentication(user.getUserid(),nameReal,workplace,field,mail);
             if(result == -1){
                 return R.error("something went wrong");
             }else{
