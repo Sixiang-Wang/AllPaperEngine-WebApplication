@@ -48,8 +48,8 @@ const simpleSearchType = ref('1');
 const simpleCheckList = ref(["1", "2"])
 const id = ref("");
 const submit = async () => {
-  const res = await httpUtil.get('/scholar/claim/add',{
-    "scholarId": 1,//这里后续从cookie读取
+  const res = await httpUtil.get('/claim/add',{
+    "userId": 1,//这里后续从cookie读取
     "workId": id.value
   })
   console.log(res.data);
@@ -70,13 +70,13 @@ const handleRowDbClick = (row)=>{
   console.log("id.value"+id.value);
 }
 onMounted(async()=>{
-  const res = await httpUtil.get('/scholar/claim/get/personal',
+  const res = await httpUtil.get('/claim/get/personal',
       {scholarId: 1//TODO：后续修改为从cookie读取
       });
   myAchievement.value = res.data.works;
 })
 const deleteClaimed = async (id )=>{
-  const res = await httpUtil.get('/scholar/claim/delete',{
+  const res = await httpUtil.get('/claim/delete',{
     scholarId: 1,//TODO：后续修改为从cookie读取
     workId: id
   })

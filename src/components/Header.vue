@@ -64,6 +64,10 @@ watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
 })
 const drawer = ref(false);
 const handleDrawer = ()=>{
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ""){
+    ElMessage.error("请先登录！");
+    return;
+  }
   drawer.value = !drawer.value;
 }
 </script>

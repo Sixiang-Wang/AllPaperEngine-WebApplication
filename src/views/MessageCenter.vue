@@ -53,7 +53,12 @@ const goBack = ()=>{
                  :date="message.date"
                  :message-index="message.index"
                 @click="goToMessage(message)"/>
-  <span v-else>莫得消息</span>
+  <div style="display: flex; flex-direction: column; " v-else>
+    <img src="@/assets/image/noMessage.png"/>
+    <div>
+      <span style="display: flex; justify-content: center; color: #7a7a7a">暂无消息</span>
+    </div>
+  </div>
   </div>
   <div v-if="page === 2">
     <CertainMessage

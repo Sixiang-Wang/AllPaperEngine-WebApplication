@@ -85,6 +85,9 @@ const login =  async() => {
         cookieUtil.setCookie("token",res.data.token,0.25);
         cookieUtil.setCookie("username",res.data.username, 0.25);
         await router.push('/main');
+      }else if(res.data.msg === "wrong password"){
+        ElMessage.error("密码错误");
+        return;
       }
       console.log(res.data);
     }catch(e){
