@@ -30,7 +30,6 @@ const preLogin = async ()=>{
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
   }
   onMounted(() => {
-    preLogin()
     let index = 0;
     let index2 = 0;
     const interval = setInterval(() => {
