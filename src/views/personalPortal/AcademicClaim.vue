@@ -70,7 +70,7 @@ const handleRowDbClick = (row)=>{
   console.log("id.value"+id.value);
 }
 onMounted(async()=>{
-  const res = await httpUtil.get('/scholar/claim/get/personal',
+  const res = await httpUtil.get('/claim/get/personal',
       {scholarId: 1//TODO：后续修改为从cookie读取
       });
   myAchievement.value = res.data.works;

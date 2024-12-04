@@ -99,7 +99,7 @@ const register = async () => {
       ElMessage.success("注册成功！");
       await router.push('/login');
     } else {
-      ElMessage.error("注册失败，请重");
+      ElMessage.error("注册失败，请重试");
     }
   } catch (e) {
     console.error(e);
