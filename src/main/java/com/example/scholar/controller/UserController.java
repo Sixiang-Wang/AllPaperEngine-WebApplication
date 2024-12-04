@@ -53,7 +53,7 @@ public class UserController {
                 if("no such user".equals(res.get("msg"))|| "wrong password".equals(res.get("msg"))){
                     return R.ok((String) res.get("msg"));
                 }else {
-                    return R.ok("login success").put("token", res.get("token")).put("username",res.get("username"));
+                    return R.ok("login success").put("token", res.get("token")).put("username",res.get("username")).put("userId",res.get("userId"));
                 }
             }catch (Exception e){
                 return R.error(e.toString());
@@ -64,7 +64,9 @@ public class UserController {
         @ApiOperation("自动登录接口")
         public R preLogin(@TokenToUser User user){
             try{
-                return R.ok("login success").put("username",user.getName());
+                return R.ok("login success").
+                        put("username",user.getName())
+                        .put("userId",user.getUserid());
             }catch (Exception e){
                 return R.error(e.toString());
             }
@@ -346,6 +348,18 @@ public class UserController {
                 return R.error(e.toString());
             }
         }
+
+    @GetMapping(value = "/delete")
+    @ApiOperation("删除用户")
+    public R delete(@RequestParam int userId) {
+        try {
+            HashMap<String, Object> resultMap = userService.delete(userId);
+            return R.ok((String) resultMap.get("msg"));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 
     // 查看所有标签
     @GetMapping("/viewAllTags")
