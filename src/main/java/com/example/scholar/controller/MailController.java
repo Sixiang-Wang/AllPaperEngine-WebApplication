@@ -19,6 +19,7 @@ public class MailController {
         String verifyCode = mailUtil.sendMail(to);
         jsonObject.put("verifyCode",verifyCode);
         System.out.println(to+":"+verifyCode);
+        System.out.println("别他妈改我的接口");
         return jsonObject;
     }
 }

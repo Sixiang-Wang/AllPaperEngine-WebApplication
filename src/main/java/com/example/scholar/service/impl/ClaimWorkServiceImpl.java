@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("claimWorkService")
 public class ClaimWorkServiceImpl implements ClaimWorkService {
@@ -92,6 +93,7 @@ public class ClaimWorkServiceImpl implements ClaimWorkService {
             return null;
         }
         List<UserClaimedWork> list = claimMapper.selectWorksById(userId);
+
         List<Work> works = new ArrayList<>();
         List<WorkResultDto> workResultDtos = new ArrayList<>();
         for(UserClaimedWork userClaimedWork: list){
