@@ -7,6 +7,7 @@ import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.LoginDto;
 import com.example.scholar.dto.RegistDto;
+import com.example.scholar.service.MessageService;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
 import com.example.scholar.service.impl.FileService;
@@ -40,6 +41,8 @@ public class UserController {
         private UserTokenService userTokenService;
         @Resource
         private UserMapper userMapper;
+        @Resource
+        private MessageService messageService;
         @Resource
         private FileService fileService;
         @PostMapping(value = "/login")
@@ -89,6 +92,7 @@ public class UserController {
                 if ("account already exists".equals(res.get("msg"))) {
                     return R.error("account already exists");
                 } else if ("注册成功".equals(res.get("msg"))) {
+                    messageService.welcomeMessage((Integer)res.get("userid"));
                     return R.ok("register success").put("userid", res.get("userid"));
                 } else {
                     return R.error("register failed");
