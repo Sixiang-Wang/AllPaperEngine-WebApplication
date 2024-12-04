@@ -79,12 +79,12 @@ const sendVerificationCode = async () => {
 
 const register = async () => {
   if (registerForm.value.verificationCode !== registerForm.value.sentCode) {
-    ElMessage.error("验证码不正确或已过期");
+    ElMessage.error("验证码不正确");
     return;
   }
 
   if (!verificationCodeisValid.value) {
-    ElMessage.error("1111");
+    ElMessage.error("验证码已过期，请重试");
     return;
   }
   

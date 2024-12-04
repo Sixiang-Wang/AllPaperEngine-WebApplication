@@ -20,9 +20,13 @@ const goToPaper = (id)=> {
 
 <template>
   <div style="display: flex; flex-direction: column; max-width: 70%;">
-    <span class="search-result-title component" @click="goToPaper(id)">{{ title }}</span>
+    <!-- <span class="search-result-title component" @click="goToPaper(id)">{{ title }}</span>
     <span class="search-result-author component">{{ author }}</span>
-    <span class="search-result-content component multiline-ellipsis">{{ content }}</span>
+    <span class="search-result-content component multiline-ellipsis">{{ content }}</span> -->
+    <!-- 添加对title、content的html渲染以便直接突出高亮词 -->
+    <span class="search-result-title component" @click="goToPaper(id)" v-html="title"></span>
+    <span class="search-result-author component" v-html="author"></span>
+    <span class="search-result-content component multiline-ellipsis" v-html="content"></span>
     <div style="display: flex">
       <div class="component search-result-bottom" style="display:flex;align-items: center">
         <el-icon><Star/></el-icon>
