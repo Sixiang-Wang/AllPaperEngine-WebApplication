@@ -7,7 +7,7 @@ import {useTokenStore, useUserStore} from "@/store/store.js";
 import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute} from 'vue-router';
-import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
+import { useUserIdStore} from "@/store/store.js";
 
   const totalLength = ref(0);
   let searchResults = ref([]);
