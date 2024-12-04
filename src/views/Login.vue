@@ -7,9 +7,10 @@ import cookieUtil from "@/utils/cookie.js";
 const identifyCode = ref('');
 const identifyCodes = '1234567890abcdefghijklmnopqrstuvwxyz'
 import http from "@/api/http.js"
-import {useTokenStore, useUserStore} from "@/store/store.js";
+import {useTokenStore, useUserStore,useUserIdStore} from "@/store/store.js";
 const userStore = useUserStore();
 const tokenStore = useTokenStore()
+const userIdStore = useUserIdStore();
 
 const loginForm = ref({
   mail: '',
@@ -71,7 +72,7 @@ onMounted(() => {
 const login =  async() => {
   if(loginForm.value.mail === "admin" && loginForm.value.password === "admin"){
     ElMessage.success("登陆成功！");
-    await router.push('/main');f
+    await router.push('/main');
   }else{
     try{
       const res = await http.post('/user/login',{
@@ -80,8 +81,10 @@ const login =  async() => {
       })
       if(res.data.msg === "login success") {
         ElMessage.success("登陆成功！");
+        console.log(res.data);
         userStore.setUsername(res.data.username)
         tokenStore.setToken(res.data.token)
+        userIdStore.setUserId(res.data.userId)
         cookieUtil.setCookie("token",res.data.token,0.25);
         cookieUtil.setCookie("username",res.data.username, 0.25);
         await router.push('/main');

@@ -7,7 +7,7 @@ import {useTokenStore, useUserStore} from "@/store/store.js";
 import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute} from 'vue-router';
-
+import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
 
   const totalLength = ref(0);
   let searchResults = ref([]);
@@ -16,8 +16,10 @@ import {useRoute} from 'vue-router';
   const route = useRoute();
   let hoveredIndex = ref(null);
   const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取 
-  const userStore = useUserStore();
-  const tokenStore = useTokenStore()
+
+ const userStore = useUserStore();
+ const tokenStore = useTokenStore()
+const userIdStore = useUserIdStore()
   const searchType = ref('1');
   const searchInput = ref("");
   const fullText = "llPaper Engine";
@@ -203,10 +205,10 @@ const preLogin = async ()=>{
   console.log(res);
   userStore.setUsername(res.data.username);
   tokenStore.setToken(res.data.token);
+  userIdStore.setUserId(res.data.userId);
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
   }
   onMounted(() => {
-    preLogin()
     let index = 0;
     let index2 = 0;
     const interval = setInterval(() => {

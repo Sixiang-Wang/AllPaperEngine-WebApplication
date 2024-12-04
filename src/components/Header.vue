@@ -4,12 +4,16 @@ import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
 import { useRoute } from 'vue-router';
 import cookieUtil from "@/utils/cookie.js"
-import {useUserStore} from "@/store/store.js";
 import {ElMessage} from "element-plus";
 import MessageCenter from "@/views/MessageCenter.vue";
 import * as httpUtil from "@/api/http.js";
+import http from "@/api/http.js";
+import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
 const button_index = ref("登录");
 const userStore = useUserStore();
+const tokenStore = useTokenStore()
+const userIdStore = useUserIdStore()
+const userId = computed(()=>userIdStore.userId)
 const user_name = computed(() => userStore.username);
 const back = ()=> {
   router.push('/main');
@@ -46,6 +50,7 @@ const goToMessage = ()=>{
 }
 const isRedPoint = ref(false);
 onMounted(async() =>{
+  preLogin()
   if(cookieUtil.getCookie("token")===null || cookieUtil.getCookie("token")===''){
     button_index.value = "登录";
   }else{
@@ -58,6 +63,17 @@ onMounted(async() =>{
     console.error(e);
   }
 })
+
+const preLogin = async ()=>{
+  const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
+  console.log(res);
+  userStore.setUsername(res.data.username);
+  tokenStore.setToken(res.data.token);
+  userIdStore.setUserId(res.data.userId);
+  console.log(userId.value)
+  cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
+}
+
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
