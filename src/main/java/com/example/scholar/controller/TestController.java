@@ -12,7 +12,7 @@ public class TestController {
     @GetMapping(value="/111")
     @ApiOperation(value="这是一个测试接口")
     public R test() {
-        return R.ok("111");
+        return R.ok().put("num",1);
     }
     @PostMapping(value="/222")
     @ApiOperation(value="post接口测试")

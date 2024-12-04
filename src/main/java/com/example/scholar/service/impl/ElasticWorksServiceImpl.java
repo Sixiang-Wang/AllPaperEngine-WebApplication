@@ -28,6 +28,7 @@ import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,8 +52,20 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     }
 
     @Override
-    public List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm) {
-        return elasticSearchRepository.findByTitleOrKeywordsTextOrAbstract(searchTerm);
+    public int getLenthOfFindTitleOrKeywordsTextOrAbstract(String searchTerm) {
+        List<SearchHit<Works>> hits = elasticSearchRepository.findByTitleOrKeywordsTextOrAbstract(searchTerm);
+        return hits.size();
+    }
+
+    @Override
+    public List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstract(String searchTerm,int pageIndex) {
+        List<SearchHit<Works>> hits = elasticSearchRepository.findByTitleOrKeywordsTextOrAbstract(searchTerm);
+        List<SearchHit<Works>> ans = new ArrayList<>();
+        //从第一页开始
+        for(int i=pageIndex*20-20;i<pageIndex*20&&i<hits.size();i++){
+            ans.add(hits.get(i));
+        }
+        return ans;
     }
 
 

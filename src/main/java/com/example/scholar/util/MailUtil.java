@@ -1,7 +1,6 @@
 package com.example.scholar.util;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,7 +15,7 @@ import java.util.Random;
 public class MailUtil {
     private final Random random = new Random();
 
-    private final String myMailAddress = "2562187628@qq.com";
+    private final String myMailAddress = "2142703200@qq.com";
 
     @Resource
     private JavaMailSender javaMailSender;

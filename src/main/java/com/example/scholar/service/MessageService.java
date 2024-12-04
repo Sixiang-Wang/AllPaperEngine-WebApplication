@@ -14,4 +14,6 @@ public interface MessageService {
     List<MessageDto> getMessages(int userId);
     int readMessage(int userId, int messageId);
     MessageDto getMessage(int messageId);
+
+    void deleteAllMessage(int userid);
 }

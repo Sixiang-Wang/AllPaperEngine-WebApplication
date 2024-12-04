@@ -84,4 +84,9 @@ public class MessageServiceImpl implements MessageService {
         return messageDto;
     }
 
+    @Override
+    public void deleteAllMessage(int userid) {
+        messageMapper.deleteAllMessage(userid);
+    }
+
 }
