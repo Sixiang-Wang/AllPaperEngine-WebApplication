@@ -20,4 +20,5 @@ public interface WorkService {
     void updateKeywordsAndAbstract();
 
     int getWorkLengthByTitleWords(String word);
+    List<WorkResultDto> getTopNWorkByKeywords(String word,int n);
 }

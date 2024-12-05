@@ -80,6 +80,18 @@ public class OpenAlexController {
     }
 
 
+    @GetMapping(value="/work/getTopNWorksByKeyword")
+    public R getTopNWorksByKeyword(@RequestParam("keyword") String keyword,@RequestParam("number") int number){
+        try{
+            List<WorkResultDto> workResultDtoList = workService.getTopNWorkByKeywords(keyword,number);
+            return R.ok().put("work",workResultDtoList);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+
     @GetMapping(value="/concepts/getByWorkId")
     public R getConceptsByWorkId(@RequestParam("workId") String workId){
         try{
