@@ -5,10 +5,13 @@ import com.example.scholar.domain.Authentication;
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.service.AuthenticationService;
+import com.example.scholar.service.MessageService;
 import io.swagger.annotations.ApiOperation;
+import org.joda.time.DateTime;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -17,7 +20,8 @@ import java.util.List;
 public class AuthenticationController {
     @Resource
     private AuthenticationService authenticationService;
-
+    @Resource
+    private MessageService messageService;
     @GetMapping(value = "/getAll")
     public R getAllAuthentication(){
         try {
@@ -46,6 +50,19 @@ public class AuthenticationController {
             return R.error(e.toString());
         }
     }
+    @GetMapping(value="/ifauthenticated")
+    public R ifAuthenticated(@TokenToUser User user){
+        try {
+            List<Authentication> list = authenticationService.selectAuthenticationById(user.getUserid());
+            if(list.isEmpty()){
+                return R.ok("not authenticated");
+            }else{
+                return R.ok("authenticated");
+            }
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
 
     @GetMapping(value = "/put")
     public R putAuthentication(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal,@RequestParam("workplace")String workplace,@RequestParam("field")String field,@RequestParam("mail")String mail){
@@ -54,6 +71,8 @@ public class AuthenticationController {
             if(result == -1){
                 return R.error("something went wrong");
             }else{
+                messageService.createMessage(1, userId, "您于"+new DateTime(System.currentTimeMillis())+
+                        "发起的成为科研人员的申请已成功提交，请耐心等待管理员审核。");
                 return R.ok("success");
             }
         }catch (Exception e){
@@ -68,6 +87,8 @@ public class AuthenticationController {
             if(result == -1){
                 return R.error("something went wrong");
             }else{
+                messageService.createMessage(1, user.getUserid(), "您于"+new DateTime(System.currentTimeMillis())+
+                        "发起的成为科研人员的申请已成功提交，请耐心等待管理员审核。");
                 return R.ok("success");
             }
         }catch (Exception e){
@@ -76,7 +97,7 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "/delete")
-    public R putAuthentication(@RequestParam("id")int id){
+    public R deleteAuthentication(@RequestParam("id")int id){
         try {
             int result = authenticationService.deleteAuthentication(id);
             if(result == -1){

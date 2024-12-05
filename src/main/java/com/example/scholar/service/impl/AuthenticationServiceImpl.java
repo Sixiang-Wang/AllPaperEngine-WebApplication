@@ -39,4 +39,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationMapper.deleteAuthentication(id);
         return 1;
     }
+
 }

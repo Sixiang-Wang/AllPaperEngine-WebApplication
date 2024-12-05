@@ -16,6 +16,7 @@ import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -104,6 +106,20 @@ public class UserController {
             }
         }
 
+    @GetMapping(value="/ifScholar")
+    @ApiOperation("判断是否为scholar")
+    public R ifScholar(@TokenToUser User user){
+        try{
+            User user1 = userMapper.selectUserById(user.getUserid());
+            if(user1.getRole() == 1){
+                return R.ok().put("judge",1);
+            }else{
+                return R.ok().put("judge",0);
+            }
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
     @PostMapping(value = "/setUserDetails")
     @ApiOperation("设置用户详细信息接口")
     public R setUserDetails(
@@ -588,6 +604,8 @@ public class UserController {
             if(user!=null){
                 user.setRole(role);
                 userMapper.updateUserRole(user);
+                messageService.createMessage(1,userId,"恭喜，您于"+new DateTime(System.currentTimeMillis()) +
+                        "通过了审核，已成为科研人员！");
                 return R.ok("success").put("user",user);
             }else {
                 return R.error("get user failed");
