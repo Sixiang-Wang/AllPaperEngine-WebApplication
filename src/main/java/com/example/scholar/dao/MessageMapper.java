@@ -27,4 +27,6 @@ public interface MessageMapper {
     void readMessage(int messageId);
     @Select("select count(*) from message where to_id = #{userId} and is_read = 0")
     int getCountOfUnreadMessage(int userId);
+    @Delete("delete from message where to_id = #{userId}")
+    void deleteAllMessage(int userId);
 }

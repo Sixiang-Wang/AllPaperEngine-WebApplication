@@ -3,7 +3,6 @@ package com.example.scholar.dto;
 import lombok.Data;
 
 import java.sql.Date;
-
 @Data
 public class MessageDto {
     private int id;

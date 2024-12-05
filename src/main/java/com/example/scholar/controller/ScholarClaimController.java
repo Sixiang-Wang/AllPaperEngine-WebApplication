@@ -20,7 +20,7 @@ public class ScholarClaimController {
         try{
             List<WorkResultDto> works = claimWorkService.selectClaimedWorks(scholarId);
             if(works == null){
-                return R.error("something went wrong");
+                return R.error("Not A Scholar");
             }else{
                 return R.ok("success").put("works",works);
             }
