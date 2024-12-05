@@ -21,3 +21,14 @@ export const useTokenStore = defineStore('token', {
         },
     },
 });
+
+export const useUserIdStore = defineStore('userId', {
+    state: () => ({
+        userId: '',
+    }),
+    actions: {
+        setUserId(userId) {
+            this.userId = userId;
+        },
+    },
+});

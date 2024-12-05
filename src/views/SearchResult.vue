@@ -8,7 +8,7 @@ import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
 
 
-
+let resStore = ref([])
 let searchInput = ref("");
 let searchType = ref('1');
 const totalLength = ref(0);
@@ -30,39 +30,55 @@ const handlePageChange = (page) => {
 };
 
 const updateSearchResults = async () => {
+  console.log(searchInput.value)
   const res = await httpUtil.get('/openalex/get/page', {
     page: currentPage.value
   });
   console.log(res.data);
   searchResults.value = res.data.works;
 };
-const search =async () => {
+
+
+
+const search = async () => {
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
-      console.log(1)
+      console.log("begin search")
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
-        console.log(res);
+        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
-        console.log(searchResults.value);
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
-        console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/search/getWorkByTitleWord', {
-          page: currentPage.value,
-          word: route.query.input
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+          word: searchInput.value,
+          page: currentPage.value
         })
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/search/getWorkLengthByTitle', {
-          word: route.query.input
-        });
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
+
+        searchResults.value = res.data.works || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+
+        for(let result of searchResults.value){
+          if(result.highlightFields.hasOwnProperty('title')){
+            result.content.title = result.highlightFields.title[0];
+          }
+          if(result.highlightFields.hasOwnProperty('abstract')){
+            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+            if(startIndex!=-1){
+              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+            }else{
+              result.content.abstractText = result.highlightFields.abstract[0];
+            }
+          }
+          // if(result.highlightFields.hasOwnProperty('keywordsText')){
+          //   result.content.abstractText = result.highlightFields.abstract[0];
+          // }
+        }
       }
 
       break;
@@ -79,12 +95,31 @@ const search =async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        // console.log(searchInput.value)
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords',{
-          searchterm: searchInput.value
-        });
-        console.log(res);
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+          word: searchInput.value,
+          page: currentPage.value
+        })
+
+        searchResults.value = res.data.works || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+
+        for(let result of searchResults.value){
+          if(result.highlightFields.hasOwnProperty('title')){
+            result.content.title = result.highlightFields.title[0];
+          }
+          if(result.highlightFields.hasOwnProperty('abstract')){
+            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+            }else{
+              result.content.abstractText = result.highlightFields.abstract[0];
+            }
+          }
+          // if(result.highlightFields.hasOwnProperty('keywordsText')){
+          //   result.content.abstractText = result.highlightFields.abstract[0];
+          // }
       }
+      
       break;
 
     case '3'://查找关键词
@@ -99,11 +134,31 @@ const search =async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        // console.log(searchInput.value)
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords',{
-          searchterm: searchInput.value
-        });
-        console.log(res);
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+          word: searchInput.value,
+          page: currentPage.value
+        })
+
+        searchResults.value = res.data.works || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+
+        for(let result of searchResults.value){
+          if(result.highlightFields.hasOwnProperty('title')){
+            result.content.title = result.highlightFields.title[0];
+          }
+          if(result.highlightFields.hasOwnProperty('abstract')){
+            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+            if(startIndex!=-1){
+              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+            }else{
+              result.content.abstractText = result.highlightFields.abstract[0];
+            }
+          }
+          // if(result.highlightFields.hasOwnProperty('keywordsText')){
+          //   result.content.abstractText = result.highlightFields.abstract[0];
+          // }
+        }
       }
       break;
     case '4'://查找摘要
@@ -118,11 +173,31 @@ const search =async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        // console.log(searchInput.value)
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords',{
-          searchterm: searchInput.value
-        });
-        console.log(res);
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+          word: searchInput.value,
+          page: currentPage.value
+        })
+
+        searchResults.value = res.data.works || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+
+        for(let result of searchResults.value){
+          if(result.highlightFields.hasOwnProperty('title')){
+            result.content.title = result.highlightFields.title[0];
+          }
+          if(result.highlightFields.hasOwnProperty('abstract')){
+            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+            if(startIndex!=-1){
+              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+            }else{
+              result.content.abstractText = result.highlightFields.abstract[0];
+            }
+          }
+          // if(result.highlightFields.hasOwnProperty('keywordsText')){
+          //   result.content.abstractText = result.highlightFields.abstract[0];
+          // }
+        }
       }
       //searchResults = res;
       break;
@@ -144,23 +219,36 @@ const mainSearch = ()=>{
 // 监听路由变化，以便更新 currentPage
 watch(route, (newRoute) => {
   currentPage.value = Number(newRoute.query.page) || 1;
-  updateSearchResults();
+  searchInput.value = Text(newRoute.query.input) || "";
+  searchType.value = newRoute.query.type || '1';
+  searchResults.value = newRoute.query.searchResult || [];
+  // updateSearchResults();
 });
 
 const handleInputChange = async () => {
+  console.log(searchInput.value)
+  if (searchInput.value == '') {
+    showAutoComplete = false;
+  } else {
+    showAutoComplete = true;
+  }
+
   if (searchInput.value.length > 0) {
     let res = null;
     switch (searchType.value){
       case '1':
         //主题
-        res = await httpUtil.get('/elasticSearch/works/autoCompletionWithCompletionSuggester', {
+        res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
           searchContent: searchInput.value 
         });
-        // autoCompletion.value = res.data;
-        // showAutoComplete = true;
-        // console.log(res);
-
-
+        const titleSuggest1 = res.data.suggestions.suggest.title_suggest;
+        if(titleSuggest1 && titleSuggest1.length>0){
+          console.log(titleSuggest1);
+          suggestions  = titleSuggest1[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
         break;
       case '2':
         //篇名
@@ -211,7 +299,7 @@ const handleInputChange = async () => {
     }
     
   } else {
-    autocompleteSuggestions.value = [];
+    autocompleteSuggestions = [];
     showAutoComplete = false;
   }
 };
@@ -219,16 +307,16 @@ const handleInputChange = async () => {
 const selectSuggestion = (suggestion) => {
   searchInput.value = suggestion;
   showAutoComplete = false;
-  console.log(showAutoComplete)
-  // mainSearch();
+  // console.log(showAutoComplete)
+  // search();
 };
 
 const hoverSuggestion = (index) => {
   hoveredIndex.value = index;
 };
 
-const leaveSuggestion = () => {
-  hoveredIndex.value = -1;
+const leaveSuggestion = (index) => {
+  index = -1;
 };
 
 
@@ -249,7 +337,7 @@ const leaveSuggestion = () => {
               </el-select>
             </template>
           </el-input>
-          <el-button :icon="Search" @click="mainSearch" class="search-button"/>
+          <el-button :icon="Search" @click="search" class="search-button"/>
         </div>
         <div v-if="showAutoComplete" class="autocomplete-container">
           <div 
@@ -275,9 +363,9 @@ const leaveSuggestion = () => {
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="searchResults.length !== 0" style="display: flex;">
           <div>
-            <SingleResult v-for="result in searchResults" :key="result.id" :author="result.paperInformation"
-                          :content="result.abstractText"
-                          :title="result.title" :cited="result.cited" :id="result.id"/>
+            <SingleResult v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
+                          :content="result.content.abstractText"
+                          :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
           </div>
         </div>
         <div v-else style="margin-top: 4%; max-width: 70%">
