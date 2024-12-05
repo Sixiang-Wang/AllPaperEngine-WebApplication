@@ -2,6 +2,7 @@ package com.example.scholar.service.impl;
 
 import com.example.scholar.dao.AuthorMapper;
 import com.example.scholar.dao.ConceptsMapper;
+import com.example.scholar.dao.KeywordMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.WorkResultDto;
@@ -25,6 +26,8 @@ public class WorkServiceImpl implements WorkService {
     private AuthorService authorService;
     @Resource
     private ConceptsMapper conceptsMapper;
+    @Resource
+    private KeywordMapper keywordMapper;
     @Resource
     private WorkService workService;
     @Override
@@ -197,6 +200,26 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public int getWorkLengthByTitleWords(String word) {
         return workMapper.getWorkLengthByTitle(word);
+    }
+
+    @Override
+    public List<WorkResultDto> getTopNWorkByKeywords(String word, int n) {
+        List<Work> works = keywordMapper.getTopNWorksByKeywords(word,n);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+        for(Work work: works){
+
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setId(work.getId());
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+        return workResultDtoList;
     }
 
     @Override
