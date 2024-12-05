@@ -45,16 +45,19 @@ const goBack = ()=>{
 
 <template>
   <div v-if="page === 1">
+    <div v-if="messages.length > 0">
   <SingleMessage v-for="message in messages"
-                 v-if="messages.length > 0"
                  :is-read="message.isRead"
                  :key="message.id"
                  :user-name="message.userName"
                  :date="message.date"
                  :message-index="message.index"
                 @click="goToMessage(message)"/>
+<!--      <el-button type="danger" @click="deleteAll" style="bottom: 0">删除所有信息</el-button>-->
+    </div>
   <div style="display: flex; flex-direction: column; " v-else>
     <img src="@/assets/image/noMessage.png"/>
+
     <div>
       <span style="display: flex; justify-content: center; color: #7a7a7a">暂无消息</span>
     </div>
@@ -62,6 +65,7 @@ const goBack = ()=>{
   </div>
   <div v-if="page === 2">
     <CertainMessage
+        :id="currentMessage.id"
         :date="currentMessage.date"
         :index="currentMessage.index"
         :user-name="currentMessage.userName"

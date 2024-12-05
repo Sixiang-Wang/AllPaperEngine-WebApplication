@@ -57,7 +57,20 @@ onMounted(async() =>{
   }catch (e){
     console.error(e);
   }
+  try{
+    const res = await httpUtil.get('/user/ifScholar',{},{
+      Authorization: cookieUtil.getCookie("token")
+    });
+    if(res.data.judge === 1){
+      ifAuthentication.value = false;
+    }else{
+      ifAuthentication.value = true;
+    }
+  }catch (e){
+    console.error(e);
+  }
 })
+const ifAuthentication = ref(true);
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
@@ -98,7 +111,7 @@ const handleDrawer = ()=>{
       <template #title>作者服务</template>
       <el-menu-item index="/user/personalInfo">个人门户</el-menu-item>
       <el-menu-item index="/user/academicClaim">学术成果认领</el-menu-item>
-      <el-menu-item index="/scholarIdentify">学者认证</el-menu-item>
+      <el-menu-item index="/scholarIdentify" v-if="ifAuthentication">学者认证</el-menu-item>
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="4">热点分析</el-menu-item>

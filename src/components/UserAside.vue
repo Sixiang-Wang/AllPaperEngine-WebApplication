@@ -18,11 +18,11 @@
         <el-icon class="aside-icon"><Lock /></el-icon>
         <span class="fontStyle">安全隐私</span>
       </el-menu-item>
-      <el-menu-item index="/user/academicClaim">
+      <el-menu-item index="/user/academicClaim" v-if="ifAuthentication">
         <el-icon class="aside-icon"><document /></el-icon>
         <span class="fontStyle">成果管理</span>
       </el-menu-item>
-      <el-menu-item index="/user/personalInfo">
+      <el-menu-item index="/user/personalInfo" v-if="ifAuthentication">
         <el-icon class="aside-icon"><data-line/></el-icon>
         <span class="fontStyle">个人门户</span>
       </el-menu-item>
@@ -40,6 +40,9 @@
 
 <script setup>
 import {Clock, DataLine, Document, Lock, Setting, Star, User} from '@element-plus/icons-vue'
+import {onMounted, ref} from "vue";
+import * as httpUtil from "@/api/http.js";
+import cookieUtil from "@/utils/cookie.js";
 
 const handleOpen = (key, keyPath) => {
   console.log(key, keyPath)
@@ -47,6 +50,21 @@ const handleOpen = (key, keyPath) => {
 const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
+const ifAuthentication = ref(true);
+onMounted(async()=>{
+  try{
+    const res = await httpUtil.get('/user/ifScholar',{},{
+      Authorization: cookieUtil.getCookie("token")
+    });
+    if(res.data.judge === 1){
+      ifAuthentication.value = false;
+    }else{
+      ifAuthentication.value = true;
+    }
+  }catch (e){
+    console.error(e);
+  }
+})
 </script>
 
 

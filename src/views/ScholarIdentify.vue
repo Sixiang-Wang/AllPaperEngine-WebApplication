@@ -1,9 +1,10 @@
 <script setup>
 import {Edit, Picture, Setting, SuccessFilled, Upload} from "@element-plus/icons-vue";
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {ElMessage} from "element-plus";
 import httpUtil from "@/api/http.js";
 import router from "@/router/index.js";
+import * as cookieUtil from "@/utils/cookie.js";
 
 // 表单数据
 const form = ref({
@@ -56,6 +57,7 @@ const startCountdown = async () => {
 }
 
 const sendVerificationCode = async () => {
+  console.log(form.value.email);
   const res = await httpUtil.get('/sendMail', {
     to: form.value.email,
   });
@@ -64,12 +66,54 @@ const sendVerificationCode = async () => {
   }
   form.value.sentCode = res.data.verifyCode;
 }
-const oneToTwo = () => {
+const oneToTwo = async() => {
+
+  // const form = ref({
+  //   name: '',
+  //   organization: '',
+  //   researchField: '',
+  //   email: '',
+  //   sentCode: '',
+  //   verificationCode: ''
+  // });
+  if(form.value.name === ''){
+    ElMessage.error("请输入真实姓名！");
+    return;
+  }
+  if(form.value.organization === ''){
+    ElMessage.error("请输入单位名称！");
+    return;
+  }
+  if(form.value.researchField === ''){
+    ElMessage.error("请输入研究领域！");
+    return;
+  }
+  if(form.value.email === ''){
+    ElMessage.error("请输入邮箱！");
+    return;
+  }
   if (form.value.verificationCode !== form.value.sentCode || !verificationCodeisValid.value) {
+
     ElMessage.error("验证码不正确或已过期");
     return;
-  } else {
-    currentStep.value = '2';
+  }
+  try{
+    const res = await httpUtil.get("/authentication/put/token",{
+      nameReal: form.value.name,
+      workplace: form.value.organization,
+      field: form.value.researchField,
+      mail: form.value.email
+    },{Authorization: cookieUtil.getCookie("token")});
+    console.log(res.data);
+    if(res.data.msg === 'success'){
+      ElMessage.success("提交成功！");
+      currentStep.value = '2';
+    }else{
+      ElMessage.warning("提交失败；请稍后再试")
+    }
+  }catch (e){
+    ElMessage.error("提交失败，请稍后再试");
+    console.error(e);
   }
 }
 const adminOneToTwo = () => {
@@ -97,6 +141,21 @@ const tableData2 = [
 const backToMain = ()=>{
   router.push('/main');
 }
+onMounted(async()=>{
+  try{
+    const res = await httpUtil.get('/authentication/ifauthenticated',{},{
+      Authorization: cookieUtil.getCookie("token")
+    });
+    if(res.data.msg === 'authenticated'){
+      ElMessage.warning("您已申请成为学者；请耐心等待审核结果");
+      setTimeout(()=>{
+        router.push('/main');
+      },1500);
+    }
+  }catch (e){
+    console.error(e);
+  }
+})
 </script>
 
 <template>
