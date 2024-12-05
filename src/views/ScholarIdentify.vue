@@ -142,6 +142,11 @@ const backToMain = ()=>{
   router.push('/main');
 }
 onMounted(async()=>{
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    await router.push('/login');
+    return;
+  }
   try{
     const res = await httpUtil.get('/authentication/ifauthenticated',{},{
       Authorization: cookieUtil.getCookie("token")

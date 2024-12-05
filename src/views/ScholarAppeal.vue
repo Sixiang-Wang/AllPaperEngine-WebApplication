@@ -1,9 +1,10 @@
 <script setup>
 import {Edit, Picture, Search, Setting, SuccessFilled, Upload} from "@element-plus/icons-vue";
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {ElMessage} from "element-plus";
 import httpUtil from "@/api/http.js";
 import router from "@/router/index.js";
+import * as cookieUtil from "@/utils/cookie.js";
 
 // 表单数据
 const form = ref({
@@ -150,6 +151,14 @@ const reasonRules = ref({
   appealReason: [
     { required: true, message: '请选择原因！', trigger: 'blur' }
   ]
+})
+onMounted(()=>{
+  if(cookieUtil.getCookie("token")===null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+  }
 })
 </script>
 

@@ -4,6 +4,7 @@ import {Search,Plus,Minus} from "@element-plus/icons-vue";
 import httpUtil from "@/api/http.js"
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
+import * as cookieUtil from "@/utils/cookie.js";
 const myAchievement = ref([
 
 ]);
@@ -174,6 +175,14 @@ const advancedSearch = () => {
     console.log(111);
     router.push({path: "/search", query: {input: searchRows.value[0].searchInput, page: 1}});
 }
+onMounted(()=>{
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+  }
+})
 </script>
 
 <template>

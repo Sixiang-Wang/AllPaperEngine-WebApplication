@@ -4,7 +4,9 @@ import { ArrowRight } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 import router from "@/router/index.js";
 import httpUtil from "@/api/http.js";
-import {useUserIdStore} from "@/store/store.js";  // 引入 API 相关功能
+import {useUserIdStore} from "@/store/store.js";
+import * as cookieUtil from "@/utils/cookie.js";
+import {ElMessage} from "element-plus";  // 引入 API 相关功能
 
 // avatar 头像
 const avatar = ref({
@@ -36,6 +38,13 @@ const isLoading = ref(true);
 
 // 获取个人成果
 onMounted(async () => {
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+    return;
+  }
   try {
     const res = await httpUtil.get('/claim/get/personal', { scholarId: userId.value });
     if (res.data && res.data.works) {

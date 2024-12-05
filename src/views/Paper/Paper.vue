@@ -380,6 +380,7 @@ const comments = ref([
               <el-button @click="submitComment" style="height: 35px;">发送</el-button>
 
             </div>
+            <div v-if="comments.length > 0">
             <SingleComment v-for="comment in comments" :key="comment.id"
                            :comment-index="comment.commentIndex"
                            :user-name="comment.userName"
@@ -388,6 +389,7 @@ const comments = ref([
                            :likes="comment.likes"
                            :date="comment.date"
                            :user-id="comment.userId"/>
+            </div>
           </el-tab-pane>
         </el-tabs>
 

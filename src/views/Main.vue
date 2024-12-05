@@ -8,6 +8,7 @@ import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute} from 'vue-router';
 import { useUserIdStore} from "@/store/store.js";
+import {ElMessage} from "element-plus";
 
   const totalLength = ref(0);
   let searchResults = ref([]);
@@ -27,6 +28,10 @@ const userIdStore = useUserIdStore()
   const fullText2 = "ower Your Academic Journey";
   const displayedText2 = ref("P"); // 动态显示的文字
   const search = async () => {
+    if(searchInput.value === ''){
+      ElMessage.warning("请先输入搜索内容！");
+      return;
+    }
     switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口

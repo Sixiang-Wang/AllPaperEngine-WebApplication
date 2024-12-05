@@ -19,6 +19,13 @@ const back = ()=> {
   router.push('/main');
 }
 const goToUserInfo = () => {
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+    return;
+  }
   router.push('/user/info');
 }
 const avatar = ref({
@@ -35,6 +42,8 @@ const goToLogin = () => {
   }else{
     cookieUtil.deleteCookie("token");
     cookieUtil.deleteCookie("username");
+    ElMessage.success("已退出登录！");
+    router.push('/main');
     location.reload();
   }
 }
@@ -130,7 +139,7 @@ const handleDrawer = ()=>{
       <el-menu-item index="/scholarIdentify" v-if="ifAuthentication">学者认证</el-menu-item>
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="4">热点分析</el-menu-item>
+    <el-menu-item index="/hotpoint">热点分析</el-menu-item>
     <el-menu-item index="5">联系我们</el-menu-item>
     <div class="header-menu-right" >
       <div class="message-icon-container">
