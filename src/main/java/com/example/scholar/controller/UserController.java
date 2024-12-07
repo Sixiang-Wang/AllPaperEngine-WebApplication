@@ -443,7 +443,7 @@ public class UserController {
     }
 
     // 查用户带有指定标签的收藏(多选，并集，标签列表)
-    @GetMapping("/viewAllFavoritesWithTags")
+    @PostMapping("/viewAllFavoritesWithTags")
     @ApiOperation("查用户带有指定标签的收藏接口")
     public R viewAllFavoritesWithTags(@RequestParam int userId,
                                       @RequestParam List<String> tags) {
