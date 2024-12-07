@@ -140,7 +140,7 @@ const handleDrawer = ()=>{
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/hotpoint">热点分析</el-menu-item>
-    <el-menu-item index="5">联系我们</el-menu-item>
+    <el-menu-item index="5">联系我吗</el-menu-item>
     <div class="header-menu-right" >
       <div class="message-icon-container">
         <div>
