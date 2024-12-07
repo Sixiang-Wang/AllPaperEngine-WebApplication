@@ -148,6 +148,7 @@ onMounted(async()=>{
     return;
   }
   try{
+    console.log('哈哈哈');
     const res = await httpUtil.get('/authentication/ifauthenticated',{},{
       Authorization: cookieUtil.getCookie("token")
     });

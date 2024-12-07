@@ -2,6 +2,8 @@
 import { onMounted, onBeforeUnmount, ref,reactive } from "vue";
 import { ArrowRight,Picture,Camera } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
+import * as httpUtil from "@/api/http.js";
+import * as cookieUtil from "@/utils/cookie.js";
 
 const avatar = ref({
   defaultAvatar: defaultAvatar,
@@ -62,7 +64,18 @@ const tableData3 = ref([
     editable: false,
   },
 ]);
-
+onMounted(async()=>{
+  try{
+    const res = await httpUtil.get('/user/getUserInfo',{},{
+      Authorization: cookieUtil.getCookie("token")
+    })
+    tableData.value = res.data.tables[0];
+    tableData2.value = res.data.tables[1];
+    tableData3.value = res.data.tables[2];
+  }catch (e){
+    console.error(e);
+  }
+})
 const activeRow = ref(null); // 用于跟踪当前活动行
 const allTables = [tableData, tableData2, tableData3]; // 方便遍历所有表格数据
 const saveConfirmVisible = ref(false);
