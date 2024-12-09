@@ -1,7 +1,7 @@
 <script setup>
 
 import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plus/icons-vue";
-import {computed, nextTick, onMounted, ref} from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
 import SingleResult from "@/components/single/SingleResult.vue";
@@ -43,6 +43,10 @@ const citeTotalLength = ref(0);
 const citeCurrentPage = ref(1);
 let workId = ref(0);
 
+
+watch(activeName, (newVal) => {
+  localStorage.setItem("activeTab", newVal);
+});
 
 const updateReferencePageResults = () => {
   const start = (referenceCurrentPage.value - 1) * pageSize;
@@ -129,6 +133,10 @@ const getWork = async (workId) => {
 
 onMounted(async () => {
       const route = useRoute();
+      const savedTab = localStorage.getItem("activeTab");
+      if (savedTab) {
+        activeName.value = savedTab;
+      }
 
       // 从查询参数中获取 id
       workId = route.query.id;
@@ -169,6 +177,8 @@ onMounted(async () => {
       console.log(recommends.value);
     }
 )
+
+
 
 let citeNumChange = useTransition(citeNum, {
   duration: 300,
