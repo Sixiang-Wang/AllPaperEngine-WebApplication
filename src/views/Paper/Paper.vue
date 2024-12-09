@@ -149,14 +149,18 @@ onMounted(async () => {
 
       //获取评论
       console.log(workId);
-      collectNum.value = await httpUtil.get('/user/workFavoriteNum', {
+      await httpUtil.get('/user/workFavoriteNum', {
         publicationId: workId
-      })
+      }).then(res=>{
+            collectNum.value = res.data.favoriteNum
+          }
+      )
 
       const resComments = await httpUtil.get('/comment/get', {
         workId: workId
       })
       comments.value = resComments.data.comments;
+      commentNum.value = comments.value.length;
 
       //获取推荐
       const resCommends = await httpUtil.get('/test/recommend');
@@ -182,17 +186,12 @@ let commentNumChange = useTransition(commentNum, {
 //统计值在这里
 citeNum.value = 0
 referenceNum.value = 51
-
-commentNum.value = 9
 isCollected.value = false
 //
 
 const question = ref("")
 
-const submitQuestion = () => {
-  console.log("Question submitted:", question);
-  // Handle the form submission logic
-}
+
 
 const collectContent = computed(() =>
     isCollected.value ? '取消收藏' : '添加到收藏'
@@ -329,7 +328,7 @@ const deleteFavorite = async ()=>{
 
   } catch (e) {
     console.error(e);
-    ElMessage.error("发送失败");
+    ElMessage.error("取消收藏失败");
   }
 }
 const submitComment = async () => {
