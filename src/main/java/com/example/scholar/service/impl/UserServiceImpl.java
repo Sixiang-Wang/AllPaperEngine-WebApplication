@@ -476,18 +476,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public HashMap<String, Object> addUserFavorite(int userId, String publicationId, List<String> tags) {
         HashMap<String, Object> resultMap = new HashMap<>();
+        if(userMapper.haveFavorite(userId,publicationId)==0){
         for (String tag : tags) {
-            if(userMapper.haveFavorite(userId,publicationId)==0){
                 int result = userMapper.addUserFavorite(userId, publicationId, tag);
                 if (result > 0) {
                     resultMap.put("msg", "收藏添加成功");
                 } else {
                     resultMap.put("msg", "收藏添加失败");
                 }
-            }else {
-                resultMap.put("msg", "已经收藏了");
-            }
-
+        }
+        }else {
+            resultMap.put("msg", "已经收藏了");
         }
         //貌似用不着其实
 //        String timestamp = String.valueOf(System.currentTimeMillis());

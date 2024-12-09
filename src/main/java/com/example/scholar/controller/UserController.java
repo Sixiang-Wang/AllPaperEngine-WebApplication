@@ -5,6 +5,7 @@ import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.CheckResult;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
+import com.example.scholar.dto.AddUserFavoriteDto;
 import com.example.scholar.dto.LoginDto;
 import com.example.scholar.dto.RegistDto;
 import com.example.scholar.service.MessageService;
@@ -477,14 +478,32 @@ public class UserController {
     }
 
     // 添加用户收藏(标签可多选)
+//    @PostMapping(value = "/addUserFavorite")
+//    @ApiOperation("添加用户收藏接口")
+//    public R addUserFavorite(
+//            @RequestParam int userId,
+//            @RequestParam String publicationId,
+//            @RequestParam List<String> tags) {
+//        try {
+//            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, tags);
+//            if ("收藏添加成功".equals(resultMap.get("msg"))) {
+//                return R.ok("Favorite added successfully");
+//            } else {
+//                return R.error((String) resultMap.get("msg"));
+//            }
+//        } catch (Exception e) {
+//            return R.error(e.toString());
+//        }
+//    }
+
     @PostMapping(value = "/addUserFavorite")
     @ApiOperation("添加用户收藏接口")
     public R addUserFavorite(
-            @RequestParam int userId,
-            @RequestParam String publicationId,
-            @RequestParam List<String> tags) {
+            @RequestBody AddUserFavoriteDto addUserFavoriteDto) {  // 修改为 @RequestBody
         try {
-            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, tags);
+
+            HashMap<String, Object> resultMap = userService.addUserFavorite(addUserFavoriteDto.getUserId(), addUserFavoriteDto.getPublicationId(), addUserFavoriteDto.getTags());
+
             if ("收藏添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite added successfully");
             } else {
@@ -495,15 +514,16 @@ public class UserController {
         }
     }
 
+
     @GetMapping(value = "/haveFavorite")
     @ApiOperation("用户是否收藏")
-    public R addUserFavorite(
+    public R haveUserFavorite(
             @RequestParam int userId,
             @RequestParam String publicationId
     ){
         try {
             int res = userMapper.haveFavorite(userId, publicationId);
-            return R.ok("Favorite added successfully").put("haveFavorite",res);
+            return R.ok("get num").put("haveFavorite",res);
         } catch (Exception e) {
             return R.error(e.toString());
         }
