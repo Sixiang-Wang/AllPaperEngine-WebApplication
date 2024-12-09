@@ -1,7 +1,7 @@
 <script setup>
 
 import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plus/icons-vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, nextTick, onMounted, ref} from "vue";
 import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
 import SingleResult from "@/components/single/SingleResult.vue";
@@ -11,6 +11,10 @@ import {useRoute} from "vue-router";
 import SingleComment from "@/components/single/SingleComment.vue";
 import * as cookieUtil from "@/utils/cookie.js";
 import SingleRecommend from "@/components/single/SingleRecommend.vue";
+import {useUserIdStore} from "@/store/store.js";
+
+const userIdStore = useUserIdStore()
+const userId = computed(()=>userIdStore.userId)
 
 const title = ref("");
 const auth = ref([]);
@@ -203,6 +207,91 @@ const commentIndex = ref("");
 const toggleCite = () => {
 
 }
+
+//collect
+const collectVisible = ref(false);
+const collectTag = ref([])
+const tagInputValue = ref('')
+const tagInputVisible = ref(false)
+
+const toggleCollect = async () => {
+  tagInputVisible.value = false;
+  if(!isCollected.value){
+    if (userId.value==null||!userId.value) {
+      ElMessage.warning("请登录后再操作");
+      return;
+    }
+
+    try {
+      const res = await httpUtil.get('/user/viewAllTags', {
+        userId: userId.value,
+      });
+      collectTag.value = (res.data.tags || []).map(item => item.tag);
+    } catch (error) {
+      console.error("获取标签失败:", error);
+      ElMessage.error("获取标签失败");
+    }
+
+    collectVisible.value = true;
+  }
+
+
+  if (isCollected.value) {
+    collectNum.value--;
+  } else {
+    collectNum.value++;
+  }
+  isCollected.value = !isCollected.value;
+}
+
+const addTag = ()=>{
+  try {
+    httpUtil.post('/user/createNewTag', {
+      tag: tagInputValue.value,
+      userId: userId.value,
+    });
+  } catch (error) {
+    console.error("新建标签失败:", error);
+    ElMessage.error("新建标签失败");
+  }
+}
+
+const selectedTags = ref([]);
+const handleCollectSubmit = async () => {
+  try {
+    const res = await httpUtil.post('/user/addCollection', {
+      workId: workId,
+      tags: selectedTags.value,
+    });
+    if (res.data.success) {
+      ElMessage.success("收藏成功！");
+      isCollected.value = true;
+      collectNum.value++;
+    } else {
+      ElMessage.warning(res.data.message || "收藏失败");
+    }
+  } catch (error) {
+    console.error("收藏失败:", error);
+    ElMessage.error("收藏失败");
+  } finally {
+    collectVisible.value = false;
+  }
+};
+
+const showInput = () => {
+  tagInputVisible.value = true
+
+}
+
+const handleInputConfirm = () => {
+  if (tagInputValue.value) {
+    addTag()
+    collectTag.value.push(tagInputValue.value)
+  }
+  tagInputVisible.value = false
+  tagInputValue.value = ''
+}
+
 const submitComment = async () => {
   try {
     const res = await httpUtil.get('/comment/insert', {
@@ -224,14 +313,7 @@ const submitComment = async () => {
   }
 }
 
-const toggleCollect = () => {
-  if (isCollected.value) {
-    collectNum.value--;
-  } else {
-    collectNum.value++;
-  }
-  isCollected.value = !isCollected.value;
-}
+
 
 const comments = ref([
   {
@@ -433,12 +515,71 @@ const recommends = ref([]);
         </div>
       </div>
     </div>
-
   </div>
+
+  <!-- 收藏弹窗 -->
+  <el-dialog
+      title="添加到收藏"
+      v-model="collectVisible"
+      center
+      width="400px"
+  >
+
+    <!-- 标签选择 -->
+    <div style="margin-left: 10px;">
+      <el-checkbox-group v-model="selectedTags" style="font-size: 16px;  display: flex; flex-direction: column;" class="custom-checkbox-group">
+        <el-checkbox
+            v-for="tag in collectTag"
+            :label="tag"
+            :key="tag"
+            size="large"
+        >
+          {{ tag }}
+        </el-checkbox>
+      </el-checkbox-group>
+
+
+
+      <!-- 新增标签按钮 -->
+      <el-input
+          v-if="tagInputVisible"
+          ref="InputRef"
+          v-model="tagInputValue"
+          size="default"
+          @keyup.enter="handleInputConfirm"
+          @blur="handleInputConfirm"
+          style="margin-top:10px;width: 150px"
+      />
+      <el-button
+          v-else
+          size="small"
+          @click="showInput"
+          style="background: rgba(165, 165, 165, 0.4); color: #5a5a5a;margin-top: 10px; margin-bottom: 10px;"
+      >
+        + New Tag
+      </el-button>
+
+    </div>
+    <!-- 提交按钮居中 -->
+    <span
+        slot="footer"
+        class="dialog-footer"
+        style="display: flex; justify-content: center;margin-top: 35px"
+    >
+    <el-button style="padding-left: 30px;padding-right: 30px" type="primary" @click="handleCollectSubmit">提交  </el-button>
+  </span>
+  </el-dialog>
+
 </template>
 
 
 <style scoped>
+.custom-checkbox-group :deep(.el-checkbox__label) {
+  font-size: 15px !important;
+}
+
+
+
 .el-popper.is-customized {
   /* Set padding to ensure the height is 32px */
   padding: 6px 12px;
