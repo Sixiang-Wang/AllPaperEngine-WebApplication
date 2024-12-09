@@ -481,10 +481,9 @@ public class UserController {
     public R addUserFavorite(
             @RequestParam int userId,
             @RequestParam String publicationId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp,
             @RequestParam List<String> tags) {
         try {
-            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, timestamp, tags);
+            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, tags);
             if ("收藏添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite added successfully");
             } else {
@@ -495,6 +494,19 @@ public class UserController {
         }
     }
 
+    @GetMapping(value = "/haveFavorite")
+    @ApiOperation("用户是否收藏")
+    public R addUserFavorite(
+            @RequestParam int userId,
+            @RequestParam String publicationId
+    ){
+        try {
+            int res = userMapper.haveFavorite(userId, publicationId);
+            return R.ok("Favorite added successfully").put("haveFavorite",res);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
     // 删除用户收藏
     @DeleteMapping("/deleteUserFavorite")
     @ApiOperation("删除某个标签下单一收藏接口")

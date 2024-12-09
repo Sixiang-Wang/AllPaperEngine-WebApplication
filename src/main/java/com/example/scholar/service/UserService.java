@@ -27,7 +27,7 @@ public interface UserService {
     HashMap<String, Object> changePassword(int userId, String oldPassword, String newPassword);
     public HashMap<String, Object> updatePassword(int userId, String newPassword);
     // 在某个标签添加收藏
-    HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, List<String> tags);
+    HashMap<String, Object> addUserFavorite(int userId, String publicationId, List<String> tags);
 
     // 在某个标签取消收藏
     HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String tag);
