@@ -74,9 +74,11 @@ public interface UserMapper {
             "</script>")
     List<HashMap<String, Object>> selectUserFavorite(int userId);
 
+    @Select("select count(*) from user_favorite where userid=#{userId} and publicationid = #{publicationId}")
+    int haveFavorite(int userId, String publicationId);
     // 在某个标签添加一条收藏记录
-    @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp, tag) VALUES (#{userId}, #{publicationId}, #{timestamp}, #{tag})")
-    int addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String tag);
+    @Insert("INSERT INTO user_favorite (userid, `publicationid`,tag) VALUES (#{userId}, #{publicationId}, #{tag})")
+    int addUserFavorite(int userId, String publicationId, String tag);
 
     // 在某个标签删除一条收藏记录
     @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND tag = #{tag}")
@@ -84,7 +86,7 @@ public interface UserMapper {
 
     // 更新收藏记录的时间戳
     @Update("UPDATE user_favorite SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int updateUserFavoriteTimestamp(int userId, String publicationId, LocalDateTime timestamp);
+    void updateUserFavoriteTimestamp(int userId, String publicationId, LocalDateTime timestamp);
 
     // 查看所有历史记录
     @Select("SELECT * FROM user_browser_history WHERE userid = #{userId}")

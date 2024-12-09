@@ -12,8 +12,7 @@ import com.example.scholar.util.Md5Utils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -475,17 +474,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, List<String> tags) {
+    public HashMap<String, Object> addUserFavorite(int userId, String publicationId, List<String> tags) {
         HashMap<String, Object> resultMap = new HashMap<>();
         for (String tag : tags) {
-            int result = userMapper.addUserFavorite(userId, publicationId, timestamp, tag);
-            if (result > 0) {
-                resultMap.put("msg", "收藏添加成功");
-            } else {
-                resultMap.put("msg", "收藏添加失败");
+            if(userMapper.haveFavorite(userId,publicationId)==0){
+                int result = userMapper.addUserFavorite(userId, publicationId, tag);
+                if (result > 0) {
+                    resultMap.put("msg", "收藏添加成功");
+                } else {
+                    resultMap.put("msg", "收藏添加失败");
+                }
+            }else {
+                resultMap.put("msg", "已经收藏了");
             }
+
         }
-        userMapper.updateUserFavoriteTimestamp(userId, publicationId, timestamp);
+        //貌似用不着其实
+//        String timestamp = String.valueOf(System.currentTimeMillis());
+//        Instant instant = Instant.ofEpochMilli(Long.parseLong(timestamp)); // 将时间戳转换为 Instant
+//        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+//
+//        userMapper.updateUserFavoriteTimestamp(userId, publicationId, localDateTime);
         return resultMap;
     }
 

@@ -14,7 +14,6 @@ import java.util.Scanner;
 @MapperScan("com.example.scholar.dao")
 @SpringBootApplication
 public class ScholarApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ScholarApplication.class, args);
     }

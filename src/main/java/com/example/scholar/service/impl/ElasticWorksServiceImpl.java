@@ -1,28 +1,23 @@
 package com.example.scholar.service.impl;
 
+import com.example.scholar.dao.SearchedWorkMapper;
 import com.example.scholar.domain.openalexElasticsearch.Works;
-import com.example.scholar.domain.openalexElasticsearch.WorksCompletion;
 import com.example.scholar.repository.ElasticSearchRepository;
 import com.example.scholar.service.ElasticWorkService;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
-import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.elasticsearch.search.suggest.completion.FuzzyOptions;
-import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import springfox.documentation.spring.web.json.Json;
 
@@ -32,23 +27,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.search.suggest.SuggestBuilders.completionSuggestion;
-
 
 @Service("ElasticWorkService")
 public class ElasticWorksServiceImpl implements ElasticWorkService {
-
-
 
     @Autowired
     private ElasticsearchOperations elasticsearchOperations;
     @Resource
     private ElasticSearchRepository elasticSearchRepository;
+    @Resource
+    private SearchedWorkMapper elasticWorkMapper;
 
     @Override
     public List<SearchHit<Works>> searchByTitle(String title) {
-        return elasticSearchRepository.findByTitle(title);
+        List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
+        List<Works> worksList = searchHits.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+        int cnt = 0;
+        for(Works work: worksList)
+        {
+            elasticWorkMapper.insertSearchWork(work);
+            if(cnt <= 100000)
+            {
+                elasticWorkMapper.insertSearchWork(work);
+                cnt++;
+            }
+        }
+        return searchHits;
     }
 
     @Override
