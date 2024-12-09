@@ -498,18 +498,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String tag) {
+    public HashMap<String, Object> deleteUserFavoriteOld(int userId, String publicationId, String tag) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
         }
-        int result = userMapper.deleteUserFavorite(userId, publicationId, tag);
+        int result = userMapper.deleteUserFavoriteOld(userId, publicationId, tag);
         if (result > 0) {
             resultMap.put("msg", "收藏删除成功");
         }
         else {
+            resultMap.put("msg", "收藏删除失败");
+        }
+        return resultMap;
+    }
+
+    @Override
+    public HashMap<String, Object> deleteUserFavorite(int userId, String publicationId) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        int result = userMapper.deleteUserFavorite(userId, publicationId);
+        if (result > 0) {
+            resultMap.put("msg", "收藏删除成功");
+        } else {
             resultMap.put("msg", "收藏删除失败");
         }
         return resultMap;
