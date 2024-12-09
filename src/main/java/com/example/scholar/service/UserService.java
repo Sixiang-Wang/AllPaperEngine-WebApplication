@@ -29,8 +29,11 @@ public interface UserService {
     // 在某个标签添加收藏
     HashMap<String, Object> addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, List<String> tags);
 
-    // 在某个标签取消收藏
-    HashMap<String, Object> deleteUserFavorite(int userId, String publicationId, String tag);
+    // 在某个标签取消收藏（旧版）
+    HashMap<String, Object> deleteUserFavoriteOld(int userId, String publicationId, String tag);
+
+    // 删除收藏（新版）
+    HashMap<String, Object> deleteUserFavorite(int userId, String publicationId);
 
     // 添加浏览历史
     HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
@@ -67,4 +70,5 @@ public interface UserService {
     List<HashMap<String, Object>> viewAllTagsAndCounts(int userId);
 
     Boolean updateUserAvatar(Integer userid,String avatar);
+
 }

@@ -78,9 +78,13 @@ public interface UserMapper {
     @Insert("INSERT INTO user_favorite (userid, publicationid, timestamp, tag) VALUES (#{userId}, #{publicationId}, #{timestamp}, #{tag})")
     int addUserFavorite(int userId, String publicationId, LocalDateTime timestamp, String tag);
 
-    // 在某个标签删除一条收藏记录
+    // 在某个标签删除一条收藏记录（旧版）
     @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND tag = #{tag}")
-    int deleteUserFavorite(int userId, String publicationId, String tag);
+    int deleteUserFavoriteOld(int userId, String publicationId, String tag);
+
+    // 删除收藏（新版）
+    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId}")
+    int deleteUserFavorite(int userId, String publicationId);
 
     // 更新收藏记录的时间戳
     @Update("UPDATE user_favorite SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
@@ -156,6 +160,5 @@ public interface UserMapper {
 
     @Delete("DELETE FROM user WHERE userid = #{userId}")
     int deleteUser(int userId);
-
 
 }

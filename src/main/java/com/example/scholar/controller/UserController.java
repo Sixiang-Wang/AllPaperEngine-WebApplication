@@ -496,13 +496,13 @@ public class UserController {
     }
 
     // 删除用户收藏
-    @DeleteMapping("/deleteUserFavorite")
-    @ApiOperation("删除某个标签下单一收藏接口")
-    public R deleteUserFavorite(@RequestParam int userId,
+    @DeleteMapping("/deleteUserFavoriteOld")
+    @ApiOperation("删除某个标签下单一收藏接口（旧版）")
+    public R deleteUserFavoriteOld(@RequestParam int userId,
                                 @RequestParam String publicationId,
                                 @RequestParam String tag) {
         try {
-            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId, tag);
+            HashMap<String, Object> resultMap = userService.deleteUserFavoriteOld(userId, publicationId, tag);
             if ("收藏删除成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite deleted successfully");
             } else {
@@ -512,6 +512,24 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
+    // 删除用户收藏（新），即从所有标签下移除某篇文章
+    @DeleteMapping("/deleteUserFavorite")
+    @ApiOperation("删除单条收藏接口（新版）")
+    public R deleteUserFavorite(@RequestParam int userId,
+                            @RequestParam String publicationId) {
+        try {
+            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId);
+            if ("收藏删除成功".equals(resultMap.get("msg"))) {
+                return R.ok("Favorite deleted successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 
     // 添加一条浏览历史
     @PostMapping("/addHistory")
