@@ -528,6 +528,20 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
+    @GetMapping(value = "/workFavoriteNum")
+    @ApiOperation("收藏数量")
+    public R workFavoriteNum(
+            @RequestParam String publicationId
+    ){
+        try {
+            int res = userMapper.getWorkFavoriteNum(publicationId);
+            return R.ok("get num").put("favoriteNum",res);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
     // 删除用户收藏
     @DeleteMapping("/deleteUserFavoriteOld")
     @ApiOperation("删除某个标签下单一收藏接口（旧版）")
