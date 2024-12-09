@@ -142,11 +142,17 @@ onMounted(async () => {
 
       updateReferencePageResults();
       updateCitePageResults();
-      getWork(workId);
+      await getWork(workId);
+
+
+      haveFavorite();
 
       //获取评论
-
       console.log(workId);
+      collectNum.value = await httpUtil.get('/user/workFavoriteNum', {
+        publicationId: workId
+      })
+
       const resComments = await httpUtil.get('/comment/get', {
         workId: workId
       })
@@ -176,7 +182,7 @@ let commentNumChange = useTransition(commentNum, {
 //统计值在这里
 citeNum.value = 0
 referenceNum.value = 51
-collectNum.value = 273
+
 commentNum.value = 9
 isCollected.value = false
 //
@@ -221,7 +227,6 @@ const toggleCollect = async () => {
       ElMessage.warning("请登录后再操作");
       return;
     }
-
     try {
       const res = await httpUtil.get('/user/viewAllTags', {
         userId: userId.value,
@@ -231,22 +236,19 @@ const toggleCollect = async () => {
       console.error("获取标签失败:", error);
       ElMessage.error("获取标签失败");
     }
-
     collectVisible.value = true;
   }
 
-
   if (isCollected.value) {
+    await deleteFavorite()
     collectNum.value--;
-  } else {
-    collectNum.value++;
+    isCollected.value = !isCollected.value;
   }
-  isCollected.value = !isCollected.value;
 }
 
 const addTag = ()=>{
   try {
-    httpUtil.post('/user/createNewTag', {
+    httpUtil.post2('/user/createNewTag', {
       tag: tagInputValue.value,
       userId: userId.value,
     });
@@ -259,11 +261,20 @@ const addTag = ()=>{
 const selectedTags = ref([]);
 const handleCollectSubmit = async () => {
   try {
-    const res = await httpUtil.post('/user/addCollection', {
-      workId: workId,
-      tags: selectedTags.value,
+
+    console.log('Request Payload:', {
+      publicationId: workId,
+      tags: [...selectedTags.value],
+      userId: userId.value,
     });
-    if (res.data.success) {
+
+
+    const res = await httpUtil.post('/user/addUserFavorite', {
+      publicationId: workId,
+      tags: [...selectedTags.value],
+      userId: userId.value
+    });
+    if (res.data.code===200) {
       ElMessage.success("收藏成功！");
       isCollected.value = true;
       collectNum.value++;
@@ -292,6 +303,35 @@ const handleInputConfirm = () => {
   tagInputValue.value = ''
 }
 
+const haveFavorite = async ()=>{
+  try {
+    const res = await httpUtil.get('/user/haveFavorite', {
+      publicationId: workId,
+      userId: userId.value
+    })
+    isCollected.value = res.data.haveFavorite
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("获取收藏失败,请先登录");
+  }
+}
+const deleteFavorite = async ()=>{
+  try {
+    const res = await httpUtil.get('/user/deleteUserFavorite', {
+      publicationId: workId,
+      userId: userId.value
+    })
+    if(res.data.code===200){
+      ElMessage.success("取消收藏成功")
+    }else {
+      ElMessage.error("取消收藏失败")
+    }
+
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("发送失败");
+  }
+}
 const submitComment = async () => {
   try {
     const res = await httpUtil.get('/comment/insert', {
