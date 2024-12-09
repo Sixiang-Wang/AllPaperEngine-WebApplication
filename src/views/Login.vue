@@ -105,7 +105,7 @@ const login =  async() => {
 <template>
   <div class="login-div component">
     <div class="component" style="display: flex; justify-content: center;">
-      <span class="login-title">IScholar平台登录</span>
+      <span class="login-title">AllPaper Engine 平台登录</span>
     </div>
     <el-form :label-position="right"
              :model="loginForm"
@@ -139,7 +139,7 @@ const login =  async() => {
       </el-form-item>
     </el-form>
     <div class="component" style="display: flex; justify-content: center;margin-top: 10px;">
-      <el-button @keyup.enter="login(loginForm)" @click="login(loginForm)" type="primary" style="width: 100%; height:40px;">登录</el-button>
+      <el-button @keyup.enter="login" @click="login" type="primary" style="width: 100%; height:40px;">登录</el-button>
       <el-button @click="goToRegister"  style="width: 100%; height:40px;">注册</el-button>
     </div>
   </div>

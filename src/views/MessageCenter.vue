@@ -1,5 +1,5 @@
 <script setup>
-import SingleMessage from "@/components/SingleMessage.vue";
+import SingleMessage from "@/components/single/SingleMessage.vue";
 import {onMounted, ref} from "vue";
 import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";

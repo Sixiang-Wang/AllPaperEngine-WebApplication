@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import {computed, onMounted} from 'vue';
 import { useRoute } from 'vue-router';
 import Header from '@/components/Header.vue';
 
@@ -15,6 +15,20 @@ const isLogin = computed(()=> {
 const isRegister = computed(()=> {
   return route.path === '/register';
 })
+onMounted(()=>{
+  // 检测浏览器路由改变页面不刷新问题,hash模式的工作原理是hashchange事件
+  window.addEventListener('hashchange', () => {
+    console.log(window.location.hash,'window.location.hash')
+    let currentPath = window.location.hash.slice(1)
+    console.log(currentPath,'currentPath')
+    if (this.$route.path !== currentPath) {
+      this.$router.push(currentPath)
+    }
+  }, false)
+})
+const key = computed(() => {
+  return route.path + Math.random();
+});
 </script>
 
 <template>
@@ -25,7 +39,7 @@ const isRegister = computed(()=> {
       <el-header height="80px" style="margin:0;padding: 0;">
         <Header/>
       </el-header>
-      <el-main style="margin:0;padding: 0;"><router-view/></el-main>
+      <el-main style="margin:0;padding: 0;"><router-view :key="key"/></el-main>
     </el-container>
   </div>
 

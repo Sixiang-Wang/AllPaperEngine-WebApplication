@@ -97,12 +97,12 @@ const handleLike = async()=>{
     {{commentIndex}}
   </div>
   <div class="comment-third-line">
-    <img src="@/assets/svg/liked.svg" @click="handleLike" style="width: 20px" v-if="thumbState"/>
-    <img src="@/assets/svg/thumb.svg" @click="handleLike" style="width: 20px" v-else/>
+    <img src="../../assets/svg/liked.svg" @click="handleLike" style="width: 20px" v-if="thumbState"/>
+    <img src="../../assets/svg/thumb.svg" @click="handleLike" style="width: 20px" v-else/>
     <span style="font-weight: lighter;font-size: 16px;margin-right: 2%">{{ currentLikes }}</span>
-    <img src="@/assets/svg/dislike.svg" style="width: 16px;margin-right: 2%" @click="ElMessage.success('踩你嘛呢，奖励你踩提莫的蘑菇')"/>
+    <img src="../../assets/svg/dislike.svg" style="width: 16px;margin-right: 2%" @click="ElMessage.success('踩你嘛呢，奖励你踩提莫的蘑菇')"/>
 <!--    <img src="@/assets/svg/comment.svg" style="width: 18px;margin-right: 2%"/>-->
-    <img src="@/assets/svg/delete.svg" style="width: 18px;margin-right: 2%" v-if="ifMine" @click="changeDeleteVisible"/>
+    <img src="../../assets/svg/delete.svg" style="width: 18px;margin-right: 2%" v-if="ifMine" @click="changeDeleteVisible"/>
   </div>
   <el-dialog v-model="deleteVisible" title="提示" width="500" align-center>
     <span style="font-weight: normal">您确定要删除该评论吗？</span>

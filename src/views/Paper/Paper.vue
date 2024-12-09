@@ -4,12 +4,13 @@ import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plu
 import {computed, onMounted, ref} from "vue";
 import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
-import SingleResult from "@/components/SingleResult.vue";
+import SingleResult from "@/components/single/SingleResult.vue";
 import httpUtil from "@/api/http.js";
 import * as urlParams from "@/api/http.js";
 import {useRoute} from "vue-router";
-import SingleComment from "@/components/SingleComment.vue";
+import SingleComment from "@/components/single/SingleComment.vue";
 import * as cookieUtil from "@/utils/cookie.js";
+import SingleRecommend from "@/components/single/SingleRecommend.vue";
 
 const title = ref("");
 const auth = ref([]);
@@ -140,12 +141,18 @@ onMounted(async () => {
       getWork(workId);
 
       //获取评论
+
       console.log(workId);
       const resComments = await httpUtil.get('/comment/get', {
         workId: workId
       })
-      console.log(resComments.data);
       comments.value = resComments.data.comments;
+
+      //获取推荐
+      const resCommends = await httpUtil.get('/test/recommend');
+      console.log('获取'+resCommends.data)
+      recommends.value = resCommends.data.recommends;
+      console.log(recommends.value);
     }
 )
 
@@ -234,6 +241,10 @@ const comments = ref([
   }
 ]);
 
+/**
+ * 推荐部分
+ */
+const recommends = ref([]);
 
 </script>
 
@@ -248,7 +259,7 @@ const comments = ref([
           <p>
             <span v-for="(author, index) in auth" :key="index">
               <a
-                  :href="'http://localhost:2221/authorInfo?id=' + author.id + '&name=' + author.name + '&citedByCount=' + author.citedByCount + '&worksCount=' + author.worksCount"
+                  :href="'http://localhost:2221/#/authorInfo?id=' + author.id + '&name=' + author.name + '&citedByCount=' + author.citedByCount + '&worksCount=' + author.worksCount"
                   target="_blank"
                   class="author-link"
               >
@@ -415,24 +426,10 @@ const comments = ref([
 
         </el-card>
         <!-- Form Section -->
-        <div class="ai-assistant">
-          <h3>AI Assistant</h3>
-          <p>
-            让AI辅助你深入了解文章内容
-          </p>
-          <el-input
-              v-model="question"
-              style="width: 230px;padding-right: 10px"
-              :autosize="{ minRows: 4, maxRows: 10 }"
-              type="textarea"
-              placeholder="询问一个文章相关问题"
-          />
-          <el-button :icon="Search"
-                     type="info"
-                     circle
-                     class="search-button"
-                     @click="submitQuestion"
-          />
+        <div class="suggested-papers">
+          <span>相关论文推荐</span>
+          <SingleRecommend v-for="recommend in recommends" :key="recommend.id" :date="recommend.date"
+                           :title="recommend.title" :id="recommend.id"/>
         </div>
       </div>
     </div>
@@ -575,9 +572,8 @@ const comments = ref([
   margin: 20px 0;
 }
 
-.ai-assistant {
-  background-color: rgba(240, 240, 240, 0.5);
-  padding: 5px 20px 20px 20px;
+.suggested-papers {
+  padding: 20px 20px 20px 20px;
   border-radius: 5px;
   border: #e1e1e1 1px solid;
 }

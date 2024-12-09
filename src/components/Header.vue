@@ -134,7 +134,7 @@ const handleDrawer = ()=>{
 
     <el-sub-menu index="3">
       <template #title>作者服务</template>
-      <el-menu-item index="/user/personalInfo">个人门户</el-menu-item>
+      <el-menu-item index="/user/personalInfo" v-if="ifAuthentication">个人门户</el-menu-item>
       <el-menu-item index="/user/academicClaim">学术成果认领</el-menu-item>
       <el-menu-item index="/scholarIdentify" v-if="ifAuthentication">学者认证</el-menu-item>
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>

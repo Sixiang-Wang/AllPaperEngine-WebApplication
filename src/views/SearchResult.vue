@@ -2,7 +2,7 @@
 import SearchAside from "@/components/SearchAside.vue";
 import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
-import SingleResult from "@/components/SingleResult.vue";
+import SingleResult from "@/components/single/SingleResult.vue";
 import router from "@/router/index.js";
 import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
