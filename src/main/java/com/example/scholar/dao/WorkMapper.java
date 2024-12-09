@@ -28,5 +28,10 @@ public interface WorkMapper {
     @Update("update openalex_works set keywordsText = #{keywords},abstract=#{abstractText} where id = #{id}")
     void insertKeywordsAndAbstract(String id,String keywords,String abstractText);
 
+    /**
+     * tpz: 这是我暂时用来测试的，别删
+     */
+    @Select("select * from openalex_works limit 5")
+    List<Work> selectRecommendTest();
 
 }

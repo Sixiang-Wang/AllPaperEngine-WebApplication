@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -580,7 +581,26 @@ public class UserController {
             return R.error(e.toString());
         }
     }
-
+    @GetMapping(value="/getUserInfo")
+    @ApiOperation("获取用户详细信息")
+    public R getUserInfo(@TokenToUser User user){
+        try{
+            List<List<HashMap<String,Object>>> res = userService.getUserInfo(user.getUserid());
+            return R.ok("success").put("tables",res);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+    @GetMapping(value="/getUserInfo/id")
+    @ApiOperation("获取用户详细信息(方便测试版)")
+    public R getUserInfo(@RequestParam("userId")int userId){
+        try{
+            List<List<HashMap<String,Object>>> res = userService.getUserInfo(userId);
+            return R.ok("success").put("tables",res);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
     @GetMapping("/getById")
     @ApiOperation("获取用户")
     public R getUserById(@RequestParam int userId){
@@ -604,7 +624,9 @@ public class UserController {
             if(user!=null){
                 user.setRole(role);
                 userMapper.updateUserRole(user);
-                messageService.createMessage(1,userId,"恭喜，您于"+new DateTime(System.currentTimeMillis()) +
+                DateTimeFormatter formatter = org.joda.time.format.DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+                messageService.createMessage(1,userId,"恭喜，您于"+new DateTime(System.currentTimeMillis()).toString(formatter) +
                         "通过了审核，已成为科研人员！");
                 return R.ok("success").put("user",user);
             }else {

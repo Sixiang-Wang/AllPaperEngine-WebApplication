@@ -8,6 +8,8 @@ import com.example.scholar.service.AuthenticationService;
 import com.example.scholar.service.MessageService;
 import io.swagger.annotations.ApiOperation;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -71,7 +73,9 @@ public class AuthenticationController {
             if(result == -1){
                 return R.error("something went wrong");
             }else{
-                messageService.createMessage(1, userId, "您于"+new DateTime(System.currentTimeMillis())+
+                DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+                messageService.createMessage(1, userId, "您于"+new DateTime(System.currentTimeMillis()).toString(formatter)+
                         "发起的成为科研人员的申请已成功提交，请耐心等待管理员审核。");
                 return R.ok("success");
             }
@@ -87,7 +91,9 @@ public class AuthenticationController {
             if(result == -1){
                 return R.error("something went wrong");
             }else{
-                messageService.createMessage(1, user.getUserid(), "您于"+new DateTime(System.currentTimeMillis())+
+                DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+                messageService.createMessage(1, user.getUserid(), "您于"+new DateTime(System.currentTimeMillis()).toString(formatter)+
                         "发起的成为科研人员的申请已成功提交，请耐心等待管理员审核。");
                 return R.ok("success");
             }
@@ -103,6 +109,7 @@ public class AuthenticationController {
             if(result == -1){
                 return R.error("something went wrong");
             }else{
+
                 return R.ok("success");
             }
         }catch (Exception e){

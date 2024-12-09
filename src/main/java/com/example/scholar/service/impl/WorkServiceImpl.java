@@ -49,6 +49,23 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
+    public List<WorkResultDto> getRecommends() {
+        List<Work> works = workMapper.selectRecommendTest();
+        List<WorkResultDto> workResultDtos = new ArrayList<>();
+        for(Work work: works){
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setId(work.getId());
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setPaperInformation("A Vignes - Industrial & Engineering Chemistry Fundamentals, 1966 - ACS Publications");
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            //这里后续需要修改
+            workResultDtos.add(workResultDto);
+        }
+        return workResultDtos;    }
+
+    @Override
     public List<WorkResultDto> getWorksByPage(int page) {
         int from = page*20-20;//设置前端每页最多20条
         List<Work> works = workMapper.selectAllWorksByPage(from);

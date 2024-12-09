@@ -67,4 +67,6 @@ public interface UserService {
     List<HashMap<String, Object>> viewAllTagsAndCounts(int userId);
 
     Boolean updateUserAvatar(Integer userid,String avatar);
+
+    List<List<HashMap<String, Object>>> getUserInfo(int userId);
 }

@@ -10,6 +10,7 @@ import java.util.List;
 @Component
 public interface WorkService {
     List<WorkResultDto> getWorks();
+    List<WorkResultDto> getRecommends();
     List<WorkResultDto> getWorksByPage(int page);
     WorkSpecificResultDto getWorkById(String workId);
     List<WorkResultDto> getWorksByTitleWords(String word,int page);

@@ -4,6 +4,7 @@ package com.example.scholar.service.impl;
 import com.example.scholar.dao.UserMapper;
 import com.example.scholar.dao.UserTokenMapper;
 import com.example.scholar.domain.User;
+import com.example.scholar.domain.constant.ConstDef;
 import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.service.UserService;
 import com.example.scholar.util.JwtUtils;
@@ -166,6 +167,67 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean updateUserAvatar(Integer userid, String avatar){
         return userMapper.updateUserAvatar(userid.toString(),avatar)>0;
+    }
+
+    @Override
+    public List<List<HashMap<String, Object>>> getUserInfo(int userId) {
+        User user = userMapper.selectUserById(userId);
+        List<List<HashMap<String, Object>>> res = new ArrayList<>();
+        List<HashMap<String, Object>> tableData1 = new ArrayList<>();
+        for(int i=0;i<3;i++){
+            HashMap<String, Object> tmp = new HashMap<>();
+            tmp.put("feature", ConstDef.constTable1.get(i));
+            switch (i){
+                case 0:
+                    tmp.put("value", user.getName());
+                    break;
+                case 1:
+                    tmp.put("value", user.getBirthTime());
+                    break;
+                case 2:
+                    tmp.put("value","男");//好像没性别捏
+                    break;
+            }
+            tmp.put("editable", false);
+            tableData1.add(tmp);
+        }
+        res.add(tableData1);
+        List<HashMap<String, Object>> tableData2 = new ArrayList<>();
+        for(int i=0;i<3;i++){
+            HashMap<String, Object> tmp = new HashMap<>();
+            tmp.put("feature", ConstDef.constTable2.get(i));
+            switch (i){
+                case 0:
+                    tmp.put("value", user.getAcademicField());
+                    break;
+                case 1:
+                    tmp.put("value", user.getCompany());
+                    break;
+                case 2:
+                    tmp.put("value",user.getProfession());
+                    break;
+            }
+            tmp.put("editable", false);
+            tableData2.add(tmp);
+        }
+        res.add(tableData2);
+        List<HashMap<String, Object>> tableData3 = new ArrayList<>();
+        for(int i=0;i<2;i++){
+            HashMap<String, Object> tmp = new HashMap<>();
+            tmp.put("feature", ConstDef.constTable3.get(i));
+            switch (i){
+                case 0:
+                    tmp.put("value", user.getMail());
+                    break;
+                case 1:
+                    tmp.put("value", user.getPhone());
+                    break;
+            }
+            tmp.put("editable", false);
+            tableData3.add(tmp);
+        }
+        res.add(tableData3);
+        return res;
     }
 
     @Override
