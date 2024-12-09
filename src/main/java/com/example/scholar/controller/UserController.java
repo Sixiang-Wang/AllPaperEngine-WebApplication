@@ -413,7 +413,7 @@ public class UserController {
     }
 
     // 删除标签
-    @DeleteMapping("/deleteTag")
+    @GetMapping("/deleteTag")
     @ApiOperation("删除标签接口")
     public R deleteTag(@RequestParam int userId, @RequestParam String tag) {
         try {
@@ -543,7 +543,7 @@ public class UserController {
     }
 
     // 删除用户收藏
-    @DeleteMapping("/deleteUserFavoriteOld")
+    @GetMapping("/deleteUserFavoriteOld")
     @ApiOperation("删除某个标签下单一收藏接口（旧版）")
     public R deleteUserFavoriteOld(@RequestParam int userId,
                                 @RequestParam String publicationId,
@@ -561,7 +561,7 @@ public class UserController {
     }
 
     // 删除用户收藏（新），即从所有标签下移除某篇文章
-    @DeleteMapping("/deleteUserFavorite")
+    @GetMapping("/deleteUserFavorite")
     @ApiOperation("删除单条收藏接口（新版）")
     public R deleteUserFavorite(@RequestParam int userId,
                             @RequestParam String publicationId) {
@@ -614,7 +614,7 @@ public class UserController {
     }
 
     // 删除某条浏览历史
-    @DeleteMapping("/deleteHistory/{id}")
+    @GetMapping("/deleteHistory/{id}")
     @ApiOperation("删除某条浏览历史接口")
     public R deleteHistory(@RequestParam int userId,
                            @RequestParam String publicationId) {
@@ -631,7 +631,7 @@ public class UserController {
     }
 
     // 清空所有浏览历史
-    @DeleteMapping("/clearAllHistory")
+    @GetMapping("/clearAllHistory")
     @ApiOperation("清空所有浏览历史接口")
     public R clearAllHistory(@RequestParam int userId) {
         try {
