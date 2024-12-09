@@ -29,6 +29,8 @@ public interface UserService {
     // 在某个标签添加收藏
     HashMap<String, Object> addUserFavorite(int userId, String publicationId, List<String> tags);
 
+    public List<List<HashMap<String, Object>>> getUserInfo(int userId);
+
     // 在某个标签取消收藏（旧版）
     HashMap<String, Object> deleteUserFavoriteOld(int userId, String publicationId, String tag);
 
