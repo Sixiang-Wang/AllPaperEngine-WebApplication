@@ -84,7 +84,7 @@ export function post(url, params = {}) {
     httpService({
       url: url,
       method: 'post',
-      data: params
+      params: params
     }).then(response => {
       resolve(response);
     }).catch(error => {

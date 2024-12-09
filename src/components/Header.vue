@@ -59,7 +59,12 @@ const goToMessage = ()=>{
 }
 const isRedPoint = ref(false);
 onMounted(async() =>{
-  preLogin()
+  if(userId.value==null||userId.value === ''){
+    preLogin()
+  } else {
+    console.log('no preLogin')
+  }
+
   if(cookieUtil.getCookie("token")===null || cookieUtil.getCookie("token")===''){
     button_index.value = "登录";
   }else{
@@ -91,7 +96,6 @@ const preLogin = async ()=>{
   userStore.setUsername(res.data.username);
   tokenStore.setToken(res.data.token);
   userIdStore.setUserId(res.data.userId);
-  console.log(userId.value)
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
 }
 
