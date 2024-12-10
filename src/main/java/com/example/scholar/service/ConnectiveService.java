@@ -8,6 +8,7 @@ import java.util.List;
 
 @Component
 public interface ConnectiveService {
+    void create();
     List<String> sortKeywords();
     List<Works> getWorksByKeyword(String keyword);
 }

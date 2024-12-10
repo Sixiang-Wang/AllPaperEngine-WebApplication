@@ -80,11 +80,8 @@ public class MailServiceImpl implements MailService {
 
     private void cleanExpiredCodes() {
         long currentTime = System.currentTimeMillis();
-
         verifyCodeTimes.entrySet().removeIf(entry -> currentTime > entry.getValue());
         verifyCodes.entrySet().removeIf(entry -> !verifyCodeTimes.containsKey(entry.getKey()));
         lastRequestTimes.entrySet().removeIf(entry -> !verifyCodeTimes.containsKey(entry.getKey()));
-
-        System.out.println("已清理过期验证码和发送记录！");
     }
 }

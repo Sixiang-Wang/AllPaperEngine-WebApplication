@@ -17,6 +17,16 @@ import java.util.List;
 public class ConnectiveController {
     @Resource
     private ConnectiveService connectiveService;
+    @GetMapping(value = "/create")
+    public R create()
+    {
+        try {
+            connectiveService.create();
+            return R.ok();
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
 
     @GetMapping(value="/getSortedKeywords")
     public R sortKeywords(){
