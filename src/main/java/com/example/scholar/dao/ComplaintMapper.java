@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 public interface ComplaintMapper {
-    @Select("select * from complaint")
+    @Select("select * from complaint where state = 0")
     List<Complaint> getAllComplaints();
 
     @Insert("insert into complaint (user_id, name_real, workplace, mail, work_id, reason, addition) values " +
@@ -29,5 +29,5 @@ public interface ComplaintMapper {
     @Select("select * from complaint where id = #{id}")
     Complaint selectComplaintById(int id);
     @Select("select * from user_claim where work_id = #{id}")
-    UserClaimedWork selectUserClaimById(String id);
+    List<UserClaimedWork> selectUserClaimById(String id);
 }

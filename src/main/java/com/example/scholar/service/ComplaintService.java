@@ -1,6 +1,7 @@
 package com.example.scholar.service;
 
 import com.example.scholar.domain.Complaint;
+import com.example.scholar.dto.AllComplaintDto;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ public interface ComplaintService {
 
     int dealComplaint(int complaintId, int result);
 
-    List<Complaint> getAllComplaints();
+    List<AllComplaintDto> getAllComplaints();
 }
