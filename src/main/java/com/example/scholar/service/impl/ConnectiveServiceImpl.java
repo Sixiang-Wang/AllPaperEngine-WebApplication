@@ -18,7 +18,8 @@ public class ConnectiveServiceImpl implements ConnectiveService {
 
     @Override
     public void create(){
-        searchedWorkMapper.recreateTable();
+        searchedWorkMapper.dropTableIfExists();
+        searchedWorkMapper.createTable();
     }
 
     @Override
