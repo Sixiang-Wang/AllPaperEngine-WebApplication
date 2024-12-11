@@ -14,12 +14,15 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service("authorService")
 public class AuthorServiceImpl implements AuthorService {
     @Resource
     private AuthorMapper authorMapper;
+    @Resource
+    private AuthorService authorService;
     @Resource
     private WorkMapper workMapper;
     @Override
@@ -46,14 +49,9 @@ public class AuthorServiceImpl implements AuthorService {
         return authorResultDtos;
     }
 
-    @Override
-    public String getAuthorIdByAuthorName(String authorName) {
-        return authorMapper.getAuthorIdByAuthorName(authorName);
-    }
 
     @Override
-    public List<Work> getWorksByAuthorName(String authorName) {
-        String authorId = getAuthorIdByAuthorName(authorName);
+    public List<Work> getWorksByAuthorId(String authorId) {
         List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
         List<Work> works = new ArrayList<>();
         for (String workId : workIds) {
@@ -62,6 +60,132 @@ public class AuthorServiceImpl implements AuthorService {
                 works.add(work);
             }
         }
+        works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
         return works;
+    }
+
+    @Override
+    public int getWorksCountByAuthorId(String authorId) {
+        Author author = authorMapper.selectAuthorById(authorId);
+        return author.getWorksCount();
+    }
+
+    @Override
+    public List<Work> getHighQualityWorksByAuthorId(String authorId) {
+        List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
+        List<Work> works = new ArrayList<>();
+        for (String workId : workIds) {
+            Work work = workMapper.getWorkById(workId);
+            if (work != null) {
+                if(work.getCitedByCount()>1000){
+                    works.add(work);
+                }
+            }
+        }
+        works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
+        return works;
+    }
+
+    @Override
+    public int getHighQualityWorksCountByAuthorId(String authorId,boolean track) {
+        Author author = authorMapper.selectAuthorById(authorId);
+        if(author.isIsInitialized()){
+            return author.getHighQualityWorkCount();
+        }else{
+            List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
+            List<Work> works = new ArrayList<>();
+            for (String workId : workIds) {
+                Work work = workMapper.getWorkById(workId);
+                if (work != null) {
+                    if(work.getCitedByCount()>1000){
+                        works.add(work);
+                    }
+                }
+            }
+            if(track!=false){
+                int hNumber = authorService.getHNumberByAuthorId(authorId,false);
+                int firstCount = authorService.getFirstPublishWorkCountByAuthorId(authorId,false);
+                authorMapper.insertIntoHighQualityWorksCount(authorId,works.size(),hNumber,firstCount);
+            }
+            return works.size();
+        }
+
+
+    }
+
+    @Override
+    public int getCitedCountByAuthorId(String authorId) {
+        //先判断init列是不是false，如果是true那就继续，如果不是就跳过直接搜
+        Author author = authorMapper.selectAuthorById(authorId);
+        return author.getCitedByCount();
+    }
+
+    @Override
+    public int getHNumberByAuthorId(String authorId,boolean track) {
+        Author author = authorMapper.selectAuthorById(authorId);
+        if(author.isIsInitialized()){
+            return author.getHnumber();
+        }else{
+            List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
+            List<Work> works = new ArrayList<>();
+            for (String workId : workIds) {
+                Work work = workMapper.getWorkById(workId);
+                if (work != null) {
+                    works.add(work);
+                }
+            }
+            works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
+            int i=0;
+            for(i=0;i<works.size();i++) {
+                if (works.get(i).getCitedByCount() >= (i + 1)) {
+                    continue;
+                }
+            }
+            if(track!=false){
+                int size = authorService.getHighQualityWorksCountByAuthorId(authorId,false);
+                int firstCount = authorService.getFirstPublishWorkCountByAuthorId(authorId,false);
+                authorMapper.insertIntoHighQualityWorksCount(authorId,size,i,firstCount);
+            }
+            return i;
+        }
+
+    }
+
+    @Override
+    public List<Work> getFirstPublishWorkByAuthorId(String authorId) {
+        List<String> workIds = authorMapper.getWorkIdsByFirstAuthorId(authorId);
+        List<Work> works = new ArrayList<>();
+        for (String workId : workIds) {
+            Work work = workMapper.getWorkById(workId);
+            if (work != null) {
+                works.add(work);
+            }
+        }
+        works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
+        return works;
+    }
+
+    @Override
+    public int getFirstPublishWorkCountByAuthorId(String authorId,boolean track) {
+        Author author = authorMapper.selectAuthorById(authorId);
+        if(author.isIsInitialized()){
+            return author.getFirstPublishCount();
+        }else{
+            List<String> workIds = authorMapper.getWorkIdsByFirstAuthorId(authorId);
+            List<Work> works = new ArrayList<>();
+            for (String workId : workIds) {
+                Work work = workMapper.getWorkById(workId);
+                if (work != null) {
+                    works.add(work);
+                }
+            }
+            works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
+            if(track!=false) {
+                int size = authorService.getHighQualityWorksCountByAuthorId(authorId, false);
+                int hNumber = authorService.getHNumberByAuthorId(authorId, false);
+                authorMapper.insertIntoHighQualityWorksCount(authorId,size,hNumber,works.size());
+            }
+            return works.size();
+        }
     }
 }

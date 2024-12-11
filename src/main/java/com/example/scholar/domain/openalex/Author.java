@@ -19,4 +19,11 @@ public class Author {
     private String worksApiUrl;
     private String updatedDate;
 
+
+    //需要一列:是否初始化了 默认是false
+    private int firstPublishCount;
+    private int highQualityWorkCount;
+    private int Hnumber;
+    private boolean IsInitialized;
+
 }
