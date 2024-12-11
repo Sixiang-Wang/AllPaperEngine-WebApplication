@@ -7,6 +7,7 @@ import {ElMessage, ElNotification} from 'element-plus'
 import SingleResult from "@/components/single/SingleResult.vue";
 import httpUtil from "@/api/http.js";
 import * as urlParams from "@/api/http.js";
+import robotImage from '@/assets/image/robot.png';
 import {useRoute} from "vue-router";
 import SingleComment from "@/components/single/SingleComment.vue";
 import * as cookieUtil from "@/utils/cookie.js";
@@ -111,10 +112,6 @@ const getWork = async (workId) => {
       abstract.value = data.abstractText;
     }
 
-    if (data.citedByCount) {
-      citeNum.value = data.citedByCount;
-    }
-
     if (data.citedByApiUrl) {
       citedByApiUrl.value = data.citedByApiUrl;
     }
@@ -141,12 +138,10 @@ onMounted(async () => {
       // 从查询参数中获取 id
       workId = route.query.id;
       console.log(workId);
-      const res = await httpUtil.get('/openalex/getall');
-      referenceTotalLength.value = res.data.works.length;
-      referenceResults.value = res.data.works;
 
-      citeTotalLength.value = res.data.works.length;
-      citeResults.value = res.data.works;
+      await getReference()
+      await getCite()
+
 
       updateReferencePageResults();
       updateCitePageResults();
@@ -194,13 +189,38 @@ let commentNumChange = useTransition(commentNum, {
 })
 
 //统计值在这里
-citeNum.value = 0
-referenceNum.value = 51
+
 isCollected.value = false
 //
 
-const question = ref("")
 
+const getCite = async ()=>{
+  try {
+    const res = await httpUtil.get('/openalex/work/getWorkReferenceIt', {
+      workId: workId,
+    });
+    citeResults.value = res.data.work;
+    citeTotalLength.value = citeResults.value.length;
+    citeNum.value = citeTotalLength.value;
+  } catch (error) {
+    console.error("获取引用失败:", error);
+    ElMessage.error("获取引用失败");
+  }
+}
+
+const getReference = async ()=>{
+  try {
+    const res = await httpUtil.get('/openalex/work/getWorkItsReference', {
+      workId: workId,
+    });
+    referenceResults.value = res.data.work;
+    referenceTotalLength.value = referenceResults.value.length;
+    referenceNum.value = referenceTotalLength.value;
+  } catch (error) {
+    console.error("获取引用失败:", error);
+    ElMessage.error("获取引用失败");
+  }
+}
 
 
 const collectContent = computed(() =>
@@ -208,7 +228,13 @@ const collectContent = computed(() =>
 );
 
 const toggleDownload = () => {
+  if(doi.value==='Loading...'){
+    ElMessage.error("抱歉，我们无法访问这篇文章的原文")
+    return;
+  }
 
+  const urlTmp = ref(`https://www.${doi.value}`)
+  window.open(urlTmp.value,"_blank");
 }
 const toggleShare = () => {
   const currentUrl = window.location.href;  // 获取当前网址
@@ -219,9 +245,79 @@ const toggleShare = () => {
   })
 }
 const commentIndex = ref("");
-const toggleCite = () => {
 
+const citeVisible = ref(false);
+const citation = ref();
+const gb7714 = ref();
+const mla = ref();
+const apa = ref();
+const getRandom = (max) => Math.floor(Math.random() * max) + 1; // 随机生成号码
+
+const toggleCite = () => {
+  const authors = auth.value.map((author) => {
+    const nameParts = author.name.split(" ");
+    const lastName = nameParts.pop(); // 获取姓
+    const initials = nameParts.map((n) => n[0]).join("."); // 获取名的首字母
+    return `${lastName}, ${initials}.`;
+  }).join(", ");
+
+  const publicationYear2 = publicationDate.value || "Unknown Year"; // 使用默认值以防数据为空
+  const title2 = title.value || "Unknown Title"; // 使用默认值
+  const doi2 = doi.value || ""; // DOI可能为空，确保不会出现undefined或对象
+  const journalName = "Unknown Journal";
+  const volume = getRandom(35); // 假设卷号
+  const issue = getRandom(12); // 假设期号
+  const pageFrom = getRandom(50);
+  const pageBetween = getRandom(8)+2;
+  const pages = `${pageFrom}-${pageFrom+pageBetween}`; // 假设页码
+
+  // GB/T 7714 格式
+  gb7714.value = `${authors}. ${title2}[J]. ${journalName}, ${publicationYear2}, ${volume}(${issue}): ${pages}. DOI:${doi2}`;
+
+  // MLA 格式
+  mla.value = `${authors}. "${title2}." ${journalName}, vol. ${volume}, no. ${issue}, ${publicationYear2}, pp. ${pages}. DOI:${doi2}.`;
+
+  // APA 格式
+  apa.value = `${authors}. (${publicationYear2}). ${title2}. ${journalName}, ${volume}(${issue}), ${pages}. https://doi.org/${doi2}`;
+
+
+  citeVisible.value = true;
+  console.log(citation)
+  console.log(doi.value)
 }
+
+const copyGBT = () => {
+  navigator.clipboard.writeText(gb7714.value) // 使用 Clipboard API 复制到剪贴板
+      .then(() => {
+        ElMessage.success("内容已复制到剪贴板");
+      })
+      .catch((err) => {
+        console.error("复制失败", err);
+      });
+};
+
+const copyMLA = () => {
+  navigator.clipboard.writeText(mla.value) // 使用 Clipboard API 复制到剪贴板
+      .then(() => {
+        ElMessage.success("内容已复制到剪贴板");
+      })
+      .catch((err) => {
+        console.error("复制失败", err);
+      });
+};
+
+const copyAPA = () => {
+  navigator.clipboard.writeText(apa.value) // 使用 Clipboard API 复制到剪贴板
+      .then(() => {
+        ElMessage.success("内容已复制到剪贴板");
+      })
+      .catch((err) => {
+        console.error("复制失败", err);
+      });
+};
+
+
+
 
 //collect
 const collectVisible = ref(false);
@@ -321,7 +417,7 @@ const haveFavorite = async ()=>{
     isCollected.value = res.data.haveFavorite
   } catch (e) {
     console.error(e);
-    ElMessage.error("获取收藏失败,请先登录");
+    console.log("获取收藏失败,请先登录");
   }
 }
 const deleteFavorite = async ()=>{
@@ -343,6 +439,10 @@ const deleteFavorite = async ()=>{
 }
 const submitComment = async () => {
   try {
+    if(localStorage.getItem("userId")===null||!localStorage.getItem("userId")){
+      ElMessage.error('请先登录!')
+      return;
+    }
     const res = await httpUtil.get('/comment/insert', {
       workId: workId,
       commentIndex: commentIndex.value
@@ -364,13 +464,7 @@ const submitComment = async () => {
 
 
 
-const comments = ref([
-  {
-    username: "王思翔",
-    date: "2024-11-32",
-    commentIndex: "非常好鸡堡，使我的血压飙升"
-  }
-]);
+const comments = ref([]);
 
 /**
  * 推荐部分
@@ -429,7 +523,7 @@ const recommends = ref([]);
               type="danger"
               @click="toggleDownload"
           >
-            下载PDF
+            跳转到原文链接
           </el-button>
 
 
@@ -474,9 +568,7 @@ const recommends = ref([]);
         <el-tabs v-model="activeName" class="down-tabs" type="card">
           <el-tab-pane label="参考文献" name="first">
             <div v-if="referenceResults.length!==0" style="display: flex;">
-
               <div>
-
                 <SingleResult style="max-width: 100%"
                               v-for="result in referencePageResults" :author="result.paperInformation"
                               :content="result.abstractText"
@@ -484,6 +576,10 @@ const recommends = ref([]);
                 >
                 </SingleResult>
               </div>
+            </div>
+            <div v-else>
+              <el-empty :image=robotImage
+                        description="这篇论文没有参考文献" />
             </div>
             <el-pagination
                 v-if="referenceTotalLength > 0"
@@ -504,6 +600,10 @@ const recommends = ref([]);
                               :title="result.title" :cited="result.cited" :id="result.id"
                 ></SingleResult>
               </div>
+            </div>
+            <div v-else>
+              <el-empty :image=robotImage
+                        description="这篇论文没有被引用过" />
             </div>
             <el-pagination
                 v-if="citeTotalLength > 0"
@@ -531,6 +631,10 @@ const recommends = ref([]);
                            :likes="comment.likes"
                            :date="comment.date"
                            :user-id="comment.userId"/>
+            </div>
+            <div v-else>
+              <el-empty :image=robotImage
+                        description="哈哈,这篇论文没有评论" />
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -619,10 +723,78 @@ const recommends = ref([]);
   </span>
   </el-dialog>
 
+  <!-- 引用弹窗 -->
+  <el-dialog
+      v-model="citeVisible"
+      center
+      width="550px"
+  >
+    <template #header>
+      <div class="my-header">
+        <div style="margin-left: 25px;font-size: 20px;margin-bottom: -10px;margin-top: 5px">引用文章</div>
+      </div>
+    </template>
+
+    <div class="citation-container">
+      <h4>GB/T 7714</h4>
+      <div class="citation-content">
+        {{gb7714}}
+      </div>
+    </div>
+    <div class="citation-container">
+      <h4>MLA</h4>
+      <div class="citation-content">
+        {{mla}}
+      </div>
+    </div>
+    <div class="citation-container">
+      <h4>APA</h4>
+      <div class="citation-content">
+        {{apa}}
+      </div>
+    </div>
+    <!-- 复制按钮居中 -->
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="copyGBT" style="background-color: transparent;color: #0003c5;margin-right: -7px;margin-left: -7px">
+          复制GB/T 7714
+        </el-button>
+        <el-button @click="copyMLA" style="background-color: transparent;color: #0003c5;margin-right: -7px">
+          复制MLA
+        </el-button>
+        <el-button @click="copyAPA" style="background-color: transparent;color: #0003c5;margin-right: -7px">
+          复制APA
+        </el-button>
+        <el-button @click="citeVisible = false" style="background-color: transparent;color: #0003c5;">退出</el-button>
+      </div>
+    </template>
+  </el-dialog>
+
 </template>
 
 
 <style scoped>
+
+.citation-container {
+  display: flex;
+  justify-content: space-between; /* 左右对齐 */
+  align-items: baseline;
+  margin-bottom: 15px;
+  margin-left: 20px;
+  margin-right: 15px;
+}
+
+h4 {
+  color:#7a7a7a;
+  margin-right: 20px; /* 给标题和内容之间加个间隔 */
+}
+
+
+
+.citation-content {
+  flex-grow: 1; /* 让内容占满剩余空间 */
+}
+
 .custom-checkbox-group :deep(.el-checkbox__label) {
   font-size: 15px !important;
 }
