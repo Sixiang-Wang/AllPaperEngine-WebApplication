@@ -17,6 +17,12 @@ public class ConnectiveServiceImpl implements ConnectiveService {
     private SearchedWorkMapper searchedWorkMapper;
 
     @Override
+    public void create(){
+        searchedWorkMapper.dropTableIfExists();
+        searchedWorkMapper.createTable();
+    }
+
+    @Override
     public List<String> sortKeywords(){
         List<String> results = searchedWorkMapper.getCollectiveNum();
         return results;

@@ -5,6 +5,7 @@ import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.CheckResult;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.myenum.AcademicFieldType;
+import com.example.scholar.dto.AddUserFavoriteDto;
 import com.example.scholar.dto.LoginDto;
 import com.example.scholar.dto.RegistDto;
 import com.example.scholar.service.MessageService;
@@ -412,7 +413,7 @@ public class UserController {
     }
 
     // 删除标签
-    @DeleteMapping("/deleteTag")
+    @GetMapping("/deleteTag")
     @ApiOperation("删除标签接口")
     public R deleteTag(@RequestParam int userId, @RequestParam String tag) {
         try {
@@ -477,14 +478,32 @@ public class UserController {
     }
 
     // 添加用户收藏(标签可多选)
+//    @PostMapping(value = "/addUserFavorite")
+//    @ApiOperation("添加用户收藏接口")
+//    public R addUserFavorite(
+//            @RequestParam int userId,
+//            @RequestParam String publicationId,
+//            @RequestParam List<String> tags) {
+//        try {
+//            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, tags);
+//            if ("收藏添加成功".equals(resultMap.get("msg"))) {
+//                return R.ok("Favorite added successfully");
+//            } else {
+//                return R.error((String) resultMap.get("msg"));
+//            }
+//        } catch (Exception e) {
+//            return R.error(e.toString());
+//        }
+//    }
+
     @PostMapping(value = "/addUserFavorite")
     @ApiOperation("添加用户收藏接口")
     public R addUserFavorite(
-            @RequestParam int userId,
-            @RequestParam String publicationId,
-            @RequestParam List<String> tags) {
+            @RequestBody AddUserFavoriteDto addUserFavoriteDto) {  // 修改为 @RequestBody
         try {
-            HashMap<String, Object> resultMap = userService.addUserFavorite(userId, publicationId, tags);
+
+            HashMap<String, Object> resultMap = userService.addUserFavorite(addUserFavoriteDto.getUserId(), addUserFavoriteDto.getPublicationId(), addUserFavoriteDto.getTags());
+
             if ("收藏添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite added successfully");
             } else {
@@ -495,27 +514,42 @@ public class UserController {
         }
     }
 
+
     @GetMapping(value = "/haveFavorite")
     @ApiOperation("用户是否收藏")
-    public R addUserFavorite(
+    public R haveUserFavorite(
             @RequestParam int userId,
             @RequestParam String publicationId
     ){
         try {
             int res = userMapper.haveFavorite(userId, publicationId);
-            return R.ok("Favorite added successfully").put("haveFavorite",res);
+            return R.ok("get num").put("haveFavorite",res);
         } catch (Exception e) {
             return R.error(e.toString());
         }
     }
+
+    @GetMapping(value = "/workFavoriteNum")
+    @ApiOperation("收藏数量")
+    public R workFavoriteNum(
+            @RequestParam String publicationId
+    ){
+        try {
+            int res = userMapper.getWorkFavoriteNum(publicationId);
+            return R.ok("get num").put("favoriteNum",res);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
     // 删除用户收藏
-    @DeleteMapping("/deleteUserFavorite")
-    @ApiOperation("删除某个标签下单一收藏接口")
-    public R deleteUserFavorite(@RequestParam int userId,
+    @GetMapping("/deleteUserFavoriteOld")
+    @ApiOperation("删除某个标签下单一收藏接口（旧版）")
+    public R deleteUserFavoriteOld(@RequestParam int userId,
                                 @RequestParam String publicationId,
                                 @RequestParam String tag) {
         try {
-            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId, tag);
+            HashMap<String, Object> resultMap = userService.deleteUserFavoriteOld(userId, publicationId, tag);
             if ("收藏删除成功".equals(resultMap.get("msg"))) {
                 return R.ok("Favorite deleted successfully");
             } else {
@@ -525,6 +559,24 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
+    // 删除用户收藏（新），即从所有标签下移除某篇文章
+    @GetMapping("/deleteUserFavorite")
+    @ApiOperation("删除单条收藏接口（新版）")
+    public R deleteUserFavorite(@RequestParam int userId,
+                            @RequestParam String publicationId) {
+        try {
+            HashMap<String, Object> resultMap = userService.deleteUserFavorite(userId, publicationId);
+            if ("收藏删除成功".equals(resultMap.get("msg"))) {
+                return R.ok("Favorite deleted successfully");
+            } else {
+                return R.error((String) resultMap.get("msg"));
+            }
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 
     // 添加一条浏览历史
     @PostMapping("/addHistory")
@@ -562,7 +614,7 @@ public class UserController {
     }
 
     // 删除某条浏览历史
-    @DeleteMapping("/deleteHistory/{id}")
+    @GetMapping("/deleteHistory/{id}")
     @ApiOperation("删除某条浏览历史接口")
     public R deleteHistory(@RequestParam int userId,
                            @RequestParam String publicationId) {
@@ -579,7 +631,7 @@ public class UserController {
     }
 
     // 清空所有浏览历史
-    @DeleteMapping("/clearAllHistory")
+    @GetMapping("/clearAllHistory")
     @ApiOperation("清空所有浏览历史接口")
     public R clearAllHistory(@RequestParam int userId) {
         try {
@@ -593,6 +645,7 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
     @GetMapping(value="/getUserInfo")
     @ApiOperation("获取用户详细信息")
     public R getUserInfo(@TokenToUser User user){

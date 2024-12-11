@@ -22,4 +22,9 @@ public interface WorkService {
 
     int getWorkLengthByTitleWords(String word);
     List<WorkResultDto> getTopNWorkByKeywords(String word,int n);
+
+
+    List<WorkResultDto> getWorkItsReferenced(String workId);
+    List<WorkResultDto> getWorkReferenceIt(String workId);
+
 }

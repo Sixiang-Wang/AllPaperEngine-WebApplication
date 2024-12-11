@@ -9,6 +9,19 @@ import java.util.Map;
 @Mapper
 public interface SearchedWorkMapper {
 
+    @Update("""
+        DROP TABLE IF EXISTS search_work;
+        """)
+    void dropTableIfExists();
+
+    @Update("""
+        CREATE TABLE search_work (
+            id VARCHAR(255) PRIMARY KEY,
+            keywordsText VARCHAR(255) NOT NULL
+        )
+        """)
+    void createTable();
+
     @Insert("INSERT INTO search_work(id, keywordsText)" +
     "VALUES (#{id}, #{keywordsText})")
     @Options(useGeneratedKeys = true, keyProperty = "id")

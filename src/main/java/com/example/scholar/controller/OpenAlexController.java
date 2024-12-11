@@ -69,6 +69,29 @@ public class OpenAlexController {
         }
     }
 
+
+
+    @GetMapping(value="/work/getWorkItsReference")
+    public R getWorkItsReference(@RequestParam("workId") String workId){
+        try{
+            return R.ok().put("work",workService.getWorkItsReferenced(workId));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+
+    @GetMapping(value="/work/getWorkReferenceIt")
+    public R getWorkReferenceIt(@RequestParam("workId") String workId){
+        try{
+            return R.ok().put("work",workService.getWorkReferenceIt(workId));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
     @PostMapping(value="/work/updateKeywordsAndAbstract")
     public R updateKeywordsAndAbstract(){
         try{

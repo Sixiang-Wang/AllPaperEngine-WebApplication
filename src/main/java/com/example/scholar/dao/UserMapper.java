@@ -76,13 +76,20 @@ public interface UserMapper {
 
     @Select("select count(*) from user_favorite where userid=#{userId} and publicationid = #{publicationId}")
     int haveFavorite(int userId, String publicationId);
+
+    @Select("select count(*) from user_favorite where publicationid = #{publicationId}")
+    int getWorkFavoriteNum(String publicationId);
     // 在某个标签添加一条收藏记录
     @Insert("INSERT INTO user_favorite (userid, `publicationid`,tag) VALUES (#{userId}, #{publicationId}, #{tag})")
     int addUserFavorite(int userId, String publicationId, String tag);
 
-    // 在某个标签删除一条收藏记录
+    // 在某个标签删除一条收藏记录（旧版）
     @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId} AND tag = #{tag}")
-    int deleteUserFavorite(int userId, String publicationId, String tag);
+    int deleteUserFavoriteOld(int userId, String publicationId, String tag);
+
+    // 删除收藏（新版）
+    @Delete("DELETE FROM user_favorite WHERE userid = #{userId} AND publicationid = #{publicationId}")
+    int deleteUserFavorite(int userId, String publicationId);
 
     // 更新收藏记录的时间戳
     @Update("UPDATE user_favorite SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
@@ -158,6 +165,5 @@ public interface UserMapper {
 
     @Delete("DELETE FROM user WHERE userid = #{userId}")
     int deleteUser(int userId);
-
 
 }

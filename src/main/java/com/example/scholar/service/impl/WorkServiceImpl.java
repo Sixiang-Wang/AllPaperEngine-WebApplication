@@ -240,6 +240,44 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
+    public List<WorkResultDto> getWorkItsReferenced(String workId) {
+        List<Work> works = workMapper.selectWorkByItsReference(workId);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+        for(Work work: works){
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setId(work.getId());
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+        return workResultDtoList;
+    }
+
+    @Override
+    public List<WorkResultDto> getWorkReferenceIt(String workId) {
+        List<Work> works = workMapper.selectWorkByReferenceIt(workId);
+        List<WorkResultDto> workResultDtoList = new ArrayList<>();
+        for(Work work: works){
+            WorkResultDto workResultDto = new WorkResultDto();
+            workResultDto.setId(work.getId());
+            workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
+            workResultDto.setTitle(work.getTitle());
+            workResultDto.setCited(work.getCitedByCount());
+            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //这里后续需要修改
+            workResultDto.setGrants(work.getGrants());
+            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            workResultDtoList.add(workResultDto);
+        }
+        return workResultDtoList;
+    }
+
+    @Override
     public void updateKeywordsAndAbstract() {
         List<Work> works = workMapper.selectAllWorks();
         for(Work work:works){
