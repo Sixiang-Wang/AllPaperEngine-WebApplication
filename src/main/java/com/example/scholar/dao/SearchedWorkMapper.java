@@ -10,12 +10,13 @@ import java.util.Map;
 public interface SearchedWorkMapper {
 
     @Update("""
-        CREATE TABLE IF NOT EXISTS search_work (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+        DROP TABLE IF EXISTS search_work;
+        CREATE TABLE search_work (
+            id VARCHAR(255) PRIMARY KEY,
             keywordsText VARCHAR(255) NOT NULL
         )
         """)
-    void createTableIfNotExists();
+    void recreateTable();
 
     @Insert("INSERT INTO search_work(id, keywordsText)" +
     "VALUES (#{id}, #{keywordsText})")
