@@ -10,8 +10,7 @@ import java.util.List;
 
 public interface AuthorService {
     ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId);
-
-
+    String getAuthorIdByAuthorName(String authorName);
     List<Work> getWorksByAuthorId(String authorId);
     int getWorksCountByAuthorId(String authorId);
     List<Work> getHighQualityWorksByAuthorId(String authorId);

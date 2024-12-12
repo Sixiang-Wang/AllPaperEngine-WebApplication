@@ -1,9 +1,12 @@
 package com.example.scholar.service;
 
 import com.example.scholar.dto.HottestKeywordsResult;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+
+@Component
 public interface HotSpotService {
 
     //关键词keywords分析

@@ -50,6 +50,14 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
 
+
+
+    @Override
+    public String getAuthorIdByAuthorName(String authorName) {
+        return authorMapper.getAuthorIdByAuthorName(authorName);
+    }
+
+
     @Override
     public List<Work> getWorksByAuthorId(String authorId) {
         List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);

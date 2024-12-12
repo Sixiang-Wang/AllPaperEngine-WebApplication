@@ -13,6 +13,17 @@ public class AuthorController {
     @Resource
     private AuthorService authorService;
 
+
+    @GetMapping(value="/getAuthorIdByAuthorName")
+    public R getAuthorIdByAuthorName(@RequestParam("authorName") String authorName){
+        try{
+            return R.ok().put("getAuthorIdByAuthorName",authorService.getAuthorIdByAuthorName(authorName));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
     @GetMapping(value="/getAuthorsByWorkId")
     public R getAuthorsByWorkId(@RequestParam("workId") String workId){
         try{
