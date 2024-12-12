@@ -11,7 +11,7 @@ public interface AuthenticationService {
 
     List<Authentication> allAuthentication();
 
-    int putAuthentication(int userId,String nameReal,String workplace,String field,String mail);
+    int putAuthentication(int userId,String nameReal,String workplace,String field,String mail,String authorId);
     int deleteAuthentication(int id);
 
 }

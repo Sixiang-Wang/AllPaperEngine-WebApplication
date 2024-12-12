@@ -19,4 +19,7 @@ public interface AuthorService {
     int getHNumberByAuthorId(String authorId,boolean track);
     List<Work> getFirstPublishWorkByAuthorId(String authorId);
     int getFirstPublishWorkCountByAuthorId(String authorId,boolean track);
+    List<Work> getWorksByAuthorName(String authorName);
+
+    List<AuthorResultDto> getAuthorsByName(String name);
 }

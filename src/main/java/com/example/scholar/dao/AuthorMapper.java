@@ -26,4 +26,6 @@ public interface AuthorMapper {
 
     @Select("SELECT work_id FROM openalex_works_authorships WHERE author_id = #{authorId} AND author_position = 'first'")
     List<String> getWorkIdsByFirstAuthorId(String authorId);
+    @Select("select * from openalex_authors where display_name_alternatives LIKE CONCAT('%', #{name}, '%')")
+    List<Author> getAuthorsByName(String name);
 }

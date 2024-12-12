@@ -114,6 +114,14 @@ public class AuthorController {
             return R.error(e.toString());
         }
     }
+    @GetMapping("/getByName")
+    public R getAuthorsByName(@RequestParam("name")String name){
+        try{
+            return R.ok().put("authors", authorService.getAuthorsByName(name));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
 
 
 

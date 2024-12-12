@@ -196,4 +196,25 @@ public class AuthorServiceImpl implements AuthorService {
             return works.size();
         }
     }
+
+    @Override
+    public List<Work> getWorksByAuthorName(String authorName) {
+        return null;
+    }
+
+    @Override
+    public List<AuthorResultDto> getAuthorsByName(String name) {
+        List<Author> list = authorMapper.getAuthorsByName(name);
+        List<AuthorResultDto> res = new ArrayList<>();
+        for(Author author: list) {
+            AuthorResultDto authorResultDto = new AuthorResultDto();
+            authorResultDto.setAuthorId(author.getId());
+            authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
+            authorResultDto.setWorksCount(author.getWorksCount());
+            authorResultDto.setCitedByCount(author.getCitedByCount());
+            authorResultDto.setWorksApiUrl(author.getWorksApiUrl());
+            res.add(authorResultDto);
+        }
+        return res;
+    }
 }

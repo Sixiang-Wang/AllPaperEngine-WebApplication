@@ -21,7 +21,8 @@ public interface UserMapper {
 
     @Select("select role from user where userid = #{userId}")
     int getUserRole(int userId);
-
+    @Update("update user set author_id = #{id} where userid = #{userId}")
+    void updateUserAuthorRelation(String id, int userId);
     @Select("select * from user where mail = #{mail}")
     User selectUserByMail(String mail);
 
