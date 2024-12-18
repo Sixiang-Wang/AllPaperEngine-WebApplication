@@ -76,18 +76,7 @@ onMounted(async() =>{
   }catch (e){
     console.error(e);
   }
-  try{
-    const res = await httpUtil.get('/user/ifScholar',{},{
-      Authorization: cookieUtil.getCookie("token")
-    });
-    if (res.data.judge === 0){
-      ifAuthentication.value = false;
-    }else{
-      ifAuthentication.value = true;
-    }
-  }catch (e){
-    console.error(e);
-  }
+
 })
 
 const preLogin = async ()=>{
@@ -103,7 +92,7 @@ const preLogin = async ()=>{
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
 }
 
-const ifAuthentication = ref(true);
+const ifAuthentication = ref(localStorage.getItem("ifAuthentication"));
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
