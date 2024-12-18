@@ -8,6 +8,7 @@ import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.AddUserFavoriteDto;
 import com.example.scholar.dto.LoginDto;
 import com.example.scholar.dto.RegistDto;
+import com.example.scholar.dto.TagDto;
 import com.example.scholar.service.MessageService;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
@@ -447,8 +448,9 @@ public class UserController {
     // 查用户带有指定标签的收藏(多选，并集，标签列表)
     @PostMapping("/viewAllFavoritesWithTags")
     @ApiOperation("查用户带有指定标签的收藏接口")
-    public R viewAllFavoritesWithTags(@RequestParam int userId,
-                                      @RequestParam List<String> tags) {
+    public R viewAllFavoritesWithTags(@RequestBody TagDto tagDto) {
+            List<String> tags = tagDto.getTags();
+            int userId = tagDto.getUserId();
         try {
             List<HashMap<String, Object>> favoriteList = userService.viewAllFavoritesWithTags(userId, tags);
             if (favoriteList.isEmpty()) {
