@@ -49,9 +49,11 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         {
             if(cnt <= 100000)
             {
-                if(work.getKeywordsText() != null)
-                    elasticWorkMapper.insertSearchWork(work);
+                elasticWorkMapper.insertSearchWork(work);
                 cnt++;
+            }
+            else{
+                break;
             }
         }
         return searchHits;

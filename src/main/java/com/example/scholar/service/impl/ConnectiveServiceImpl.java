@@ -17,20 +17,54 @@ public class ConnectiveServiceImpl implements ConnectiveService {
     private SearchedWorkMapper searchedWorkMapper;
 
     @Override
-    public void create(){
-        searchedWorkMapper.dropTableIfExists();
-        searchedWorkMapper.createTable();
+    public List<String> sortKeywords(){
+        List<String> results = searchedWorkMapper.getCollectiveNum();
+        return results;
+    }
+
+//    @Override
+//    public List<Integer> sortPublictionYears(){
+//        List<Integer> results = searchedWorkMapper.getPublication_years();
+//        return results;
+//    }
+
+    @Override
+    public List<String> sortTypes(){
+        List<String> results = searchedWorkMapper.getTypes();
+        return results;
     }
 
     @Override
-    public List<String> sortKeywords(){
-        List<String> results = searchedWorkMapper.getCollectiveNum();
+    public List<String> sortLanguages()
+    {
+        List<String> results = searchedWorkMapper.getLanguages();
         return results;
     }
 
     @Override
     public List<Works> getWorksByKeyword(String keyword){
         List<String> workIds = searchedWorkMapper.getWorksByKeyword(keyword);
+        List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
+        return works;
+    }
+
+//    @Override
+//    public List<Works> getWorksByPublicationYear(int year){
+//        List<String> workIds = searchedWorkMapper.getWorksByYear(year);
+//        List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
+//        return works;
+//    }
+
+    @Override
+    public List<Works> getWorksByType(String type){
+        List<String> workIds = searchedWorkMapper.getWorksByType(type);
+        List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
+        return works;
+    }
+
+    @Override
+    public List<Works> getWorksByLanguage(String language){
+        List<String> workIds = searchedWorkMapper.getWorksByLanguage(language);
         List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
         return works;
     }
