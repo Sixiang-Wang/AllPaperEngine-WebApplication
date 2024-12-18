@@ -79,12 +79,34 @@ export function put(url, params = {}) {
  *  url:请求地址
  *  params:参数
  * */
+export function post2(url, params = {}) {
+  return new Promise((resolve, reject) => {
+    httpService({
+      url: url,
+      method: 'post',
+      params: params,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+
+    }).then(response => {
+      resolve(response);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
+
 export function post(url, params = {}) {
   return new Promise((resolve, reject) => {
     httpService({
       url: url,
       method: 'post',
-      params: params
+      data: params,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+
     }).then(response => {
       resolve(response);
     }).catch(error => {
@@ -120,6 +142,7 @@ export function getServerUrl(){
 export default {
   get,
   put,
+  post2,
   post,
   fileUpload,
   getServerUrl,

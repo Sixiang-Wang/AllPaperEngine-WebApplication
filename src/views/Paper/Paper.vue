@@ -1,12 +1,13 @@
 <script setup>
 
-import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plus/icons-vue";
-import {computed, nextTick, onMounted, ref} from "vue";
+import {Document, Paperclip, Search,Link, Share, Star, StarFilled} from "@element-plus/icons-vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
 import SingleResult from "@/components/single/SingleResult.vue";
 import httpUtil from "@/api/http.js";
 import * as urlParams from "@/api/http.js";
+import robotImage from '@/assets/image/robot.png';
 import {useRoute} from "vue-router";
 import SingleComment from "@/components/single/SingleComment.vue";
 import * as cookieUtil from "@/utils/cookie.js";
@@ -43,6 +44,10 @@ const citeTotalLength = ref(0);
 const citeCurrentPage = ref(1);
 let workId = ref(0);
 
+
+watch(activeName, (newVal) => {
+  localStorage.setItem("activeTab", newVal);
+});
 
 const updateReferencePageResults = () => {
   const start = (referenceCurrentPage.value - 1) * pageSize;
@@ -107,10 +112,6 @@ const getWork = async (workId) => {
       abstract.value = data.abstractText;
     }
 
-    if (data.citedByCount) {
-      citeNum.value = data.citedByCount;
-    }
-
     if (data.citedByApiUrl) {
       citedByApiUrl.value = data.citedByApiUrl;
     }
@@ -129,28 +130,40 @@ const getWork = async (workId) => {
 
 onMounted(async () => {
       const route = useRoute();
+      const savedTab = localStorage.getItem("activeTab");
+      if (savedTab) {
+        activeName.value = savedTab;
+      }
 
       // 从查询参数中获取 id
       workId = route.query.id;
       console.log(workId);
-      const res = await httpUtil.get('/openalex/getall');
-      referenceTotalLength.value = res.data.works.length;
-      referenceResults.value = res.data.works;
 
-      citeTotalLength.value = res.data.works.length;
-      citeResults.value = res.data.works;
+      await getReference()
+      await getCite()
+
 
       updateReferencePageResults();
       updateCitePageResults();
-      getWork(workId);
+      await getWork(workId);
+
+
+      haveFavorite();
 
       //获取评论
-
       console.log(workId);
+      await httpUtil.get('/user/workFavoriteNum', {
+        publicationId: workId
+      }).then(res=>{
+            collectNum.value = res.data.favoriteNum
+          }
+      )
+
       const resComments = await httpUtil.get('/comment/get', {
         workId: workId
       })
       comments.value = resComments.data.comments;
+      commentNum.value = comments.value.length;
 
       //获取推荐
       const resCommends = await httpUtil.get('/test/recommend');
@@ -159,6 +172,21 @@ onMounted(async () => {
       console.log(recommends.value);
     }
 )
+
+const getReference = async ()=>{
+  try {
+    const res = await httpUtil.get('/openalex/work/getWorkReferenceIt', {
+      workId: workId,
+    });
+    citeResults.value = res.data.work;
+    citeTotalLength.value = citeResults.value.length;
+    citeNum.value = citeTotalLength.value;
+  } catch (error) {
+    console.error("获取引用失败:", error);
+    ElMessage.error("获取引用失败");
+  }
+}
+
 
 let citeNumChange = useTransition(citeNum, {
   duration: 300,
@@ -174,27 +202,54 @@ let commentNumChange = useTransition(commentNum, {
 })
 
 //统计值在这里
-citeNum.value = 0
-referenceNum.value = 51
-collectNum.value = 273
-commentNum.value = 9
+
 isCollected.value = false
 //
 
-const question = ref("")
 
-const submitQuestion = () => {
-  console.log("Question submitted:", question);
-  // Handle the form submission logic
+const getCite = async ()=>{
+  try {
+    const res = await httpUtil.get('/openalex/work/getWorkReferenceIt', {
+      workId: workId,
+    });
+    citeResults.value = res.data.work;
+    citeTotalLength.value = citeResults.value.length;
+    citeNum.value = citeTotalLength.value;
+  } catch (error) {
+    console.error("获取引用失败:", error);
+    ElMessage.error("获取引用失败");
+  }
 }
+
+
+
 
 const collectContent = computed(() =>
     isCollected.value ? '取消收藏' : '添加到收藏'
 );
 
-const toggleDownload = () => {
+const toggleSite = () => {
+  if(doi.value==='Loading...'){
+    ElMessage.error("抱歉，我们无法访问这篇文章的原文")
+    return;
+  }
 
+  const urlTmp = ref(`https://www.${doi.value}`)
+  window.open(urlTmp.value,"_blank");
 }
+
+const togglePdf = async () => {
+  if(doi.value==='Loading...'){
+    ElMessage.error("抱歉，我们无法访问这篇文章的原文")
+    return;
+  }
+  let tmp1;
+  tmp1 = doi.value.split('doi.org/')[1];
+
+  const urlTmp = ref(`https://www.wellesu.com/${tmp1}`)
+  window.open(urlTmp.value,"_blank");
+}
+
 const toggleShare = () => {
   const currentUrl = window.location.href;  // 获取当前网址
   navigator.clipboard.writeText(currentUrl)  // 将网址复制到剪切板
@@ -204,9 +259,79 @@ const toggleShare = () => {
   })
 }
 const commentIndex = ref("");
-const toggleCite = () => {
 
+const citeVisible = ref(false);
+const citation = ref();
+const gb7714 = ref();
+const mla = ref();
+const apa = ref();
+const getRandom = (max) => Math.floor(Math.random() * max) + 1; // 随机生成号码
+
+const toggleCite = () => {
+  const authors = auth.value.map((author) => {
+    const nameParts = author.name.split(" ");
+    const lastName = nameParts.pop(); // 获取姓
+    const initials = nameParts.map((n) => n[0]).join("."); // 获取名的首字母
+    return `${lastName}, ${initials}.`;
+  }).join(", ");
+
+  const publicationYear2 = publicationDate.value || "Unknown Year"; // 使用默认值以防数据为空
+  const title2 = title.value || "Unknown Title"; // 使用默认值
+  const doi2 = doi.value || ""; // DOI可能为空，确保不会出现undefined或对象
+  const journalName = "Unknown Journal";
+  const volume = getRandom(35); // 假设卷号
+  const issue = getRandom(12); // 假设期号
+  const pageFrom = getRandom(50);
+  const pageBetween = getRandom(8)+2;
+  const pages = `${pageFrom}-${pageFrom+pageBetween}`; // 假设页码
+
+  // GB/T 7714 格式
+  gb7714.value = `${authors}. ${title2}[J]. ${journalName}, ${publicationYear2}, ${volume}(${issue}): ${pages}. DOI:${doi2}`;
+
+  // MLA 格式
+  mla.value = `${authors}. "${title2}." ${journalName}, vol. ${volume}, no. ${issue}, ${publicationYear2}, pp. ${pages}. DOI:${doi2}.`;
+
+  // APA 格式
+  apa.value = `${authors}. (${publicationYear2}). ${title2}. ${journalName}, ${volume}(${issue}), ${pages}. https://doi.org/${doi2}`;
+
+
+  citeVisible.value = true;
+  console.log(citation)
+  console.log(doi.value)
 }
+
+const copyGBT = () => {
+  navigator.clipboard.writeText(gb7714.value) // 使用 Clipboard API 复制到剪贴板
+      .then(() => {
+        ElMessage.success("内容已复制到剪贴板");
+      })
+      .catch((err) => {
+        console.error("复制失败", err);
+      });
+};
+
+const copyMLA = () => {
+  navigator.clipboard.writeText(mla.value) // 使用 Clipboard API 复制到剪贴板
+      .then(() => {
+        ElMessage.success("内容已复制到剪贴板");
+      })
+      .catch((err) => {
+        console.error("复制失败", err);
+      });
+};
+
+const copyAPA = () => {
+  navigator.clipboard.writeText(apa.value) // 使用 Clipboard API 复制到剪贴板
+      .then(() => {
+        ElMessage.success("内容已复制到剪贴板");
+      })
+      .catch((err) => {
+        console.error("复制失败", err);
+      });
+};
+
+
+
 
 //collect
 const collectVisible = ref(false);
@@ -221,7 +346,6 @@ const toggleCollect = async () => {
       ElMessage.warning("请登录后再操作");
       return;
     }
-
     try {
       const res = await httpUtil.get('/user/viewAllTags', {
         userId: userId.value,
@@ -231,22 +355,19 @@ const toggleCollect = async () => {
       console.error("获取标签失败:", error);
       ElMessage.error("获取标签失败");
     }
-
     collectVisible.value = true;
   }
 
-
   if (isCollected.value) {
+    await deleteFavorite()
     collectNum.value--;
-  } else {
-    collectNum.value++;
+    isCollected.value = !isCollected.value;
   }
-  isCollected.value = !isCollected.value;
 }
 
 const addTag = ()=>{
   try {
-    httpUtil.post('/user/createNewTag', {
+    httpUtil.post2('/user/createNewTag', {
       tag: tagInputValue.value,
       userId: userId.value,
     });
@@ -259,11 +380,20 @@ const addTag = ()=>{
 const selectedTags = ref([]);
 const handleCollectSubmit = async () => {
   try {
-    const res = await httpUtil.post('/user/addCollection', {
-      workId: workId,
-      tags: selectedTags.value,
+
+    console.log('Request Payload:', {
+      publicationId: workId,
+      tags: [...selectedTags.value],
+      userId: userId.value,
     });
-    if (res.data.success) {
+
+
+    const res = await httpUtil.post('/user/addUserFavorite', {
+      publicationId: workId,
+      tags: [...selectedTags.value],
+      userId: userId.value
+    });
+    if (res.data.code===200) {
       ElMessage.success("收藏成功！");
       isCollected.value = true;
       collectNum.value++;
@@ -292,8 +422,41 @@ const handleInputConfirm = () => {
   tagInputValue.value = ''
 }
 
+const haveFavorite = async ()=>{
+  try {
+    const res = await httpUtil.get('/user/haveFavorite', {
+      publicationId: workId,
+      userId: userId.value
+    })
+    isCollected.value = res.data.haveFavorite
+  } catch (e) {
+    console.error(e);
+    console.log("获取收藏失败,请先登录");
+  }
+}
+const deleteFavorite = async ()=>{
+  try {
+    const res = await httpUtil.get('/user/deleteUserFavorite', {
+      publicationId: workId,
+      userId: userId.value
+    })
+    if(res.data.code===200){
+      ElMessage.success("取消收藏成功")
+    }else {
+      ElMessage.error("取消收藏失败")
+    }
+
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("取消收藏失败");
+  }
+}
 const submitComment = async () => {
   try {
+    if(localStorage.getItem("userId")===null||!localStorage.getItem("userId")){
+      ElMessage.error('请先登录!')
+      return;
+    }
     const res = await httpUtil.get('/comment/insert', {
       workId: workId,
       commentIndex: commentIndex.value
@@ -315,13 +478,7 @@ const submitComment = async () => {
 
 
 
-const comments = ref([
-  {
-    username: "王思翔",
-    date: "2024-11-32",
-    commentIndex: "非常好鸡堡，使我的血压飙升"
-  }
-]);
+const comments = ref([]);
 
 /**
  * 推荐部分
@@ -336,7 +493,7 @@ const recommends = ref([]);
       <div class="left-part">
         <!-- Header Section -->
         <div class="header">
-          <h1>{{ title }}</h1>
+          <h1 v-html="title"></h1>
 
           <p>
             <span v-for="(author, index) in auth" :key="index">
@@ -369,18 +526,19 @@ const recommends = ref([]);
         <div class="abstract">
           <strong>Abstract:</strong>
           <br>
-          {{ abstract }}
+          <div v-html="abstract"></div>
         </div>
         <div class="option-part">
 
 
+
           <el-button
-              class="download-button"
-              :icon="Download"
+              class="pdf-button"
+              :icon="Document"
               type="danger"
-              @click="toggleDownload"
+              @click="togglePdf"
           >
-            下载PDF
+            查看PDF
           </el-button>
 
 
@@ -420,14 +578,22 @@ const recommends = ref([]);
             >
             </el-button>
           </el-tooltip>
+
+          <el-button
+              class="site-button"
+              :icon="Link"
+
+              @click="toggleSite"
+          >
+            原文网址
+          </el-button>
+
         </div>
 
         <el-tabs v-model="activeName" class="down-tabs" type="card">
           <el-tab-pane label="参考文献" name="first">
             <div v-if="referenceResults.length!==0" style="display: flex;">
-
               <div>
-
                 <SingleResult style="max-width: 100%"
                               v-for="result in referencePageResults" :author="result.paperInformation"
                               :content="result.abstractText"
@@ -435,6 +601,10 @@ const recommends = ref([]);
                 >
                 </SingleResult>
               </div>
+            </div>
+            <div v-else>
+              <el-empty :image=robotImage
+                        description="这篇论文没有参考文献" />
             </div>
             <el-pagination
                 v-if="referenceTotalLength > 0"
@@ -455,6 +625,10 @@ const recommends = ref([]);
                               :title="result.title" :cited="result.cited" :id="result.id"
                 ></SingleResult>
               </div>
+            </div>
+            <div v-else>
+              <el-empty :image=robotImage
+                        description="这篇论文没有被引用过" />
             </div>
             <el-pagination
                 v-if="citeTotalLength > 0"
@@ -482,6 +656,10 @@ const recommends = ref([]);
                            :likes="comment.likes"
                            :date="comment.date"
                            :user-id="comment.userId"/>
+            </div>
+            <div v-else>
+              <el-empty :image=robotImage
+                        description="哈哈,这篇论文没有评论" />
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -570,10 +748,78 @@ const recommends = ref([]);
   </span>
   </el-dialog>
 
+  <!-- 引用弹窗 -->
+  <el-dialog
+      v-model="citeVisible"
+      center
+      width="550px"
+  >
+    <template #header>
+      <div class="my-header">
+        <div style="margin-left: 25px;font-size: 20px;margin-bottom: -10px;margin-top: 5px">引用文章</div>
+      </div>
+    </template>
+
+    <div class="citation-container">
+      <h4>GB/T 7714</h4>
+      <div class="citation-content">
+        {{gb7714}}
+      </div>
+    </div>
+    <div class="citation-container">
+      <h4>MLA</h4>
+      <div class="citation-content">
+        {{mla}}
+      </div>
+    </div>
+    <div class="citation-container">
+      <h4>APA</h4>
+      <div class="citation-content">
+        {{apa}}
+      </div>
+    </div>
+    <!-- 复制按钮居中 -->
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="copyGBT" style="background-color: transparent;color: #0003c5;margin-right: -7px;margin-left: -7px">
+          复制GB/T 7714
+        </el-button>
+        <el-button @click="copyMLA" style="background-color: transparent;color: #0003c5;margin-right: -7px">
+          复制MLA
+        </el-button>
+        <el-button @click="copyAPA" style="background-color: transparent;color: #0003c5;margin-right: -7px">
+          复制APA
+        </el-button>
+        <el-button @click="citeVisible = false" style="background-color: transparent;color: #0003c5;">退出</el-button>
+      </div>
+    </template>
+  </el-dialog>
+
 </template>
 
 
 <style scoped>
+
+.citation-container {
+  display: flex;
+  justify-content: space-between; /* 左右对齐 */
+  align-items: baseline;
+  margin-bottom: 15px;
+  margin-left: 20px;
+  margin-right: 15px;
+}
+
+h4 {
+  color:#7a7a7a;
+  margin-right: 20px; /* 给标题和内容之间加个间隔 */
+}
+
+
+
+.citation-content {
+  flex-grow: 1; /* 让内容占满剩余空间 */
+}
+
 .custom-checkbox-group :deep(.el-checkbox__label) {
   font-size: 15px !important;
 }
@@ -619,13 +865,29 @@ const recommends = ref([]);
   align-items: center;
 }
 
-.download-button {
+.pdf-button {
   background: #e10000;
 }
 
-.download-button:hover {
+.pdf-button:hover {
   background: #ec5454;
 }
+
+.site-button {
+  background: rgba(0, 0, 0, 0);
+  color: #3200af;
+
+  text-decoration: underline;
+  font-size: 16px;
+  margin-left: -1px;
+  margin-bottom: -3px;
+}
+
+.site-button:hover {
+  background: rgba(112, 112, 112, 0);
+  color: #008be3;
+}
+
 
 .collect-button {
   color: #7a7a7a;

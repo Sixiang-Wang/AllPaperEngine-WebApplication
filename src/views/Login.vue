@@ -81,12 +81,15 @@ const login =  async() => {
       })
       if(res.data.msg === "login success") {
         ElMessage.success("登陆成功！");
-        console.log(res.data);
         userStore.setUsername(res.data.username)
         tokenStore.setToken(res.data.token)
         userIdStore.setUserId(res.data.userId)
         cookieUtil.setCookie("token",res.data.token,0.25);
         cookieUtil.setCookie("username",res.data.username, 0.25);
+        console.log(111);
+        const res2 = await http.get('/user/ifScholar',{userId: res.data.userId});
+
+        localStorage.setItem("ifAuthentication",res2.data.judge === 1);
         await router.push('/main');
       }else if(res.data.msg === "wrong password"){
         ElMessage.error("密码错误");

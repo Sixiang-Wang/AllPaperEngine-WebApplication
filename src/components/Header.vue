@@ -60,7 +60,7 @@ const goToMessage = ()=>{
 const isRedPoint = ref(false);
 onMounted(async() =>{
   if(userId.value==null||userId.value === ''){
-    preLogin()
+    await preLogin()
   } else {
     console.log('no preLogin')
   }
@@ -76,18 +76,7 @@ onMounted(async() =>{
   }catch (e){
     console.error(e);
   }
-  try{
-    const res = await httpUtil.get('/user/ifScholar',{},{
-      Authorization: cookieUtil.getCookie("token")
-    });
-    if(res.data.judge === 1){
-      ifAuthentication.value = false;
-    }else{
-      ifAuthentication.value = true;
-    }
-  }catch (e){
-    console.error(e);
-  }
+
 })
 
 const preLogin = async ()=>{
@@ -96,10 +85,14 @@ const preLogin = async ()=>{
   userStore.setUsername(res.data.username);
   tokenStore.setToken(res.data.token);
   userIdStore.setUserId(res.data.userId);
+  localStorage.setItem("userName", res.data.username);
+  localStorage.setItem("token", res.data.token);
+  localStorage.setItem("userId", res.data.userId);
+
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
 }
 
-const ifAuthentication = ref(true);
+const ifAuthentication = ref(localStorage.getItem("ifAuthentication"));
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
