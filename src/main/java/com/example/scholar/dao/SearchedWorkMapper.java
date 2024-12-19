@@ -9,8 +9,8 @@ import java.util.Map;
 @Mapper
 public interface SearchedWorkMapper {
 
-    @Insert("INSERT INTO search_work(publicationid, keywordText, type, worklanguage) VALUES (#{id}, #{keywordText}, #{type}, #{language})")
-    int insertSearchWork(String id, String keywordText, String type, String language);
+    @Insert("INSERT INTO search_work(publicationid, keywordText, type, worklanguage, publicationYear) VALUES (#{id}, #{keywordText}, #{type}, #{language}, #{publicationYear})")
+    int insertSearchWork(String id, String keywordText, String type, String language, Integer publicationYear);
 
     @Select("select * from search_work")
     List<Map<String, Object>> getAllWorks();
@@ -36,14 +36,24 @@ public interface SearchedWorkMapper {
             "LIMIT 100000")
     List<String> getLanguageNum();
 
+    @Select("SELECT publicationYear " +
+            "FROM search_work " +
+            "GROUP BY publicationYear " +
+            "ORDER BY publicationYear DESC " +
+            "LIMIT 100000")
+    List<Integer> getPublictionYearsNum();
+
     @Select("select publicationid from search_work where keywordText = #{keyword}")
     List<String> getWorksByKeyword(String keyword);
 
     @Select("select publicationid from search_work where type = #{type}")
     List<String> getWorksByType(String type);
 
-    @Select("select publicationid from search_work where work_language = #{language}")
+    @Select("select publicationid from search_work where worklanguage = #{language}")
     List<String> getWorksByLanguage(String language);
+
+    @Select("select publicationid from search_work where publicationYear = #{publicationYear}")
+    List<String> getWorksByPublictionYears(Integer publicationYear);
 
     @Select("<script>" +
             "SELECT * FROM openalex_works WHERE id IN " +

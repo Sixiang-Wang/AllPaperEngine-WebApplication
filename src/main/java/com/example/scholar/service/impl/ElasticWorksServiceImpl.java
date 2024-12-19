@@ -57,6 +57,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                 String publicationid = work.getId();
                 String type = work.getType();
                 String language = work.getLanguage();
+                Integer year = work.getPublication_year();
                 List<String> keywordsText = new ArrayList<>();
                 String keyword = work.getKeywords();
                 ObjectMapper mapper = new ObjectMapper();
@@ -64,11 +65,12 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                     List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
                     System.out.println(keywordMaps);
                     for (Map<String, Object> keywordMap : keywordMaps) {
-                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language);
+                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language, year);
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
+                cnt++;
             }
             else{
                 break;
@@ -80,6 +82,37 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     @Override
     public int getLenthOfFindTitleOrKeywordsTextOrAbstract(String searchTerm) {
         List<SearchHit<Works>> hits = elasticSearchRepository.findByTitleOrKeywordsTextOrAbstract(searchTerm);
+        List<Works> worksList = hits.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+        elasticWorkMapper.clearSearchWork();
+        int cnt = 0;
+        for(Works work: worksList)
+        {
+            if(cnt <= 100000)
+            {
+                String publicationid = work.getId();
+                String type = work.getType();
+                String language = work.getLanguage();
+                Integer year = work.getPublication_year();
+                List<String> keywordsText = new ArrayList<>();
+                String keyword = work.getKeywords();
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
+                    System.out.println(keywordMaps);
+                    for (Map<String, Object> keywordMap : keywordMaps) {
+                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language, year);
+                    }
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                cnt++;
+            }
+            else{
+                break;
+            }
+        }
         return hits.size();
     }
 

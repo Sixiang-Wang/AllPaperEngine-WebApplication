@@ -46,6 +46,17 @@ public class ConnectiveController {
         }
     }
 
+    @GetMapping(value = "/getSortedPublicationYears")
+    public R sortPublicationYears()
+    {
+        try{
+            List<Integer> years = connectiveService.sortPublictionYears();
+            return R.ok().put("years", years);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
     @GetMapping(value="/getWorksByKeyWord")
     public R getWorksByKeyWord(@RequestParam("keyword") String keyword){
         try {
@@ -69,6 +80,16 @@ public class ConnectiveController {
     public R getWorksByLanguage(@RequestParam("language") String language){
         try {
             List<Works> works = connectiveService.getWorksByLanguage(language);
+            return R.ok().put("works",works);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/getWorksByPublicationYear")
+    public R getWorksByPublicationYear(@RequestParam("year") Integer year){
+        try {
+            List<Works> works = connectiveService.getWorksByPublicationYear(year);
             return R.ok().put("works",works);
         }catch (Exception e){
             return R.error(e.toString());

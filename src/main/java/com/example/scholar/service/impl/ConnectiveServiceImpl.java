@@ -36,6 +36,13 @@ public class ConnectiveServiceImpl implements ConnectiveService {
     }
 
     @Override
+    public List<Integer> sortPublictionYears()
+    {
+        List<Integer> results = searchedWorkMapper.getPublictionYearsNum();
+        return results;
+    }
+
+    @Override
     public List<Works> getWorksByKeyword(String keyword){
         List<String> workIds = searchedWorkMapper.getWorksByKeyword(keyword);
         List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
@@ -53,6 +60,13 @@ public class ConnectiveServiceImpl implements ConnectiveService {
     @Override
     public List<Works> getWorksByLanguage(String language){
         List<String> workIds = searchedWorkMapper.getWorksByLanguage(language);
+        List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
+        return works;
+    }
+
+    @Override
+    public List<Works> getWorksByPublicationYear(int year){
+        List<String> workIds = searchedWorkMapper.getWorksByPublictionYears(year);
         List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
         return works;
     }
