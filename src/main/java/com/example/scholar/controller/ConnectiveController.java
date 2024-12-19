@@ -27,15 +27,6 @@ public class ConnectiveController {
             return R.error(e.toString());
         }
     }
-//    @GetMapping(value="/getSortedPublictionYears")
-//    public R sortPublictionYears(){
-//        try{
-//            List<Integer> years = connectiveService.sortPublictionYears();
-//            return R.ok().put("years", years);
-//        }catch (Exception e){
-//            return R.error(e.toString());
-//        }
-//    }
     @GetMapping(value="/getSortedTypes")
     public R sortTypes(){
         try{
@@ -64,15 +55,7 @@ public class ConnectiveController {
             return R.error(e.toString());
         }
     }
-//    @GetMapping(value="/getWorksByPublictionYear")
-//    public R getWorksByPublicationYear(@RequestParam("publication_year") int year){
-//        try {
-//            List<Works> works = connectiveService.getWorksByPublicationYear(year);
-//            return R.ok().put("works",works);
-//        }catch (Exception e){
-//            return R.error(e.toString());
-//        }
-//    }
+
     @GetMapping(value="/getWorksByType")
     public R getWorksByType(@RequestParam("type") String type){
         try {

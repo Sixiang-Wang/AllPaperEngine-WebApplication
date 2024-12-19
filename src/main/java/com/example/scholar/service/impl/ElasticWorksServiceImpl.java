@@ -55,6 +55,8 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
             if(cnt <= 100000)
             {
                 String publicationid = work.getId();
+                String type = work.getType();
+                String language = work.getLanguage();
                 List<String> keywordsText = new ArrayList<>();
                 String keyword = work.getKeywords();
                 ObjectMapper mapper = new ObjectMapper();
@@ -62,7 +64,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                     List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
                     System.out.println(keywordMaps);
                     for (Map<String, Object> keywordMap : keywordMaps) {
-                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"));
+                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language);
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();

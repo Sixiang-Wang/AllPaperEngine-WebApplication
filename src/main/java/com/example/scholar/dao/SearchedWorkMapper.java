@@ -9,8 +9,8 @@ import java.util.Map;
 @Mapper
 public interface SearchedWorkMapper {
 
-    @Insert("INSERT INTO search_work(publicationid, keywordText) VALUES (#{id}, #{keywordText})")
-    int insertSearchWork(String id, String keywordText);
+    @Insert("INSERT INTO search_work(publicationid, keywordText, type, worklanguage) VALUES (#{id}, #{keywordText}, #{type}, #{language})")
+    int insertSearchWork(String id, String keywordText, String type, String language);
 
     @Select("select * from search_work")
     List<Map<String, Object>> getAllWorks();
@@ -22,8 +22,28 @@ public interface SearchedWorkMapper {
             "LIMIT 100000")
     List<String> getCollectiveNum();
 
+    @Select("SELECT type " +
+            "FROM search_work " +
+            "GROUP BY type " +
+            "ORDER BY COUNT(DISTINCT publicationid) DESC " +
+            "LIMIT 100000")
+    List<String> getTypeNum();
+
+    @Select("SELECT worklanguage " +
+            "FROM search_work " +
+            "GROUP BY worklanguage " +
+            "ORDER BY COUNT(DISTINCT publicationid) DESC " +
+            "LIMIT 100000")
+    List<String> getLanguageNum();
+
     @Select("select publicationid from search_work where keywordText = #{keyword}")
     List<String> getWorksByKeyword(String keyword);
+
+    @Select("select publicationid from search_work where type = #{type}")
+    List<String> getWorksByType(String type);
+
+    @Select("select publicationid from search_work where work_language = #{language}")
+    List<String> getWorksByLanguage(String language);
 
     @Select("<script>" +
             "SELECT * FROM openalex_works WHERE id IN " +
