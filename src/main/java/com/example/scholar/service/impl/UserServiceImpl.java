@@ -513,6 +513,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<HashMap<String, Object>> viewAllHistory(int userId) {
         List<HashMap<String, Object>> resultList = userMapper.selectUserBrowserHistory(userId);
+        for (HashMap<String, Object> history : resultList) {
+            history.put("title", userMapper.selectPublicationTitle(history.get("publicationid").toString()));
+        }
         return resultList;
     }
 

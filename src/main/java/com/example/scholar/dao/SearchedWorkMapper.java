@@ -9,22 +9,20 @@ import java.util.Map;
 @Mapper
 public interface SearchedWorkMapper {
 
-    @Insert("INSERT INTO search_work(id, keywordsText)" +
-    "VALUES (#{id}, #{keywordsText})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    int insertSearchWork(Works works);
+    @Insert("INSERT INTO search_work(publicationid, keywordText) VALUES (#{id}, #{keywordText})")
+    int insertSearchWork(String id, String keywordText);
 
     @Select("select * from search_work")
     List<Map<String, Object>> getAllWorks();
 
-    @Select("SELECT keywordsText " +
+    @Select("SELECT keywordText " +
             "FROM search_work " +
-            "GROUP BY keywordsText " +
+            "GROUP BY keywordText " +
             "ORDER BY COUNT(*) DESC " +
             "LIMIT 100000")
     List<String> getCollectiveNum();
 
-    @Select("select id from search_work where keywordsText = #{keyword}")
+    @Select("select publicationid from search_work where keywordText = #{keyword}")
     List<String> getWorksByKeyword(String keyword);
 
     @Select("<script>" +
@@ -34,5 +32,9 @@ public interface SearchedWorkMapper {
             "</foreach>" +
             "</script>")
     List<Works> getWorksByIds(@Param("ids") List<String> ids);
+
+    // 每次搜索后用于清空search_work表
+    @Delete("TRUNCATE TABLE search_work")
+    void clearSearchWork();
 
 }
