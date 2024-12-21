@@ -26,4 +26,5 @@ public interface ScholarClaimMapper {
     int ableClaim(int id);
     @Update("update user_claim SET available = 0 WHERE id = #{id}")
     int disableClaim(int id);
+
 }

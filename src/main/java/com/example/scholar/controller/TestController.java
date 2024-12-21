@@ -15,9 +15,9 @@ import javax.annotation.Resource;
 public class TestController {
     @Resource
     private WorkService workService;
-    @GetMapping(value="/111")
+    @DeleteMapping(value="/111")
     @ApiOperation(value="这是一个测试接口")
-    public R test() {
+    public R test(@RequestParam int a) {
         return R.ok().put("num",1);
     }
     @GetMapping(value="/recommend")

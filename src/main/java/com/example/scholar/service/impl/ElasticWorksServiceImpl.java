@@ -4,6 +4,8 @@ import com.example.scholar.dao.SearchedWorkMapper;
 import com.example.scholar.domain.openalexElasticsearch.Works;
 import com.example.scholar.repository.ElasticSearchRepository;
 import com.example.scholar.service.ElasticWorkService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -24,7 +26,9 @@ import springfox.documentation.spring.web.json.Json;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -44,14 +48,32 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         List<Works> worksList = searchHits.stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
+        elasticWorkMapper.clearSearchWork();
         int cnt = 0;
         for(Works work: worksList)
         {
             if(cnt <= 100000)
             {
-                if(work.getKeywordsText() != null)
-                    elasticWorkMapper.insertSearchWork(work);
+                String publicationid = work.getId();
+                String type = work.getType();
+                String language = work.getLanguage();
+                Integer year = work.getPublication_year();
+                List<String> keywordsText = new ArrayList<>();
+                String keyword = work.getKeywords();
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
+                    System.out.println(keywordMaps);
+                    for (Map<String, Object> keywordMap : keywordMaps) {
+                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language, year);
+                    }
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
                 cnt++;
+            }
+            else{
+                break;
             }
         }
         return searchHits;
@@ -60,6 +82,37 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     @Override
     public int getLenthOfFindTitleOrKeywordsTextOrAbstract(String searchTerm) {
         List<SearchHit<Works>> hits = elasticSearchRepository.findByTitleOrKeywordsTextOrAbstract(searchTerm);
+        List<Works> worksList = hits.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+        elasticWorkMapper.clearSearchWork();
+        int cnt = 0;
+        for(Works work: worksList)
+        {
+            if(cnt <= 100000)
+            {
+                String publicationid = work.getId();
+                String type = work.getType();
+                String language = work.getLanguage();
+                Integer year = work.getPublication_year();
+                List<String> keywordsText = new ArrayList<>();
+                String keyword = work.getKeywords();
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
+                    System.out.println(keywordMaps);
+                    for (Map<String, Object> keywordMap : keywordMaps) {
+                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language, year);
+                    }
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                cnt++;
+            }
+            else{
+                break;
+            }
+        }
         return hits.size();
     }
 

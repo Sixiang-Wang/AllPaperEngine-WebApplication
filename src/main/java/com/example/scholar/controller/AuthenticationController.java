@@ -67,9 +67,14 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "/put")
-    public R putAuthentication(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal,@RequestParam("workplace")String workplace,@RequestParam("field")String field,@RequestParam("mail")String mail){
+    public R putAuthentication(@RequestParam("userId")int userId,
+                               @RequestParam("nameReal")String nameReal,
+                               @RequestParam("workplace")String workplace,
+                               @RequestParam("field")String field,
+                               @RequestParam("mail")String mail,
+                               @RequestParam("authorId")String authorId){
         try {
-            int result = authenticationService.putAuthentication(userId,nameReal,workplace,field,mail);
+            int result = authenticationService.putAuthentication(userId,nameReal,workplace,field,mail,authorId);
             if(result == -1){
                 return R.error("something went wrong");
             }else{
@@ -85,9 +90,14 @@ public class AuthenticationController {
     }
     @GetMapping(value = "/put/token")
     @ApiOperation("添加个人门户token版")
-    public R putAuthentication(@TokenToUser User user, @RequestParam("nameReal")String nameReal, @RequestParam("workplace")String workplace, @RequestParam("field")String field, @RequestParam("mail")String mail){
+    public R putAuthentication(@TokenToUser User user,
+                               @RequestParam("nameReal")String nameReal,
+                               @RequestParam("workplace")String workplace,
+                               @RequestParam("field")String field,
+                               @RequestParam("mail")String mail,
+                               @RequestParam("authorId")String authorId){
         try {
-            int result = authenticationService.putAuthentication(user.getUserid(),nameReal,workplace,field,mail);
+            int result = authenticationService.putAuthentication(user.getUserid(),nameReal,workplace,field,mail,authorId);
             if(result == -1){
                 return R.error("something went wrong");
             }else{

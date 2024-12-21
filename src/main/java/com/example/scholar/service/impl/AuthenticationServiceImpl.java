@@ -24,10 +24,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public int putAuthentication(int userId, String nameReal, String workplace, String field, String mail) {
+    public int putAuthentication(int userId, String nameReal, String workplace, String field, String mail,String authorId) {
         List<Authentication> authenticationList = authenticationMapper.selectAuthenticationById(userId);
         if(authenticationList.isEmpty()){
             authenticationMapper.putAuthentication(userId,nameReal,workplace,field,mail);
+            if(authorId !=null && !authorId.isEmpty()){
+                authenticationMapper.updateRelateUserAuthor(userId,authorId);
+            }
             return 1;
         }else {
             return -1;

@@ -8,6 +8,7 @@ import com.example.scholar.domain.myenum.AcademicFieldType;
 import com.example.scholar.dto.AddUserFavoriteDto;
 import com.example.scholar.dto.LoginDto;
 import com.example.scholar.dto.RegistDto;
+import com.example.scholar.dto.TagDto;
 import com.example.scholar.service.MessageService;
 import com.example.scholar.service.UserService;
 import com.example.scholar.service.UserTokenService;
@@ -110,9 +111,9 @@ public class UserController {
 
     @GetMapping(value="/ifScholar")
     @ApiOperation("判断是否为scholar")
-    public R ifScholar(@TokenToUser User user){
+    public R ifScholar(@RequestParam("userId")int userId){
         try{
-            User user1 = userMapper.selectUserById(user.getUserid());
+            User user1 = userMapper.selectUserById(userId);
             if(user1.getRole() == 1){
                 return R.ok().put("judge",1);
             }else{
@@ -447,8 +448,9 @@ public class UserController {
     // 查用户带有指定标签的收藏(多选，并集，标签列表)
     @PostMapping("/viewAllFavoritesWithTags")
     @ApiOperation("查用户带有指定标签的收藏接口")
-    public R viewAllFavoritesWithTags(@RequestParam int userId,
-                                      @RequestParam List<String> tags) {
+    public R viewAllFavoritesWithTags(@RequestBody TagDto tagDto) {
+            List<String> tags = tagDto.getTags();
+            int userId = tagDto.getUserId();
         try {
             List<HashMap<String, Object>> favoriteList = userService.viewAllFavoritesWithTags(userId, tags);
             if (favoriteList.isEmpty()) {
@@ -689,6 +691,27 @@ public class UserController {
             if(user!=null){
                 user.setRole(role);
                 userMapper.updateUserRole(user);
+                DateTimeFormatter formatter = org.joda.time.format.DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+                messageService.createMessage(1,userId,"恭喜，您于"+new DateTime(System.currentTimeMillis()).toString(formatter) +
+                        "通过了审核，已成为科研人员！");
+                return R.ok("success").put("user",user);
+            }else {
+                return R.error("get user failed");
+            }
+        }catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+    @PostMapping("/setRole2")
+    @ApiOperation("设置用户权限，并将用户与author绑定")
+    public R setUserRole(@RequestParam int userId,@RequestParam int role, @RequestParam String authorId){
+        try {
+            User user = userMapper.selectUserById(userId);
+            if(user!=null){
+                user.setRole(role);
+                userMapper.updateUserRole(user);
+                userMapper.updateUserAuthorRelation(authorId, userId);
                 DateTimeFormatter formatter = org.joda.time.format.DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
                 messageService.createMessage(1,userId,"恭喜，您于"+new DateTime(System.currentTimeMillis()).toString(formatter) +

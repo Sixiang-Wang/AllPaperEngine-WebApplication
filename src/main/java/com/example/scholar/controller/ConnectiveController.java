@@ -17,16 +17,6 @@ import java.util.List;
 public class ConnectiveController {
     @Resource
     private ConnectiveService connectiveService;
-    @GetMapping(value = "/create")
-    public R create()
-    {
-        try {
-            connectiveService.create();
-            return R.ok();
-        }catch (Exception e){
-            return R.error(e.toString());
-        }
-    }
 
     @GetMapping(value="/getSortedKeywords")
     public R sortKeywords(){
@@ -37,11 +27,69 @@ public class ConnectiveController {
             return R.error(e.toString());
         }
     }
+    @GetMapping(value="/getSortedTypes")
+    public R sortTypes(){
+        try{
+            List<String> types = connectiveService.sortTypes();
+            return R.ok().put("types", types);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+    @GetMapping(value="/getSortedLanguages")
+    public R sortLanguages(){
+        try{
+            List<String> languages = connectiveService.sortLanguages();
+            return R.ok().put("languages", languages);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/getSortedPublicationYears")
+    public R sortPublicationYears()
+    {
+        try{
+            List<Integer> years = connectiveService.sortPublictionYears();
+            return R.ok().put("years", years);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
 
     @GetMapping(value="/getWorksByKeyWord")
     public R getWorksByKeyWord(@RequestParam("keyword") String keyword){
         try {
             List<Works> works = connectiveService.getWorksByKeyword(keyword);
+            return R.ok().put("works",works);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value="/getWorksByType")
+    public R getWorksByType(@RequestParam("type") String type){
+        try {
+            List<Works> works = connectiveService.getWorksByType(type);
+            return R.ok().put("works",works);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+    @GetMapping(value="/getWorksByLanguage")
+    public R getWorksByLanguage(@RequestParam("language") String language){
+        try {
+            List<Works> works = connectiveService.getWorksByLanguage(language);
+            return R.ok().put("works",works);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/getWorksByPublicationYear")
+    public R getWorksByPublicationYear(@RequestParam("year") Integer year){
+        try {
+            List<Works> works = connectiveService.getWorksByPublicationYear(year);
             return R.ok().put("works",works);
         }catch (Exception e){
             return R.error(e.toString());

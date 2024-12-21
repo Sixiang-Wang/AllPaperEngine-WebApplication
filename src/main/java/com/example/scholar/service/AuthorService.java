@@ -11,5 +11,15 @@ import java.util.List;
 public interface AuthorService {
     ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId);
     String getAuthorIdByAuthorName(String authorName);
+    List<Work> getWorksByAuthorId(String authorId);
+    int getWorksCountByAuthorId(String authorId);
+    List<Work> getHighQualityWorksByAuthorId(String authorId);
+    int getHighQualityWorksCountByAuthorId(String authorId,boolean track);
+    int getCitedCountByAuthorId(String authorId);
+    int getHNumberByAuthorId(String authorId,boolean track);
+    List<Work> getFirstPublishWorkByAuthorId(String authorId);
+    int getFirstPublishWorkCountByAuthorId(String authorId,boolean track);
     List<Work> getWorksByAuthorName(String authorName);
+
+    List<AuthorResultDto> getAuthorsByName(String name);
 }

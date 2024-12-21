@@ -9,36 +9,51 @@ import java.util.Map;
 @Mapper
 public interface SearchedWorkMapper {
 
-    @Update("""
-        DROP TABLE IF EXISTS search_work;
-        """)
-    void dropTableIfExists();
-
-    @Update("""
-        CREATE TABLE search_work (
-            id VARCHAR(255) PRIMARY KEY,
-            keywordsText VARCHAR(255) NOT NULL
-        )
-        """)
-    void createTable();
-
-    @Insert("INSERT INTO search_work(id, keywordsText)" +
-    "VALUES (#{id}, #{keywordsText})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    int insertSearchWork(Works works);
+    @Insert("INSERT INTO search_work(publicationid, keywordText, type, worklanguage, publicationYear) VALUES (#{id}, #{keywordText}, #{type}, #{language}, #{publicationYear})")
+    int insertSearchWork(String id, String keywordText, String type, String language, Integer publicationYear);
 
     @Select("select * from search_work")
     List<Map<String, Object>> getAllWorks();
 
-    @Select("SELECT keywordsText " +
+    @Select("SELECT keywordText " +
             "FROM search_work " +
-            "GROUP BY keywordsText " +
+            "GROUP BY keywordText " +
             "ORDER BY COUNT(*) DESC " +
             "LIMIT 100000")
     List<String> getCollectiveNum();
 
-    @Select("select id from search_work where keywordsText = #{keyword}")
+    @Select("SELECT type " +
+            "FROM search_work " +
+            "GROUP BY type " +
+            "ORDER BY COUNT(DISTINCT publicationid) DESC " +
+            "LIMIT 100000")
+    List<String> getTypeNum();
+
+    @Select("SELECT worklanguage " +
+            "FROM search_work " +
+            "GROUP BY worklanguage " +
+            "ORDER BY COUNT(DISTINCT publicationid) DESC " +
+            "LIMIT 100000")
+    List<String> getLanguageNum();
+
+    @Select("SELECT publicationYear " +
+            "FROM search_work " +
+            "GROUP BY publicationYear " +
+            "ORDER BY publicationYear DESC " +
+            "LIMIT 100000")
+    List<Integer> getPublictionYearsNum();
+
+    @Select("select publicationid from search_work where keywordText = #{keyword}")
     List<String> getWorksByKeyword(String keyword);
+
+    @Select("select publicationid from search_work where type = #{type}")
+    List<String> getWorksByType(String type);
+
+    @Select("select publicationid from search_work where worklanguage = #{language}")
+    List<String> getWorksByLanguage(String language);
+
+    @Select("select publicationid from search_work where publicationYear = #{publicationYear}")
+    List<String> getWorksByPublictionYears(Integer publicationYear);
 
     @Select("<script>" +
             "SELECT * FROM openalex_works WHERE id IN " +
@@ -47,5 +62,9 @@ public interface SearchedWorkMapper {
             "</foreach>" +
             "</script>")
     List<Works> getWorksByIds(@Param("ids") List<String> ids);
+
+    // 每次搜索后用于清空search_work表
+    @Delete("TRUNCATE TABLE search_work")
+    void clearSearchWork();
 
 }

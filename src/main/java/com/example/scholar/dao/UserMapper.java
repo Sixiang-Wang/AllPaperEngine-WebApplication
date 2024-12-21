@@ -21,7 +21,8 @@ public interface UserMapper {
 
     @Select("select role from user where userid = #{userId}")
     int getUserRole(int userId);
-
+    @Update("update user set author_id = #{id} where userid = #{userId}")
+    void updateUserAuthorRelation(String id, int userId);
     @Select("select * from user where mail = #{mail}")
     User selectUserByMail(String mail);
 
@@ -77,7 +78,7 @@ public interface UserMapper {
     @Select("select count(*) from user_favorite where userid=#{userId} and publicationid = #{publicationId}")
     int haveFavorite(int userId, String publicationId);
 
-    @Select("select count(*) from user_favorite where publicationid = #{publicationId}")
+    @Select("select count(DISTINCT userid) from user_favorite where publicationid = #{publicationId}")
     int getWorkFavoriteNum(String publicationId);
     // 在某个标签添加一条收藏记录
     @Insert("INSERT INTO user_favorite (userid, `publicationid`,tag) VALUES (#{userId}, #{publicationId}, #{tag})")
