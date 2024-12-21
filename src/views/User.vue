@@ -3,12 +3,12 @@
 
 
   <div class="common-layout">
-    <el-container>
+    <el-container style="height: 100%;">
       <el-aside width="400px">
         <UserAside></UserAside>
       </el-aside>
 
-      <el-main>
+      <el-main style="flex-grow: 1;">
         <router-view/>
       </el-main>
     </el-container>

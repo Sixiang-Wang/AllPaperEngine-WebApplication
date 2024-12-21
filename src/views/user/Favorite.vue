@@ -7,16 +7,20 @@ import httpUtil from "@/api/http.js";
 import {ElButton, ElMessageBox, ElMessage} from 'element-plus';
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
+import testhttp from "@/api/http.js";
 
 const activeName = ref('1')
-const userId = ref(1);
+
+const userId = localStorage.getItem("userId");
+// const userId = ref(1);
 const selectedTags = ref([]);
 const route = useRoute();
-const buttonLabels = ref(['按钮1', '按钮2', '按钮3', '按钮4', '按钮5', '按钮6', '按钮7', '按钮8', '按钮9', '按钮10', '按钮114514', '按钮ciallo~']);
+let buttonLabels = ref([]);
 const buttonStates = ref(Array(12).fill(false));
 // 设置四种按钮的颜色
 const buttonColors = ref(['#9c69fc', '#5bc8f3', '#ffab73', '#a4f65c']);
 const tableData = ref()
+const test = ['test1'];
 const ChangeTagList = (index) => {
   if(buttonStates.value[index]){
     selectedTags.value.push(buttonLabels.value[index]);
@@ -26,19 +30,33 @@ const ChangeTagList = (index) => {
   }
   UpdateFavorite();
 }
+const ClearTagList = async () => {
+  for(let i = 0; i < buttonStates.value.length; i++){
+    buttonStates.value[i] = false;
+  }
+  selectedTags.value = [];
+  await UpdateFavorite();
+}
 function OnDeleteButtonClicked(id){
   // 弹出确认消息
   ElMessageBox.confirm('确认要取消该收藏吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(() => {
+  }).then(async () => {
     // 用户点击确认后执行的代码
-    // router.push({path: '/favorite/delete', query: {id: id}}}) // 调用删除请求接口
+    console.log(userId.value);
+    console.log(id);
+    await httpUtil.get('user/deleteUserFavorite', {
+      userId: userId.value,
+      publicationId: id
+    });
     console.log(`确定删除,id: ${id}`);
-    UpdateFavorite();
+    ClearTagList();
+    await UpdateFavorite();
   }).catch(() => {
     // 用户点击取消后执行的代码
+    console.log("Delete Error");
   });
 }
 const goToPaper = (id)=> {
@@ -47,16 +65,23 @@ const goToPaper = (id)=> {
 }
 const UpdateFavorite = async () => {
   let res = ([]);
-  console.log(selectedTags.value.length);
-  if(selectedTags.value.length === 0)
-   res = await httpUtil.get('user/viewAllFavoritesByUser', {
+  // console.log(selectedTags.value.length);
+  console.log(selectedTags.value);
+  let tags = ([]);
+  tags = await httpUtil.get('user/viewAllTags', {
     userId: userId.value
   });
-  else {
-    console.log(selectedTags.value);
-    res = await httpUtil.get('user/viewFavoritesWithTags', {
-      tags: selectedTags.value,
+  tags.data.tags.forEach((item, index) => {
+    buttonLabels.value[index] = item.tag;
+  });
+  if(selectedTags.value.length === 0)
+    res = await httpUtil.get('user/viewAllFavoritesByUser', {
       userId: userId.value
+    });
+  else {
+    res = await httpUtil.post('user/viewAllFavoritesWithTags', {
+        userId: userId.value,
+        tags: [...selectedTags.value]
     });
     console.log(res.data.favoriteList);
   }
@@ -82,7 +107,7 @@ onMounted(async () => {
         <el-table :data="tableData" style="width: 100%" max-height="800" :header-cell-style="{'text-align':'center'}">
           <el-table-column label="标题" width="500">
             <template #default="scope">
-              <span class="favorite-title" @click="goToPaper(scope.row.id)">{{ scope.row.title }}</span>
+              <span class="favorite-title" @click="goToPaper(scope.row.publicationid)">{{ scope.row.title }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="tags" label="标签" width="180" align="center">
@@ -96,13 +121,13 @@ onMounted(async () => {
             </template>
           </el-table-column>
           <el-table-column label="操作" #default="scope" align="center">
-            <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+            <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.publicationid)"/>
           </el-table-column>
 
         </el-table>
     </el-card>
-    <div style="height: 335px">
-      <el-card class="card-tag" style="width: 360px; max-height: 350px">
+    <div style="height: 600px">
+      <el-card class="card-tag" style="width: 360px; max-height: 500px">
         <template #header>
           <div class="card-tag-header">
             <span style="font-size: 20px; font-weight: bold;">按标签筛选<span style="font-weight: bold;">😏</span></span>
@@ -113,7 +138,7 @@ onMounted(async () => {
                   content="清除选择"
                   placement="top"
               >
-                <el-button type="primary" :icon="Remove" circle />
+                <el-button type="primary" :icon="Remove" circle @click="ClearTagList"/>
               </el-tooltip>
             </div>
           </div>

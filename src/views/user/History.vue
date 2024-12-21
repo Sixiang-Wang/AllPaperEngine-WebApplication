@@ -8,25 +8,46 @@ import { ElButton } from 'element-plus';
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 
+const userId = localStorage.getItem("userId");
 const activeName = ref('1')
 const route = useRoute();
+const getCurrentDateTime = () =>{
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = this.padZero(now.getMonth() + 1); // 月份是从0开始的
+  const day = this.padZero(now.getDate());
+  const hours = this.padZero(now.getHours());
+  const minutes = this.padZero(now.getMinutes());
+  const seconds = this.padZero(now.getSeconds());
+
+  // 构建 $date-time 格式的字符串
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+const padZero = (num) => {
+  return num < 10 ? '0' + num : num;
+}
 const OnDeleteButtonClicked = () => {
 
 }
-const goToPaper = (id)=> {
+const goToPaper = async (id)=> {
   // console.log(id)
-  router.push({path: '/paper', query: {id: id, input: route.query.input}})
+  await httpUtil.post('user/addHistory', {
+    userId: userId,
+    publicationId: id,
+    timestamp: getCurrentDateTime()
+  });
+  await router.push({path: '/paper', query: {id: id, input: route.query.input}})
 }
 const tableData = ref()
-const UpdateFavorite = async () => {
-  const res = await httpUtil.get('/openalex/get/page', {
-    page: 1
+const UpdateHistory = async () => {
+  const res = await httpUtil.get('user/viewAllHistory', {
+    userId: userId
   });
-  console.log(res.data.works);
-  tableData.value = res.data.works;
+  console.log(res.data.historyList);
+  tableData.value = res.data.historyList;
 };
 onMounted(async () => {
-  await UpdateFavorite();
+  await UpdateHistory();
 })
 </script>
 
@@ -48,7 +69,11 @@ onMounted(async () => {
                 <span class="history-title" @click="goToPaper(scope.row.id)">{{ scope.row.title }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="" label="收藏日期" width="180" />
+            <el-table-column label="收藏日期" width="180" >
+              <template #default="scope">
+                <span class="date-range">{{ scope.row.timestamp }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" #default="scope">
               <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
             </el-table-column>
