@@ -15,5 +15,6 @@ public class Concepts {
     private int citedbyCount;
     private String imageUrl;
     private String imageThumbnailUrl;
+    private String worksApiUrl;
     private String updatedDate;
 }

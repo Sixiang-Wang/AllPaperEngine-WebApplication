@@ -135,14 +135,14 @@ public class OpenAlexController {
 
 
 
-    @GetMapping(value="/institutions/getInstitutionById")
-    public R getInstitutionById(@RequestParam("institutionId") String institutionId){
-        try{
-            return R.ok().put("institutions",institutionsService.getInstitutionById(institutionId));
-        }catch (Exception e){
-            return R.error(e.toString());
-        }
-    }
+//    @GetMapping(value="/institutions/getInstitutionById")
+//    public R getInstitutionById(@RequestParam("institutionId") String institutionId){
+//        try{
+//            return R.ok().put("institutions",institutionsService.getInstitutionById(institutionId));
+//        }catch (Exception e){
+//            return R.error(e.toString());
+//        }
+//    }
 
 
 

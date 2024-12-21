@@ -9,6 +9,6 @@ public class WorksConcepts {
     private String workId;
     private String conceptId;
     private Float score;
-    private String displayName;
-    private String wikidata;
+//    private String displayName;
+//    private String wikidata;
 }

@@ -53,7 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 
     @Override
-    public String getAuthorIdByAuthorName(String authorName) {
+    public List<String> getAuthorIdByAuthorName(String authorName) {
         return authorMapper.getAuthorIdByAuthorName(authorName);
     }
 
