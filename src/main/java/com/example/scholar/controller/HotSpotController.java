@@ -3,6 +3,7 @@ package com.example.scholar.controller;
 
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.dto.HottestKeywordsResult;
+import com.example.scholar.dto.TopicResultDto;
 import com.example.scholar.dto.WorkResultDto;
 import com.example.scholar.service.HotSpotService;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +31,17 @@ public class HotSpotController {
         }
     }
 
-
-
-
-
-
-
+    @GetMapping(value="/getTopicsWorksCount")
+    public R getTopicsBySubfield(@RequestParam("domainDisplayName") String domainDisplayName,
+                                 @RequestParam("fieldDisplayName") String fieldDisplayName,
+                                 @RequestParam("subfieldDisplayName") String subfieldDisplayName) {
+        try {
+            List<TopicResultDto> topics = hotSpotService.getTopicsBySubfield(domainDisplayName, fieldDisplayName, subfieldDisplayName);
+            return R.ok().put("topics", topics);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
 
 
 }
