@@ -4,6 +4,7 @@ import com.example.scholar.dao.NetMapper;
 import com.example.scholar.dao.UserMapper;
 import com.example.scholar.domain.AuthorForNet;
 import com.example.scholar.domain.openalex.Author;
+import com.example.scholar.dto.net.NetConfig;
 import com.example.scholar.service.NetService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -24,28 +25,29 @@ public class NetServiceImpl implements NetService {
     private UserMapper userMapper;
     @Override
     public AuthorForNet getNetNodes(int userId) {
-        // TODO: 验证是否为authorId
+        //  验证是否为authorId
         if (userMapper.getUserRole(userId) == 0) {
             return null;
         }
 
         // 通过userId获取用户认证的authorId
         String authorId = netMapper.getAuthorIdByUserId(userId);
-        // 通过authorId获取所有论文的id
-        List<String> worksIdlist = netMapper.getWorksId(authorId);
-        // 通过worksIdList获取对应的其他作者
         List<AuthorForNet> res = new ArrayList<>();
-        for (String str : worksIdlist) {
-            List<String> tmp = netMapper.getRelatedAuthorIds(str);
-            // 获取每条workId对应的相关作者
-            for (String authorTmpId : tmp) {
-                AuthorForNet authorForNet = netMapper.selectAuthorById(authorTmpId);
-                // 获取authorForNet对象
-                authorForNet.setName(getFirstArray(authorForNet.getDisplayNameAlterNatives()));
-                res.add(authorForNet);
+        if(NetConfig.CONTAINS_RELATED_WORKS) {
+            // 通过authorId获取所有论文的id
+            List<String> worksIdlist = netMapper.getWorksId(authorId);
+            // 通过worksIdList获取对应的其他作者
+            for (String str : worksIdlist) {
+                List<String> tmp = netMapper.getRelatedAuthorIds(str);
+                // 获取每条workId对应的相关作者
+                for (String authorTmpId : tmp) {
+                    AuthorForNet authorForNet = netMapper.selectAuthorById(authorTmpId);
+                    // 获取authorForNet对象
+                    authorForNet.setName(getFirstArray(authorForNet.getDisplayNameAlterNatives()));
+                    res.add(authorForNet);
+                }
             }
         }
-
         AuthorForNet authorForNet = netMapper.selectAuthorById(authorId);
 
         String displayNameAlterNatives = authorForNet.getDisplayNameAlterNatives();
