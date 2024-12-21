@@ -1,14 +1,27 @@
 package com.example.scholar.service;
 
-import com.example.scholar.domain.UserApplication;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.List;
 
 @Component
 public interface AdminService {
-    HashMap<String, Object> approveApplication(int applicationId, String reason);
-    HashMap<String, Object> rejectApplication(int applicationId, String reason);
-    List<UserApplication> getApplications();
+
+    public int verifyPassword(String admin,String password);
+
+    int putAdmin(String admin,String password);
+
+    int setPassword(String admin, String password);
+
+    int agree(String admin,String code);
+
+    boolean haveAdmin(String admin);
+
+
+
+
+
+
+
+//    HashMap<String, Object> approveApplication(int applicationId, String reason);
+//    HashMap<String, Object> rejectApplication(int applicationId, String reason);
+//    List<UserApplication> getApplications();
 }

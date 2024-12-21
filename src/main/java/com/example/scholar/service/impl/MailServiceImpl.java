@@ -5,9 +5,6 @@ import com.example.scholar.service.MailService;
 import com.example.scholar.util.MailUtil;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -42,7 +39,7 @@ public class MailServiceImpl implements MailService {
             return jsonObject;
         }
 
-        String verifyCode = mailUtil.sendMail(to);
+        String verifyCode = mailUtil.sendVerifyMail(to);
         verifyCodes.put(to,verifyCode);
         verifyCodeTimes.put(to,System.currentTimeMillis() + EXPIRY_TIME);
 

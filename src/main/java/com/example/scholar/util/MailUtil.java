@@ -20,7 +20,7 @@ public class MailUtil {
     @Resource
     private JavaMailSender javaMailSender;
 
-    public String sendMail(String to){
+    public String sendVerifyMail(String to){
         String verifyCode = getVerifyCode();
 
         MimeMessagePreparator msg = mimeMessage -> {
@@ -37,14 +37,34 @@ public class MailUtil {
         return verifyCode;
     }
 
-    public void sendCustomMail(String to,String from,String subject,String text){
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(to);
-        msg.setSubject(subject);
-        msg.setText(text);
-        msg.setFrom(from+" <"+myMailAddress+">");
+    public void sendAdminMail(String admin) {
+        String hashedCode = Md5Utils.agenerate(admin);
+
+        String contentReal = "<div style=\"position: relative; width: 100%; background-color: #001122; text-align: center; padding: 20px; color: white; font-size: 18px;\">\n" +
+                "    <p style=\"color:#66FFFF; font-size:20px;\">您好，<br>AllPaper Engine 有管理员申请注册:<br></p>\n" +
+                "    <p>请确定管理员申请者</p>\n" +
+                "    <p>申请人: <b>" + admin + "</b></p>\n" +
+                "    <p style=\"margin: 20px 0;\">\n" +
+                "        <a href=\"http://116.204.112.5:1145/admin/agree?admin=" + admin + "&code="+hashedCode+"\"\n" +
+                "           style=\"display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; font-size: 16px; border-radius: 5px;\">\n" +
+                "            点击同意\n" +
+                "        </a>\n" +
+                "    </p>\n" +
+                "</div>";
+
+
+        MimeMessagePreparator msg = mimeMessage -> {
+            MimeMessageHelper msgHelper = new MimeMessageHelper(mimeMessage);
+            msgHelper.setTo("2562187628@qq.com");
+            msgHelper.setSubject("AllPaper Engine 管理员申请: ");
+
+            msgHelper.setText(contentReal, true); // true 表示启用 HTML 格式
+            msgHelper.setFrom("AllPaper Engine官方 <" + myMailAddress + ">");
+        };
         javaMailSender.send(msg);
     }
+
+
 
     public String getVerifyCode(){
         Integer randomNum = random.nextInt(999999);
