@@ -39,7 +39,7 @@ const goToPaper = (id)=> {
       <div class="component search-result-bottom" style="display:flex;align-items: center">
         <span>引用次数：{{cited}}</span>
       </div>
-      <div>
+    <div>
 
       </div>
     </div>

@@ -51,6 +51,11 @@ const router = createRouter({
             ]
         },
         {
+            path: '/singleAuthor',
+            name: 'singleAuthor',
+            component: () => import('@/components/single/SingleAuthor.vue')
+        },
+        {
             path: '/hotpoint',
             name: 'hotpoint',
             component: () => import('@/views/Hotpoint.vue')
@@ -126,7 +131,6 @@ const router = createRouter({
             component: () => import('@/views/personalPortal/PersonalPortal.vue'),
             redirect: '/personalportal/personalInfo',
             children: [
-
                 {
                     path: '/personalportal/otherService',
                     name: 'OtherService',

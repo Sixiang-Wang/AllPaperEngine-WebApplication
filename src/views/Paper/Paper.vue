@@ -1,6 +1,6 @@
 <script setup>
 
-import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plus/icons-vue";
+import {Document, Paperclip, Search,Link, Share, Star, StarFilled} from "@element-plus/icons-vue";
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
@@ -173,6 +173,19 @@ onMounted(async () => {
     }
 )
 
+const getReference = async ()=>{
+  try {
+    const res = await httpUtil.get('/openalex/work/getWorkReferenceIt', {
+      workId: workId,
+    });
+    citeResults.value = res.data.work;
+    citeTotalLength.value = citeResults.value.length;
+    citeNum.value = citeTotalLength.value;
+  } catch (error) {
+    console.error("获取引用失败:", error);
+    ElMessage.error("获取引用失败");
+  }
+}
 
 
 let citeNumChange = useTransition(citeNum, {
@@ -208,26 +221,14 @@ const getCite = async ()=>{
   }
 }
 
-const getReference = async ()=>{
-  try {
-    const res = await httpUtil.get('/openalex/work/getWorkItsReference', {
-      workId: workId,
-    });
-    referenceResults.value = res.data.work;
-    referenceTotalLength.value = referenceResults.value.length;
-    referenceNum.value = referenceTotalLength.value;
-  } catch (error) {
-    console.error("获取引用失败:", error);
-    ElMessage.error("获取引用失败");
-  }
-}
+
 
 
 const collectContent = computed(() =>
     isCollected.value ? '取消收藏' : '添加到收藏'
 );
 
-const toggleDownload = () => {
+const toggleSite = () => {
   if(doi.value==='Loading...'){
     ElMessage.error("抱歉，我们无法访问这篇文章的原文")
     return;
@@ -236,6 +237,19 @@ const toggleDownload = () => {
   const urlTmp = ref(`https://www.${doi.value}`)
   window.open(urlTmp.value,"_blank");
 }
+
+const togglePdf = async () => {
+  if(doi.value==='Loading...'){
+    ElMessage.error("抱歉，我们无法访问这篇文章的原文")
+    return;
+  }
+  let tmp1;
+  tmp1 = doi.value.split('doi.org/')[1];
+
+  const urlTmp = ref(`https://www.wellesu.com/${tmp1}`)
+  window.open(urlTmp.value,"_blank");
+}
+
 const toggleShare = () => {
   const currentUrl = window.location.href;  // 获取当前网址
   navigator.clipboard.writeText(currentUrl)  // 将网址复制到剪切板
@@ -479,7 +493,7 @@ const recommends = ref([]);
       <div class="left-part">
         <!-- Header Section -->
         <div class="header">
-          <h1>{{ title }}</h1>
+          <h1 v-html="title"></h1>
 
           <p>
             <span v-for="(author, index) in auth" :key="index">
@@ -512,18 +526,19 @@ const recommends = ref([]);
         <div class="abstract">
           <strong>Abstract:</strong>
           <br>
-          {{ abstract }}
+          <div v-html="abstract"></div>
         </div>
         <div class="option-part">
 
 
+
           <el-button
-              class="download-button"
-              :icon="Download"
+              class="pdf-button"
+              :icon="Document"
               type="danger"
-              @click="toggleDownload"
+              @click="togglePdf"
           >
-            跳转到原文链接
+            查看PDF
           </el-button>
 
 
@@ -563,6 +578,16 @@ const recommends = ref([]);
             >
             </el-button>
           </el-tooltip>
+
+          <el-button
+              class="site-button"
+              :icon="Link"
+
+              @click="toggleSite"
+          >
+            原文网址
+          </el-button>
+
         </div>
 
         <el-tabs v-model="activeName" class="down-tabs" type="card">
@@ -840,13 +865,29 @@ h4 {
   align-items: center;
 }
 
-.download-button {
+.pdf-button {
   background: #e10000;
 }
 
-.download-button:hover {
+.pdf-button:hover {
   background: #ec5454;
 }
+
+.site-button {
+  background: rgba(0, 0, 0, 0);
+  color: #3200af;
+
+  text-decoration: underline;
+  font-size: 16px;
+  margin-left: -1px;
+  margin-bottom: -3px;
+}
+
+.site-button:hover {
+  background: rgba(112, 112, 112, 0);
+  color: #008be3;
+}
+
 
 .collect-button {
   color: #7a7a7a;

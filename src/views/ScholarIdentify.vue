@@ -1,5 +1,5 @@
 <script setup>
-import {Edit, Picture, Setting, SuccessFilled, Upload} from "@element-plus/icons-vue";
+import {Avatar, Edit, Picture, Search, Setting, SuccessFilled, Upload} from "@element-plus/icons-vue";
 import {onMounted, ref} from 'vue';
 import {ElMessage} from "element-plus";
 import httpUtil from "@/api/http.js";
@@ -162,6 +162,58 @@ onMounted(async()=>{
     console.error(e);
   }
 })
+
+const input = ref();
+const ifTable = ref(false);
+const authorResults = ref([]);
+const search = async()=>{
+    ifTable.value = true;
+    try{
+      console.log(input.value);
+      const res = await httpUtil.get('/author/getByName',{
+        name: input.value
+      })
+      authorResults.value = res.data.authors;
+    }catch (e){
+      console.error(e);
+    }
+}
+const id = ref();
+const handleRowDbClick = (row)=>{
+
+  id.value = row.authorId;
+  console.log("id.value"+id.value);
+}
+const rowStyle=({row})=>{
+  if(id.value === row.authorId){
+    return  {'background-color': '#dfe6e6', cursor: 'pointer'};
+  }
+  return {cursor: 'pointer'}
+
+}
+const submitAndJump = async()=>{
+  try{
+    const res = await httpUtil.get('/authentication/put',{
+      userId: localStorage.getItem("userId"),
+      nameReal: form.value.name,
+      workplace: form.value.organization,
+      field: form.value.researchField,
+      mail: form.value.email,
+      authorId: id.value
+    })
+    console.log(res.data);
+    if(res.data.msg === 'success'){
+      ElMessage.success("提交成功，请耐心等待");
+      setTimeout(()=>{
+        currentStep.value = '4';
+      },300);
+    }else{
+      ElMessage.error("提交失败，请稍后再试");
+    }
+  }catch (e){
+    console.error(e);
+  }
+}
 </script>
 
 <template>
@@ -172,6 +224,7 @@ onMounted(async()=>{
           <el-steps style="width: 600px; margin-top: 3%;" :active="currentStep" finish-status="success">
             <el-step title="填写个人信息" :icon="Edit"/>
             <el-step title="个人门户设置" :icon="Setting"/>
+            <el-step title="选择学者身份" :icon="Avatar"/>
             <el-step title="等待审批" :icon="SuccessFilled"/>
           </el-steps>
         </div>
@@ -225,11 +278,29 @@ onMounted(async()=>{
           </div>
         </div>
         <div v-if="currentStep === '3'" class="scholar-identify-input">
+          <span>
+            <el-input v-model="input" class="search-input" style="width: 550px" placeholder="请输入用户名称"
+                      @keyup.enter="search"/>
+            <el-button :icon="Search" @click="search" class="claim-button"/>
+          </span>
+          <div style="margin-top: 3%; max-height: 200px; overflow-y: auto;">
+            <el-table :data="authorResults" v-if="ifTable" :row-style="rowStyle" @row-click="handleRowDbClick" show-overflow-tooltip>
+              <el-table-column prop="authorName[0]" label="作者姓名" width="180" />
+              <el-table-column prop="worksCount" label="论文数量" width="180" />
+              <el-table-column prop="citedByCount" label="被引用数" width="180" />
+            </el-table>
+          </div>
+          <div style="display:flex; margin-top: 5%">
+            <el-button style="width: 125px; height: 36px" @click="currentStep = '2'">上一步</el-button>
+            <el-button color="#1F578F" style="width: 125px; height: 36px" @click="submitAndJump">下一步</el-button>
+          </div>
+        </div>
+        <div v-if="currentStep === '4'" class="scholar-identify-input">
           <img src="@/assets/image/identifySuccess.png">
           <h1 style="color:#7a7a7a">恭喜。您已提交成功！请耐心等待审核</h1>
           <div style="display:flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="backToMain">返回主页</el-button>
-            <el-button style="width: 125px; height: 36px" @click="threeToTwo">开发专用！</el-button>
+            <el-button style="width: 125px; height: 36px" @click="currentStep = '3'">开发专用！</el-button>
           </div>
         </div>
       </div>
@@ -240,4 +311,83 @@ onMounted(async()=>{
 <style scoped>
 @import "@/css/basic.css";
 @import "@/css/scholarIdentify.css";
+
+:deep(.el-tabs__nav-wrap::after) {
+  position: static !important;
+}
+.search-input{
+  height: 40px;
+  max-width: 80%;
+}
+
+.claim-button {
+  border-radius: 0 4px 4px 0; /* 使按钮圆角与输入框拼接 */
+  height: 40px;
+  background-color: transparent;
+  border-left-width: 0;
+}
+.claim-button:hover {
+  border: 1px solid #1F578F;
+  border-left-width: 0;
+  color: #1F578F;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+:deep(.el-input__wrapper){
+  background-color:rgba(0,0,0,0) !important;
+  border-radius: 0 !important;
+  --el-input-focus-border-color: #1F578F;
+  --el-input-hover-border-color: #1F578F;
+}
+:deep(.el-input-group__prepend){
+  background-color:rgba(0,0,0,0);
+}
+:deep(.el-input__inner) {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+:deep(.el-input__inner::placeholder) {
+  color: rgba(200, 200, 200, 0.7) !important;
+  cursor: pointer;
+}
+:deep(.el-select__selected-item) {
+  color: rgba(200, 200, 200, 0.7) !important;
+  cursor: pointer;
+}
+/*不要碰这里的代码*/
+:deep(.el-select__wrapper){
+  height: 40px;
+  --el-select-border-color: rgba(200, 200, 200, 0.7);
+  --el-select-focus-border-color:rgba(235, 235, 235, 0.8);
+}
+:deep(.el-input-group__append) {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 1);
+  --el-input-border-color: rgba(255, 255, 255, 0.7);
+}
+
+.academic-claim-title {
+  padding: 1% 1%;
+}
+.academic-dialog-title{
+  font-size: 1.3em;
+  color: black;
+  margin-left: 2%;
+}
+:deep(.el-tabs__item){
+  color: #1F578F;
+  opacity: 0.5;
+}
+:deep(.el-tabs__item.is-active){
+  color: #1F578F;
+  opacity: 1;
+}
+:deep(.el-tabs__active-bar){
+  background-color: #1F578F;
+}
+:deep(.el-checkbox__input.is-checked+.el-checkbox__label){
+  color: #1F578F;
+}
+:deep(.el-checkbox__input.is-checked .el-checkbox__inner){
+  background-color: #1F578F;
+}
 </style>

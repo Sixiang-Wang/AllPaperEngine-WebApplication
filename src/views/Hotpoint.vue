@@ -1,3 +1,55 @@
+<template>
+  <el-container>
+    <el-header style="margin-bottom: 20px;">
+      <h1>热点领域分析</h1>
+      <p>以下是技术领域中的一些关键技术与概念的词云，词语的大小代表其相关性或热度。</p>
+    </el-header>
+    <el-container>
+      <!-- 侧边栏 -->
+      <el-aside width="200px" style="margin-left: 50px; margin-top: 20px;">
+        <el-collapse v-model="activeFilter" accordion>
+          <el-collapse-item title="学科筛选" name="1">
+            <el-menu
+              default-active="1"
+              @select="updateSelectedFilter"
+              class="el-menu-vertical-demo"
+            >
+              <el-menu-item index="1" @click="updateSelectedFilter('All')">显示所有</el-menu-item>
+              <el-menu-item index="2" @click="updateSelectedFilter('Physical Sciences')">Physical Sciences</el-menu-item>
+              <el-menu-item index="3" @click="updateSelectedFilter('Social Sciences')">Social Sciences</el-menu-item>
+              <el-menu-item index="4" @click="updateSelectedFilter('Life Sciences')">Life Sciences</el-menu-item>
+              <el-menu-item index="5" @click="updateSelectedFilter('Health Sciences')">Health Sciences</el-menu-item>
+            </el-menu>
+          </el-collapse-item>
+        </el-collapse>
+      </el-aside>
+      <el-main>
+        <!-- 图表展示按钮 -->
+        <div class="chart-buttons">
+          <el-button @click="toggleChart('wordcloud')">词云</el-button>
+          <el-button @click="toggleChart('bar')">柱状图</el-button>
+          <el-button @click="toggleChart('line')">折线图</el-button>
+          <el-button @click="toggleChart('pie')">饼状图</el-button>
+          <el-button @click="exportToExcel()">导出为 Excel</el-button>
+          <el-button @click="exportToPDF()">导出为 PDF</el-button>
+        </div>
+
+        <!-- 图表展示区域 -->
+        <div v-if="showChart === 'wordcloud'" ref="wordCloudRef"></div>
+        <div v-if="showChart === 'bar'" class="chart-container">
+          <canvas id="barChartCanvas"></canvas>
+        </div>
+        <div v-if="showChart === 'line'" class="chart-container">
+          <canvas id="lineChartCanvas"></canvas>
+        </div>
+        <div v-if="showChart === 'pie'" class="chart-container">
+          <canvas id="pieChartCanvas"></canvas>
+        </div>
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
 import * as d3 from 'd3';
@@ -12,64 +64,90 @@ Chart.register(...registerables);
 
 // 示例词云数据
 const wordCloudData = ref([
-  {text: "AI", size: 2},
-  {text: "Machine Learning", size: 3},
-  {text: "Vue", size: 10},
-  {text: "JavaScript", size: 15},
-  {text: "React", size: 20},
-  {text: "Python", size: 5},
-  {text: "Data Science", size: 7},
-  {text: "Web Development", size: 30},
-  {text: "Node.js", size: 12},
-  {text: "Java", size: 18},
-  {text: "CSS", size: 4},
-  {text: "HTML", size: 6},
-  {text: "D3.js", size: 8},
-  {text: "Docker", size: 14},
-  {text: "Cloud Computing", size: 25},
-  {text: "Big Data", size: 40},
-  {text: "Blockchain", size: 60},
-  {text: "Cybersecurity", size: 50},
-  {text: "API", size: 10},
-  {text: "Git", size: 9},
-  {text: "GraphQL", size: 13},
-  {text: "Kubernetes", size: 22},
-  {text: "Software Engineering", size: 30},
-  {text: "Frontend", size: 11},
-  {text: "DevOps", size: 20},
-  {text: "TypeScript", size: 17},
-  {text: "Cloud Storage", size: 8},
-  {text: "Java EE", size: 6},
-  {text: "SQL", size: 9},
-  {text: "Graph Databases", size: 25},
-  {text: "NoSQL", size: 28},
-  {text: "Data Visualization", size: 35},
-  {text: "Serverless", size: 18},
-  {text: "CI/CD", size: 12},
-  {text: "Agile", size: 14},
-  {text: "Software Testing", size: 17},
-  {text: "Containerization", size: 22},
-  {text: "Microservices", size: 40},
-  {text: "Automation", size: 19},
-  {text: "Network Security", size: 45},
-  {text: "Quantum Computing", size: 50},
-  {text: "Cloud Infrastructure", size: 38},
-  {text: "Blockchain Development", size: 55},
-  {text: "Digital Transformation", size: 33},
-  {text: "Robotic Process Automation", size: 42}
+  { text: "AI", size: 2, label: "Physical Sciences" },
+  { text: "Machine Learning", size: 3, label: "Physical Sciences" },
+  { text: "Economics", size: 5, label: "Social Sciences" },
+  { text: "Psychology", size: 4, label: "Social Sciences" },
+  { text: "Biology", size: 6, label: "Life Sciences" },
+  { text: "Medicine", size: 7, label: "Health Sciences" },
+  { text: "Vue", size: 10, label: "Physical Sciences" },
+  { text: "JavaScript", size: 15, label: "Physical Sciences" },
+  { text: "React", size: 20, label: "Physical Sciences" },
+  { text: "Python", size: 5, label: "Physical Sciences" },
+  { text: "Data Science", size: 7, label: "Physical Sciences" },
+  { text: "Web Development", size: 30, label: "Physical Sciences" },
+  { text: "Node.js", size: 12, label: "Physical Sciences" },
+  { text: "Java", size: 18, label: "Physical Sciences" },
+  { text: "CSS", size: 4, label: "Physical Sciences" },
+  { text: "HTML", size: 6, label: "Physical Sciences" },
+  { text: "D3.js", size: 8, label: "Physical Sciences" },
+  { text: "Docker", size: 14, label: "Physical Sciences" },
+  { text: "Cloud Computing", size: 25, label: "Physical Sciences" },
+  { text: "Big Data", size: 40, label: "Physical Sciences" },
+  { text: "Blockchain", size: 60, label: "Physical Sciences" },
+  { text: "Cybersecurity", size: 50, label: "Physical Sciences" },
+  { text: "API", size: 10, label: "Physical Sciences" },
+  { text: "Git", size: 9, label: "Physical Sciences" },
+  { text: "GraphQL", size: 13, label: "Physical Sciences" },
+  { text: "Kubernetes", size: 22, label: "Physical Sciences" },
+  { text: "Software Engineering", size: 30, label: "Physical Sciences" },
+  { text: "Frontend", size: 11, label: "Physical Sciences" },
+  { text: "DevOps", size: 20, label: "Physical Sciences" },
+  { text: "TypeScript", size: 17, label: "Physical Sciences" },
+  { text: "Cloud Storage", size: 8, label: "Physical Sciences" },
+  { text: "Java EE", size: 6, label: "Physical Sciences" },
+  { text: "SQL", size: 9, label: "Physical Sciences" },
+  { text: "Graph Databases", size: 25, label: "Physical Sciences" },
+  { text: "NoSQL", size: 28, label: "Physical Sciences" },
+  { text: "Data Visualization", size: 35, label: "Physical Sciences" },
+  { text: "Serverless", size: 18, label: "Physical Sciences" },
+  { text: "CI/CD", size: 12, label: "Physical Sciences" },
+  { text: "Agile", size: 14, label: "Physical Sciences" },
+  { text: "Software Testing", size: 17, label: "Physical Sciences" },
+  { text: "Containerization", size: 22, label: "Physical Sciences" },
+  { text: "Microservices", size: 40, label: "Physical Sciences" },
+  { text: "Automation", size: 19, label: "Physical Sciences" },
+  { text: "Network Security", size: 45, label: "Physical Sciences" },
+  { text: "Quantum Computing", size: 50, label: "Physical Sciences" },
+  { text: "Cloud Infrastructure", size: 38, label: "Physical Sciences" },
+  { text: "Blockchain Development", size: 55, label: "Physical Sciences" },
+  { text: "Digital Transformation", size: 33, label: "Physical Sciences" },
+  { text: "Robotic Process Automation", size: 42, label: "Physical Sciences" },
+  { text: "Sociology", size: 12, label: "Social Sciences" },
+  { text: "Political Science", size: 14, label: "Social Sciences" },
+  { text: "Law", size: 16, label: "Social Sciences" },
+  { text: "History", size: 18, label: "Social Sciences" },
+  { text: "Econometrics", size: 20, label: "Social Sciences" },
+  { text: "Philosophy", size: 22, label: "Social Sciences" },
+  { text: "Anthropology", size: 8, label: "Social Sciences" },
+  { text: "Genetics", size: 24, label: "Life Sciences" },
+  { text: "Biochemistry", size: 28, label: "Life Sciences" },
+  { text: "Ecology", size: 26, label: "Life Sciences" },
+  { text: "Microbiology", size: 30, label: "Life Sciences" },
+  { text: "Neuroscience", size: 32, label: "Life Sciences" },
+  { text: "Pharmacology", size: 15, label: "Life Sciences" },
+  { text: "Cell Biology", size: 14, label: "Life Sciences" },
+  { text: "Nursing", size: 18, label: "Health Sciences" },
+  { text: "Public Health", size: 22, label: "Health Sciences" },
+  { text: "Pediatrics", size: 25, label: "Health Sciences" },
+  { text: "Cardiology", size: 30, label: "Health Sciences" },
+  { text: "Neurology", size: 28, label: "Health Sciences" },
+  { text: "Oncology", size: 35, label: "Health Sciences" },
+  { text: "Health Informatics", size: 19, label: "Health Sciences" }
 ]);
 
 // 用于绑定到 DOM 元素的 ref
 const wordCloudRef = ref(null);
 const showChart = ref(''); // 默认不显示任何图表
 
-// 图表数据
+const filteredWordCloudData = ref(wordCloudData.value); // 默认显示全部数据
 
+// 图表数据
 const barChartData = ref({
-  labels: wordCloudData.value.map(item => item.text),
+  labels: filteredWordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度',
-    data: wordCloudData.value.map(item => item.size),
+    data: filteredWordCloudData.value.map(item => item.size),
     backgroundColor: 'rgba(54, 162, 235, 0.2)',
     borderColor: 'rgba(54, 162, 235, 1)',
     borderWidth: 1
@@ -78,10 +156,10 @@ const barChartData = ref({
 
 
 const lineChartData = ref({
-  labels: wordCloudData.value.map(item => item.text),
+  labels: filteredWordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度趋势',
-    data: wordCloudData.value.map(item => item.size),
+    data: filteredWordCloudData.value.map(item => item.size),
     fill: false,
     borderColor: 'rgba(75, 192, 192, 1)',
     tension: 0.1
@@ -89,9 +167,9 @@ const lineChartData = ref({
 });
 
 const pieChartData = ref({
-  labels: wordCloudData.value.map(item => item.text),
+  labels: filteredWordCloudData.value.map(item => item.text),
   datasets: [{
-    data: wordCloudData.value.map(item => item.size),
+    data: filteredWordCloudData.value.map(item => item.size),
     backgroundColor: generateColors(50),
     hoverBackgroundColor: generateColors(50)
   }]
@@ -109,11 +187,41 @@ function generateColors(count) {
   return colors;
 }
 
+const updateSelectedFilter = (category) => {
+  // 筛选出符合当前选择的学科的数据
+  if (category === "All") {
+    filteredWordCloudData.value = wordCloudData.value;
+  }
+  else {
+    filteredWordCloudData.value = wordCloudData.value.filter(
+      (item) => item.label === category
+    );
+  }
+
+  updateChartData();
+
+  // 重新渲染词云
+  nextTick(() => { 
+    renderWordCloud();
+  });
+};
+
+const updateChartData = () => {
+  barChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
+  barChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+
+  lineChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
+  lineChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+
+  pieChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
+  pieChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+};
+
 // 渲染词云
 const renderWordCloud = () => {
   const layout = cloud()
     .size([window.innerWidth * 0.6, window.innerHeight * 0.6])
-    .words(wordCloudData.value.map(word => ({ text: word.text, size: word.size })))
+    .words(filteredWordCloudData.value.map(word => ({ text: word.text, size: word.size })))
     .font("Impact")
     .fontSize(d => Math.pow(d.size, 1.2))
     .rotate(() => Math.floor(Math.random() * 181) - 90)
@@ -233,7 +341,7 @@ const exportToExcel = () => {
 
 // 确保 getTableData 函数是通过 ref 或者直接暴露的
 const getTableData = () => {
-  return wordCloudData.value.map(item => ({
+  return filteredWordCloudData.value.map(item => ({
     技术名词: item.text,
     热度: item.size
   }));
@@ -288,43 +396,6 @@ const exportToPDF = () => {
 
 
 </script>
-
-<template>
-  <el-container>
-    <el-header style="margin-bottom: 20px;">
-      <h1>热点领域分析</h1>
-      <p>以下是技术领域中的一些关键技术与概念的词云，词语的大小代表其相关性或热度。</p>
-    </el-header>
-    <el-container>
-      <el-aside>
-        <Aside />
-      </el-aside>
-      <el-main>
-        <!-- 图表展示按钮 -->
-        <div class="chart-buttons">
-          <el-button @click="toggleChart('wordcloud')">词云</el-button>
-          <el-button @click="toggleChart('bar')">柱状图</el-button>
-          <el-button @click="toggleChart('line')">折线图</el-button>
-          <el-button @click="toggleChart('pie')">饼状图</el-button>
-          <el-button @click="exportToExcel()">导出为 Excel</el-button>
-          <el-button @click="exportToPDF()">导出为 PDF</el-button>
-        </div>
-
-        <!-- 图表展示区域 -->
-        <div v-if="showChart === 'wordcloud'" ref="wordCloudRef"></div>
-        <div v-if="showChart === 'bar'" class="chart-container">
-          <canvas id="barChartCanvas"></canvas>
-        </div>
-        <div v-if="showChart === 'line'" class="chart-container">
-          <canvas id="lineChartCanvas"></canvas>
-        </div>
-        <div v-if="showChart === 'pie'" class="chart-container">
-          <canvas id="pieChartCanvas"></canvas>
-        </div>
-      </el-main>
-    </el-container>
-  </el-container>
-</template>
 
 <style scoped>
 el-header {
