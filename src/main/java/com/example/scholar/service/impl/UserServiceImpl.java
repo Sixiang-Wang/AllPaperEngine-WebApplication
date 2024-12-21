@@ -542,6 +542,7 @@ public class UserServiceImpl implements UserService {
         List<HashMap<String, Object>> resultList = userMapper.selectUserFavorite(userId);
         for (HashMap<String, Object> favorite : resultList) {
             favorite.put("title", userMapper.selectPublicationTitle(favorite.get("publicationid").toString()));
+            ;
         }
         return resultList;
     }
