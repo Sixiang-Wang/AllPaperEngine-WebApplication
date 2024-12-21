@@ -6,6 +6,7 @@ import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.dto.net.NetConfig;
 import com.example.scholar.dto.net.NetData;
+import com.example.scholar.dto.net.NetDataType;
 import com.example.scholar.dto.net.NetLink;
 import com.example.scholar.service.NetService;
 import org.springframework.web.bind.annotation.*;
@@ -34,18 +35,33 @@ public class NetController {
             netData.setName(res.getName());
             netData.setSymbolSize(NetConfig.AUTHOR_SYMBOL_SIZE);
             data.add(netData);
-            for(AuthorForNet authorForNet: res.getRelatedAuthors()){
-                if(!res.getName().equals(authorForNet.getName())) {
-                    NetData tmp = new NetData();
-                    tmp.setName(authorForNet.getName());
-                    tmp.setSymbolSize(NetConfig.RELATE_AUTHOR_SYMBOL_SIZE);
-                    data.add(tmp);
-                }
-                if(!res.getName().equals(authorForNet.getName())) {
-                    NetLink netLink = new NetLink();
-                    netLink.setSource(res.getName());
-                    netLink.setTarget(authorForNet.getName());
-                    links.add(netLink);
+            for (AuthorForNet authorForNet : res.getRelatedAuthors()) {
+                if(authorForNet.getType() == NetDataType.WORK_RELATED) {
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetData tmp = new NetData();
+                        tmp.setName(authorForNet.getName());
+                        tmp.setSymbolSize(NetConfig.RELATE_AUTHOR_SYMBOL_SIZE);
+                        data.add(tmp);
+                    }
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetLink netLink = new NetLink();
+                        netLink.setSource(res.getName());
+                        netLink.setTarget(authorForNet.getName());
+                        links.add(netLink);
+                    }
+                }else if (authorForNet.getType() == NetDataType.INSTITUTION_RELATED){
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetData tmp = new NetData();
+                        tmp.setName(authorForNet.getName());
+                        tmp.setSymbolSize(NetConfig.RELATE_INSTITUTION_AUTHOR_SYMBOL_SIZE);
+                        data.add(tmp);
+                    }
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetLink netLink = new NetLink();
+                        netLink.setSource(res.getName());
+                        netLink.setTarget(authorForNet.getName());
+                        links.add(netLink);
+                    }
                 }
             }
             return R.ok().put("data", data).put("links", links);

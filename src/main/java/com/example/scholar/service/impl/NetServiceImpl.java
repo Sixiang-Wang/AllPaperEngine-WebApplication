@@ -5,6 +5,7 @@ import com.example.scholar.dao.UserMapper;
 import com.example.scholar.domain.AuthorForNet;
 import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.dto.net.NetConfig;
+import com.example.scholar.dto.net.NetDataType;
 import com.example.scholar.service.NetService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -44,6 +45,7 @@ public class NetServiceImpl implements NetService {
                     AuthorForNet authorForNet = netMapper.selectAuthorById(authorTmpId);
                     // 获取authorForNet对象
                     authorForNet.setName(getFirstArray(authorForNet.getDisplayNameAlterNatives()));
+                    authorForNet.setType(NetDataType.WORK_RELATED);
                     res.add(authorForNet);
                 }
             }
@@ -52,6 +54,16 @@ public class NetServiceImpl implements NetService {
 
         String displayNameAlterNatives = authorForNet.getDisplayNameAlterNatives();
         authorForNet.setName(getFirstArray(displayNameAlterNatives));
+        if(NetConfig.CONTAINS_RELATED_INSTITUTIONS) {
+            //通过相关机构获取用户
+
+            String institution = netMapper.getInstitutionByAuthorId(authorId);
+            List<AuthorForNet> institutionAuthors = netMapper.getRelatedAuthorsByInstitution(institution);
+            for(AuthorForNet author: institutionAuthors){
+                author.setType(NetDataType.INSTITUTION_RELATED);
+            }
+            res.addAll(institutionAuthors);
+        }
         // 设置相关作者
         authorForNet.setRelatedAuthors(res);
         return authorForNet;
