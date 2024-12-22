@@ -13,7 +13,7 @@ public interface WorkMapper {
     List<Work> selectAllWorksByPage(int from);
     @Select("select count(*) from openalex.works")
     int getWorksLength();
-    @Select("select * from openalex.works where id = #{workId}")
+    @Select("select * from openalex.works where id = #{workId} limit 1")
     Work getWorkById(String workId);
     @Select("select * from openalex.works where match(title) against(#{word}) limit #{from},#{to}")
     List<Work> selectWorksByTitleWord(String word,int from,int to);
