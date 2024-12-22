@@ -29,7 +29,8 @@ public interface UserMapper {
     @Update("update user SET avatar = #{avatar} WHERE userid = #{userid}")
     Integer updateUserAvatar(String userid,String avatar);
 
-
+    @Select("select avatar from user where userid = #{userid}")
+    String getUserAvatar(String userid);
     // 插入新用户
     @Insert("INSERT INTO user (name, password, avatar, birthTime, mail, phone, company, academicField, profession, role, biography) " +
             "VALUES (#{name}, #{password}, #{avatar}, #{birthTime}, #{mail}, #{phone}, #{company}, #{academicField}, #{profession}, #{role}, #{biography})")

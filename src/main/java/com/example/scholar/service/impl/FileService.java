@@ -40,14 +40,20 @@ public class FileService {
     }
 
     public void deleteFile(String path){
-        String filePath = PathConfig.path + FileSystems.getDefault().getSeparator() + "img"+ FileSystems.getDefault().getSeparator() +"avatar";
+        String filePath = PathConfig.path + path;
+        System.out.println(filePath);
+
         if(path!=null&&!"/img/avatar/default_avatar.jpg".equals(path)){
-            File userPic = new File(filePath+ FileSystems.getDefault().getSeparator() + path);
-            if(userPic.exists()){
-                if (!userPic.delete()) {
-                    System.out.println(path + ":\n" + "头像不存在或删除失败:SingerController-deleteSinger");
-                }
+
+            File userPic = new File(filePath);
+            if (!userPic.exists()) {
+                System.out.println("File does not exist: " + userPic.getAbsolutePath());
+                return;
             }
+            if (!userPic.delete()) {
+                System.out.println(path + ":\n" + "头像不存在或删除失败:SingerController-deleteSinger");
+            }
+
         }
     }
 }

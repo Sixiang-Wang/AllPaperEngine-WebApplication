@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
                 map.put("token",jwtToken);
                 map.put("username",user.getName());
                 map.put("userId",user.getUserid());
+                map.put("avatar",user.getAvatar());
                 return map;
             }else{
                 map.put("msg","wrong password");
@@ -81,7 +82,7 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(hashedPassword);  // 存储加密后的密码
         newUser.setName(name);
         newUser.setMail(mail);
-        newUser.setAvatar(""); // 可以设置默认头像
+        newUser.setAvatar("/img/avatar/default.png"); // 可以设置默认头像
 
         // 插入新用户到数据库
         int result = userMapper.insertUser(newUser);

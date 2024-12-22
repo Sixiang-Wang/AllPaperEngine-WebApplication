@@ -1,7 +1,9 @@
 package com.example.scholar.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.scholar.dao.AdminMapper;
 import com.example.scholar.dao.UserMapper;
+import com.example.scholar.domain.Admin;
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.service.AdminService;
@@ -22,6 +24,8 @@ import java.util.HashMap;
 public class AdminController {
     @Resource
     private AdminService adminService;
+    @Resource
+    private AdminMapper adminMapper;
     @Resource
     private MailUtil mailUtil;
 
@@ -119,7 +123,23 @@ public class AdminController {
     }
 
 
+    @GetMapping(value = "/getHashedPassword")
+    public Object getHashedPassword(@RequestParam("admin")String admin) {
+        JSONObject jsonObject = new JSONObject();
 
+        boolean flag = adminService.haveAdmin(admin);
+
+        if(!flag){
+            jsonObject.put("code",-2);
+            jsonObject.put("msg","用户不存在");
+            return jsonObject;
+        }
+
+        Admin admin1 = adminMapper.getAdmin(admin);
+        jsonObject.put("code",1);
+        jsonObject.put("hashedPassword",admin1.getPassword());
+        return jsonObject;
+    }
 
 
 

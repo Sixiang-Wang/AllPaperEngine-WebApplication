@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin
 @Slf4j
@@ -58,7 +59,7 @@ public class UserController {
                 if("no such user".equals(res.get("msg"))|| "wrong password".equals(res.get("msg"))){
                     return R.ok((String) res.get("msg"));
                 }else {
-                    return R.ok("login success").put("token", res.get("token")).put("username",res.get("username")).put("userId",res.get("userId"));
+                    return Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(R.ok("login success").put("token", res.get("token"))).put("username", res.get("username"))).put("userId", res.get("userId"))).put("avatar",res.get("avatar"));
                 }
             }catch (Exception e){
                 return R.error(e.toString());
@@ -69,9 +70,10 @@ public class UserController {
         @ApiOperation("自动登录接口")
         public R preLogin(@TokenToUser User user){
             try{
-                return R.ok("login success").
-                        put("username",user.getName())
-                        .put("userId",user.getUserid());
+                return Objects.requireNonNull(Objects.requireNonNull(R.ok("login success").
+                                        put("username", user.getName()))
+                                .put("userId", user.getUserid()))
+                        .put("avatar",user.getAvatar());
             }catch (Exception e){
                 return R.error(e.toString());
             }
@@ -186,14 +188,18 @@ public class UserController {
         }
 
         @ApiOperation("修改用户头像头像接口")
-        @RequestMapping(value = "/updateUserAvatar", method = RequestMethod.GET)
-        public R updateUserAvatar(@RequestParam("avatar") MultipartFile profilePictureFile, @RequestParam("userid") int userid){
+        @RequestMapping(value = "/updateUserAvatar", method = RequestMethod.POST)
+        public R updateUserAvatar(@RequestParam("file") MultipartFile profilePictureFile, @RequestParam("userid") int userid){
             if (profilePictureFile.isEmpty()) {
-                return R.error();
+                return R.error("图片上传失败");
             }
+            String oldAvatar = userMapper.getUserAvatar(String.valueOf(userid));
+
             String filePath = fileService.updateFile(profilePictureFile);
             userService.updateUserAvatar(userid,filePath);
-            return null;
+
+            fileService.deleteFile(oldAvatar);
+            return R.ok("成功上传");
         }
 
         @PostMapping(value = "/updateUserBirthTime")
