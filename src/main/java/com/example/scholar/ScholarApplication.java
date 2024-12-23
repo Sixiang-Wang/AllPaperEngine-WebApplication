@@ -5,6 +5,7 @@ import com.example.scholar.config.PathConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -13,6 +14,7 @@ import java.util.Scanner;
 
 @MapperScan("com.example.scholar.dao")
 @SpringBootApplication
+@EnableCaching
 public class ScholarApplication {
     public static void main(String[] args) {
         SpringApplication.run(ScholarApplication.class, args);
