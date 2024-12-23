@@ -8,6 +8,8 @@ const identifyCode = ref('');
 const identifyCodes = '1234567890abcdefghijklmnopqrstuvwxyz'
 import http from "@/api/http.js"
 import {useTokenStore, useUserStore,useUserIdStore} from "@/store/store.js";
+import header from "@/components/Header.vue"
+
 const userStore = useUserStore();
 const tokenStore = useTokenStore()
 const userIdStore = useUserIdStore();
@@ -89,8 +91,15 @@ const login =  async() => {
         console.log(111);
         const res2 = await http.get('/user/ifScholar',{userId: res.data.userId});
 
+        localStorage.setItem("userName", res.data.username);
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.userId);
+        localStorage.setItem("avatar",res.data.avatar)
+
         localStorage.setItem("ifAuthentication",res2.data.judge === 1);
-        await router.push('/main');
+
+        await router.push({ path: '/main', query: { refresh: Date.now() } });
+        location.reload();
       }else if(res.data.msg === "wrong password"){
         ElMessage.error("密码错误");
         return;

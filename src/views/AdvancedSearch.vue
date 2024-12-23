@@ -89,17 +89,21 @@ const advancedSearch = () => {
     console.log(111);
     router.push({path: "/search", query: {input: searchRows.value[0].searchInput, page: 1}});
 }
+
+onMounted(()=>{
+  console.log(tips.value.offsetHeight);
+})
 </script>
 
 <template >
     <div class = "head">
         高级检索
     </div>
-    <div style="display: flex; justify-content: space-between; margin: 0%;">
-        <div :style="{ width: '60%',marginLeft:'9%',boxShadow: '0 0 8px rgba(0, 0, 0, 0.3)' }">
+    <div style="display: flex; justify-content: space-between; margin: 0%; height: 700px;">
+        <div :style="{ width: '60%',marginLeft:'9%',boxShadow: '0 0 8px rgba(0, 0, 0, 0.3)', height: '70%' }">
             <div style="margin-top: 50px;">
             <el-row :gutter="10" v-for="(row, index) in searchRows" :key="index" style="margin: 20px;">
-                
+
                 <el-col :span="index === 0 ? 0 : 3">
                     <el-select v-if="index !== 0" v-model="row.logicOperator" placeholder="AND">
                         <el-option label="AND" value="AND" />
@@ -164,8 +168,9 @@ const advancedSearch = () => {
             </div>
         </div>
 
-        <div :style="{ height: '400px', width: '20%',marginRight:'9%',boxShadow: '0 0 8px rgba(0, 0, 0, 0.3)' ,overflowY: 'auto'}">
-            <p class="hStyle">高级检索使用方法：</p>
+        <div :style="{ height: '530px', width: '20%',marginRight:'9%',boxShadow: '0 0 8px rgba(0, 0, 0, 0.3)'}">
+          <div ref="tips">
+            <p class="hStyle" >高级检索使用方法：</p>
             <hr class="line">
             <p class="pStyle">高级检索支持使用运算符*、+、-、''、""、()进行同一检索项内多个检索词的组合运算，检索框内输入的内容不得超过120个字符。<br>
                 输入运算符*(与)、+(或)、-(非)时，前后要空一个字节，优先级需用英文半角括号确定。<br>
@@ -177,10 +182,12 @@ const advancedSearch = () => {
                 （3）如果需检索篇名包含“digital library”和“information service”的文献，在篇名检索项后输入：'digital library' * 'information service'。<br>
                 （4）如果需检索篇名包含“2+3”和“人才培养”的文献，在篇名检索项后输入：'2+3' * 人才培养。<br>
             </p>
+          </div>
         </div>
     </div>
 </template>
 
 <style scoped>
     @import "@/css/advancedSearch.css";
+
 </style>
