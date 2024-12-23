@@ -8,6 +8,7 @@ import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
 import com.example.scholar.dto.WorkAuthorResultDto;
 import com.example.scholar.service.AuthorService;
+import com.example.scholar.service.InstitutionService;
 import com.example.scholar.util.AuthorNameRestore;
 import com.example.scholar.util.JsonDisposer;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,15 @@ public class AuthorServiceImpl implements AuthorService {
     private AuthorService authorService;
     @Resource
     private WorkMapper workMapper;
+
+    @Resource
+    private InstitutionService institutionService;
+
+    @Override
+    public Author getAuthorById(String id) {
+        return authorMapper.selectAuthorById(id);
+    }
+
     @Override
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {
         List<AuthorShips> authorships = authorMapper.selectAuthorsById(workId);

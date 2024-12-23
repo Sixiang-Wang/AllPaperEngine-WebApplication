@@ -1,5 +1,6 @@
 package com.example.scholar.service;
 
+import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalex.AuthorShips;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface AuthorService {
+    Author getAuthorById(String id);
     ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId);
     List<String> getAuthorIdByAuthorName(String authorName);
     List<Work> getWorksByAuthorId(String authorId);

@@ -89,7 +89,7 @@ public class WorkServiceImpl implements WorkService {
         WorkSpecificResultDto workSpecificResultDto = new WorkSpecificResultDto();
 
         workSpecificResultDto.setWorkAuthorResultDtos(authorService.getAuthorsByWorkId(workId));
-        workSpecificResultDto.setLanguage(work.getLanguage());
+//        workSpecificResultDto.setLanguage(work.getLanguage());
         workSpecificResultDto.setCitedByApiUrl(work.getCitedByApiUrl());
         workSpecificResultDto.setType(work.getType());
         workSpecificResultDto.setPublicationDate(work.getPublicationDate());
@@ -97,8 +97,8 @@ public class WorkServiceImpl implements WorkService {
         workSpecificResultDto.setCitedByCount(work.getCitedByCount());
         workSpecificResultDto.setTitle(work.getTitle());
         workSpecificResultDto.setPublicationYear(work.getPublicationYear());
-        workSpecificResultDto.setGrants(work.getGrants());
-        workSpecificResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+//        workSpecificResultDto.setGrants(work.getGrants());
+//        workSpecificResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
         workSpecificResultDto.setWorksConceptsList(conceptsMapper.getWorksConceptsListById(workId));
         workSpecificResultDto.setDoi(work.getDoi());
         return workSpecificResultDto;

@@ -14,7 +14,7 @@ import java.util.List;
 public interface AuthorMapper {
     @Select("select * from openalex.authors where id = #{authorId}")
     Author selectAuthorById(String authorId);
-    @Select("select * from openalex.works_authorships where work_id = #{workId}")
+    @Select("select * from openalex.works_authorships where work_id like #{workId}")
     List<AuthorShips> selectAuthorsById(String workId);
     @Select("SELECT id FROM openalex.authors WHERE display_name like #{authorName}")
     List<String> getAuthorIdByAuthorName(String authorName);

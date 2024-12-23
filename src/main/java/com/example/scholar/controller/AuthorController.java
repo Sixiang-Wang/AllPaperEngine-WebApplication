@@ -123,6 +123,15 @@ public class AuthorController {
         }
     }
 
+    @GetMapping("/getById")
+    public R getAuthorsById(@RequestParam("id")String id){
+        try{
+            return R.ok().put("authors", authorService.getAuthorById(id));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
 
 
 }
