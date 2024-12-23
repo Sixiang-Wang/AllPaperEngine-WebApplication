@@ -13,6 +13,7 @@ import java.util.List;
 public interface UserService {
     List<User> getAll();
     int getCount();
+    String getAuthorIdByUser(int userId);
     HashMap<String, Object> login(String mail, String password);
     HashMap<String, Object> register(String name, String password, String mail);
     HashMap<String, Object> setUserDetails(int userId, String avatar, LocalDate birthTime, String biography,

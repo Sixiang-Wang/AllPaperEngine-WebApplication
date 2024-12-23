@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String getAuthorIdByUser(int userId) {
+        return userMapper.selectUserById(userId).getAuthorId();
+    }
+
+    @Override
     public HashMap<String, Object> login(String mail, String password) {
         User user = userMapper.selectUserByMail(mail);
         HashMap<String,Object> map = new HashMap<>();
