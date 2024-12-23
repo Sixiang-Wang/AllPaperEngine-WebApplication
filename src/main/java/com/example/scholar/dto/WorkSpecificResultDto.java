@@ -21,5 +21,6 @@ public class WorkSpecificResultDto {
     private String type;
     private String grants;
     private Map<String, Float> keywords;
+    private List<String> keywordsList;
     private List<WorksConcepts> worksConceptsList;
 }

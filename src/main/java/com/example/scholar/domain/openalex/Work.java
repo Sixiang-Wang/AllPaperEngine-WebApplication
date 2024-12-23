@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import springfox.documentation.spring.web.json.Json;
 
 import java.beans.Transient;
+import java.util.List;
 
 @Component
 @Data
@@ -25,4 +26,5 @@ public class Work {
     private String abstractText;
     private String grants;
     private String keywords;
+    private List<String> keywordsList;
 }

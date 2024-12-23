@@ -1,11 +1,13 @@
 package com.example.scholar.service.impl;
 
 import com.example.scholar.dao.AuthorMapper;
+import com.example.scholar.dao.InstitutionMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalex.AuthorShips;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
+import com.example.scholar.dto.InstitutionsResultDto;
 import com.example.scholar.dto.WorkAuthorResultDto;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.util.AuthorNameRestore;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 @Service("authorService")
@@ -25,31 +28,43 @@ public class AuthorServiceImpl implements AuthorService {
     private AuthorService authorService;
     @Resource
     private WorkMapper workMapper;
+    @Resource
+    private InstitutionMapper institutionMapper;
     @Override
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {
         List<AuthorShips> authorships = authorMapper.selectAuthorsById(workId);
-//        System.out.print(authorships);
         ArrayList<WorkAuthorResultDto> authorResultDtos = new ArrayList<WorkAuthorResultDto>();
-        for(AuthorShips authorShip:authorships){
-            if(authorShip!=null){
-                WorkAuthorResultDto workAuthorResultDto = new WorkAuthorResultDto();
-                workAuthorResultDto.setPosition(authorShip.getAuthorPosition());
-                workAuthorResultDto.setInstitutions(JsonDisposer.disposeInstitutions(authorShip.getInstitutions()));
-                Author author = authorMapper.selectAuthorById(authorShip.getAuthorId());
-                AuthorResultDto authorResultDto = new AuthorResultDto();
-                authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
-                authorResultDto.setAuthorId(author.getId());
-                authorResultDto.setWorksCount(author.getWorksCount());
-                authorResultDto.setWorksApiUrl(author.getWorksApiUrl());
-                authorResultDto.setCitedByCount(author.getCitedByCount());
-                workAuthorResultDto.setAuthorResultDto(authorResultDto);
-                authorResultDtos.add(workAuthorResultDto);
+        if (authorships != null) {
+            for (AuthorShips authorShip : authorships) {
+                if (authorShip != null) {
+                    WorkAuthorResultDto workAuthorResultDto = new WorkAuthorResultDto();
+                    workAuthorResultDto.setPosition(authorShip.getAuthorPosition());
+//                    workAuthorResultDto.setInstitutions(JsonDisposer.disposeInstitutions(authorShip.getInstitutions()));
+                    workAuthorResultDto.setInstitution(authorShip.getInstitution().toDto());
+                    Author author = authorMapper.selectAuthorById(authorShip.getAuthorId());
+                    if (author != null) {
+                        AuthorResultDto authorResultDto = new AuthorResultDto();
+                        if (author.getDisplayNameAlternatives() != null) {
+                            authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
+                        }
+                        if (author.getId() != null) {
+                            authorResultDto.setAuthorId(author.getId());
+                        }
+                        authorResultDto.setWorksCount(author.getWorksCount());
+
+                        if (author.getWorksApiUrl() != null) {
+                            authorResultDto.setWorksApiUrl(author.getWorksApiUrl());
+                        }
+                        authorResultDto.setCitedByCount(author.getCitedByCount());
+
+                        workAuthorResultDto.setAuthorResultDto(authorResultDto);
+                    }
+                    authorResultDtos.add(workAuthorResultDto);
+                }
             }
         }
         return authorResultDtos;
     }
-
-
 
 
     @Override
@@ -85,7 +100,7 @@ public class AuthorServiceImpl implements AuthorService {
         for (String workId : workIds) {
             Work work = workMapper.getWorkById(workId);
             if (work != null) {
-                if(work.getCitedByCount()>1000){
+                if (work.getCitedByCount() > 1000) {
                     works.add(work);
                 }
             }
@@ -95,25 +110,25 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public int getHighQualityWorksCountByAuthorId(String authorId,boolean track) {
+    public int getHighQualityWorksCountByAuthorId(String authorId, boolean track) {
         Author author = authorMapper.selectAuthorById(authorId);
-        if(author.isIsInitialized()){
+        if (author.isIsInitialized()) {
             return author.getHighQualityWorkCount();
-        }else{
+        } else {
             List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
             List<Work> works = new ArrayList<>();
             for (String workId : workIds) {
                 Work work = workMapper.getWorkById(workId);
                 if (work != null) {
-                    if(work.getCitedByCount()>1000){
+                    if (work.getCitedByCount() > 1000) {
                         works.add(work);
                     }
                 }
             }
-            if(track!=false){
-                int hNumber = authorService.getHNumberByAuthorId(authorId,false);
-                int firstCount = authorService.getFirstPublishWorkCountByAuthorId(authorId,false);
-                authorMapper.insertIntoHighQualityWorksCount(authorId,works.size(),hNumber,firstCount);
+            if (track != false) {
+                int hNumber = authorService.getHNumberByAuthorId(authorId, false);
+                int firstCount = authorService.getFirstPublishWorkCountByAuthorId(authorId, false);
+                authorMapper.insertIntoHighQualityWorksCount(authorId, works.size(), hNumber, firstCount);
             }
             return works.size();
         }
@@ -129,11 +144,11 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public int getHNumberByAuthorId(String authorId,boolean track) {
+    public int getHNumberByAuthorId(String authorId, boolean track) {
         Author author = authorMapper.selectAuthorById(authorId);
-        if(author.isIsInitialized()){
+        if (author.isIsInitialized()) {
             return author.getHnumber();
-        }else{
+        } else {
             List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
             List<Work> works = new ArrayList<>();
             for (String workId : workIds) {
@@ -143,16 +158,16 @@ public class AuthorServiceImpl implements AuthorService {
                 }
             }
             works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
-            int i=0;
-            for(i=0;i<works.size();i++) {
+            int i = 0;
+            for (i = 0; i < works.size(); i++) {
                 if (works.get(i).getCitedByCount() >= (i + 1)) {
                     continue;
                 }
             }
-            if(track!=false){
-                int size = authorService.getHighQualityWorksCountByAuthorId(authorId,false);
-                int firstCount = authorService.getFirstPublishWorkCountByAuthorId(authorId,false);
-                authorMapper.insertIntoHighQualityWorksCount(authorId,size,i,firstCount);
+            if (track != false) {
+                int size = authorService.getHighQualityWorksCountByAuthorId(authorId, false);
+                int firstCount = authorService.getFirstPublishWorkCountByAuthorId(authorId, false);
+                authorMapper.insertIntoHighQualityWorksCount(authorId, size, i, firstCount);
             }
             return i;
         }
@@ -174,11 +189,11 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public int getFirstPublishWorkCountByAuthorId(String authorId,boolean track) {
+    public int getFirstPublishWorkCountByAuthorId(String authorId, boolean track) {
         Author author = authorMapper.selectAuthorById(authorId);
-        if(author.isIsInitialized()){
+        if (author.isIsInitialized()) {
             return author.getFirstPublishCount();
-        }else{
+        } else {
             List<String> workIds = authorMapper.getWorkIdsByFirstAuthorId(authorId);
             List<Work> works = new ArrayList<>();
             for (String workId : workIds) {
@@ -188,10 +203,10 @@ public class AuthorServiceImpl implements AuthorService {
                 }
             }
             works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
-            if(track!=false) {
+            if (track != false) {
                 int size = authorService.getHighQualityWorksCountByAuthorId(authorId, false);
                 int hNumber = authorService.getHNumberByAuthorId(authorId, false);
-                authorMapper.insertIntoHighQualityWorksCount(authorId,size,hNumber,works.size());
+                authorMapper.insertIntoHighQualityWorksCount(authorId, size, hNumber, works.size());
             }
             return works.size();
         }
@@ -206,7 +221,7 @@ public class AuthorServiceImpl implements AuthorService {
     public List<AuthorResultDto> getAuthorsByName(String name) {
         List<Author> list = authorMapper.getAuthorsByName(name);
         List<AuthorResultDto> res = new ArrayList<>();
-        for(Author author: list) {
+        for (Author author : list) {
             AuthorResultDto authorResultDto = new AuthorResultDto();
             authorResultDto.setAuthorId(author.getId());
             authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));

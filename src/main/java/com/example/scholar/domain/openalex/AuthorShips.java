@@ -10,5 +10,8 @@ public class AuthorShips {
     private String authorPosition;
     private String authorId;
     private String rawAffiliationString;
-    private String institutions;
+//    private String institutions;
+    private String institutionId;
+    private Institutions institution;
+
 }

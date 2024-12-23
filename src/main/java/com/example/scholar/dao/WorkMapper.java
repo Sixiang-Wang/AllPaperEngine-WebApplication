@@ -30,7 +30,7 @@ public interface WorkMapper {
     /**
      * 参考文献：引用别人的
      */
-    @Select("select * from openalex.works where id in (" +
+    @Select("select * from works where id in (" +
             "select referenced_work_id from works_referenced_works " +
             "where work_id = #{workId})")
     List<Work> selectWorkByItsReference(String wordId);
@@ -48,5 +48,14 @@ public interface WorkMapper {
      */
     @Select("select * from openalex.works limit 5")
     List<Work> selectRecommendTest();
+
+    /**
+    * 用于新版搜索关键词
+    * */
+    @Select("select topic_id from works_topics where work_id = #{id}")
+    List<String> getKeyWordsById(String id);
+
+    @Select("select display_name from topics where  id = #{id} limit 1 ")
+    String getKeyWordsIndex(String id);
 
 }

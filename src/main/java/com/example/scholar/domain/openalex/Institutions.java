@@ -1,5 +1,6 @@
 package com.example.scholar.domain.openalex;
 
+import com.example.scholar.dto.InstitutionsResultDto;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -22,4 +23,15 @@ public class Institutions {
     private int citedByCount;
     private String worksApiUrl;
     private String updatedDate;
+
+    public InstitutionsResultDto toDto() {
+        InstitutionsResultDto res = new InstitutionsResultDto();
+
+        res.setType(this.type);
+        res.setRor(this.ror);
+//        res.setLineage(this.);貌似没有这个属性了
+        res.setDisplay_name(this.displayName);
+        res.setCountry_code(this.countryCode);
+        return res;
+    }
 }
