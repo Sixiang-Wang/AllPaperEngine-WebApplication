@@ -12,7 +12,7 @@ import testhttp from "@/api/http.js";
 const activeName = ref('1')
 
 // const userId = ref(localStorage.getItem("userId"));
-const userId = ref(1);
+const userId = ref();
 let tags = ref([]);
 const selectedTags = ref([]);
 const route = useRoute();
@@ -94,6 +94,7 @@ const UpdateFavorite = async () => {
   }
 };
 onMounted(async () => {
+  userId.value = localStorage.getItem("userId");
   await UpdateFavorite();
 })
 </script>
