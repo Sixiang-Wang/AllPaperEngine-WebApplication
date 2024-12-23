@@ -177,15 +177,15 @@ onMounted(async () => {
 
 const getReference = async ()=>{
   try {
-    const res = await httpUtil.get('/openalex/work/getWorkReferenceIt', {
+    const res = await httpUtil.get('/openalex/work/getWorkItsReference', {
       workId: workId,
     });
-    citeResults.value = res.data.work;
-    citeTotalLength.value = citeResults.value.length;
-    citeNum.value = citeTotalLength.value;
+    referenceResults.value = res.data.work;
+    referenceTotalLength.value = referenceResults.value.length;
+    referenceNum.value = referenceTotalLength.value;
   } catch (error) {
-    console.error("获取引用失败:", error);
-    ElMessage.error("获取引用失败");
+    console.error("获取参考文献失败:", error);
+    ElMessage.error("获取参考文献失败");
   }
 }
 
