@@ -1,22 +1,22 @@
 <template>
     <div class="author-details">
-        <div class="author-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="author-left" style="display: flex; align-items: center;">
-        <el-avatar :src="avatar" :size="120" />
-        <div class="author-info" style="margin-left: 20px;">
-            <h2>{{ name }}</h2>
-            <p><span style="font-weight: bold;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
-            <p><span style="font-weight: bold;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
-            <p><span style="font-weight: bold;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
+        <div class="author-header">
+        <div class="author-left">
+          <el-avatar :src="avatar" :size="80" />
+          <div class="author-info">
+              <h2>{{ name }}</h2>
+              <p><span style="font-weight: bold;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
+              <p><span style="font-weight: bold;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
+              <p><span style="font-weight: bold;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
+          </div>
         </div>
-    </div>
 
-        <div class="author-right" style="flex: 1; text-align: left; padding-left: 10%;">
+        <div class="author-right" >
             <p><strong>总被引量：{{ citedByCount }}</strong></p>
             <p><strong>总发文量：{{ worksCount }}</strong></p>
-            <p><strong>H指数：{{ H_index }}</strong></p>
+            <!-- <p><strong>H指数：{{ H_index }}</strong></p>
             <p><strong>第一作者发文量：{{ firstAuthor }}</strong></p>
-            <p><strong>高影响力论文发文量：{{ highInflu }}</strong></p>
+            <p><strong>高影响力论文发文量：{{ highInflu }}</strong></p> -->
         </div>
     </div>
 
@@ -25,7 +25,7 @@
     </div>
 
     <el-divider/>
-    </div>
+  </div>
 </template>
   
 <script>
@@ -148,39 +148,44 @@ import axios from 'axios';
   
 <style scoped>
 .author-details {
-max-width: 100%;
-margin: 20px auto;
+margin-bottom: 0px;
 }
 .author-header {
 display: flex;
 justify-content: space-between;
 align-items: center;
+margin:0px;
 }
 .author-left {
+margin: 0px;
 display: flex;
 align-items: center;
 }
 .author-info h2 {
-margin: 0;
 font-size: 20px;
+margin-top: 0px;
+margin-bottom: 10px;
+margin-left:5px;
 }
 .author-info .description {
-color: #888;
+  color: #888;
+}
+.author-info p {
+  margin: 2px 0;
+  margin-left:10px;
 }
 .author-right p {
-margin: 5px 0;
+margin: 0px;
 color: #333;
 }
 css
 .author-right {
 flex: 1;
 text-align: center;
-}
-.follow-button {
-margin-top: 10px;
+margin-bottom:0px;
 }
 .author-publications {
-margin-top: 20px;
+margin-top:0px;
 }
 .publication-link {
 color: #409eff;
@@ -191,11 +196,11 @@ text-decoration: underline;
 text-decoration: none;
 }
 .author-timeline {
-margin-top: 20px;
+margin-top: 0px;
 }
 .vertical-divider {
 height: 80%; 
-margin: 20px; 
+margin: 0px; 
 }
 .article{
 margin-left: 20px;
