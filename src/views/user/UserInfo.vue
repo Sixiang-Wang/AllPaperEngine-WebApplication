@@ -12,11 +12,7 @@ const avatarUrl = computed(()=>{
   return http.getUrlWithoutSlash() + avatar;
 });
 
-const dialogVisible = ref(false);
 
-const openDialog = () => {
-  dialogVisible.value = true;
-};
 
 const tableData = ref([
   {
@@ -205,8 +201,11 @@ const updateDate = async () => {
   // 等待 DOM 更新
   await nextTick();
   // 打印选择的日期
-  const formattedDate = new Date(birthTime.value).toLocaleDateString().replace(/\//g, '-');
-
+  const date = new Date(birthTime.value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 补足两位
+  const day = String(date.getDate()).padStart(2, '0');       // 补足两位
+  const formattedDate = `${year}-${month}-${day}`;
   ElMessage.success(`选择的日期是：${formattedDate}`);
   const res = await httpUtil.post2WithHeader('/user/updateUserBirthTime',
       { birthTime: formattedDate },  // 这里使用对象传递
@@ -221,13 +220,35 @@ const updateDate = async () => {
   editBirth.value = false;
 };
 
+
+
 onMounted(() => {
+  if(localStorage.getItem("avatarReload")==="yes"){
+    ElMessage.success("头像更新中...")
+    setTimeout(() => {
+      window.location.reload();
+      localStorage.setItem("avatarReload", "no");
+    }, 1000); // 延迟 1 秒
+  }
   document.addEventListener("click", handleClickOutside);
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+
+const updateAvatar = () => {
+  return `${http.baseUrl}user/updateUserAvatar?userid=${localStorage.getItem("userId")}`;
+}
+
+const afterUpdateAvatar = () => {
+  avatarUrl.value="/hahashenmedoumeiyou"
+  localStorage.setItem("avatarReload","yes")
+  window.location.reload()
+}
+
+
 </script>
 
 <template>
@@ -246,38 +267,11 @@ onBeforeUnmount(() => {
           fit="cover"
           class="user-avatar"
       />
-      <arrow-right @click="openDialog" style="width: 25px; height: 25px; margin-left: 10px;margin-right: 3%;" />
+      <el-upload :action="updateAvatar()" :on-success="afterUpdateAvatar">
+        <arrow-right style="width: 25px; height: 25px; margin-left: 10px;margin-right: 3%;" />
+      </el-upload>
+
     </div>
-    <el-dialog v-model="dialogVisible" title="> 修改头像" style="width:520px">
-      <el-row>
-        <el-col span="12">
-          <el-button type="text" class="alter-head-button">
-            <el-icon><Picture /></el-icon>
-            <span class = "alter-head-text">选择本地图片</span>
-          </el-button>
-          <el-button type="text" class="alter-head-button">
-            <el-icon><Camera /></el-icon>
-            <span class = "alter-head-text">拍摄照片</span>
-          </el-button>
-        </el-col>
-        <el-col span="1">
-          <el-divider direction="vertical" class="vertical-divider" />
-        </el-col>
-        <el-col span="11">
-          <el-avatar
-            :src="avatar.url"
-            :size="100"
-            shape="square"
-            fit="cover"
-            class="user-avatar"
-            style="margin:50px"
-          />
-        </el-col>
-      </el-row>
-      <span slot="footer" class="dialog-footer" style="margin-left: 42%;margin-top: 40px;">
-        <el-button @click="dialogVisible = false" style="width:100px">更 新</el-button>
-      </span>
-    </el-dialog>
 
     <el-divider style="margin: 0" />
     <el-table :data="tableData" style="width: 100%" :show-header="false">
@@ -362,6 +356,7 @@ onBeforeUnmount(() => {
       <el-button type="primary" @click="handleSaveConfirm('confirm')">保存</el-button>
     </span>
   </el-dialog>
+
 
   <el-dialog
       title="选择日期"
