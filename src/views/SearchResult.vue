@@ -465,11 +465,10 @@ const leaveSuggestion = (index) => {
       <el-aside>
         <SearchAside/>
       </el-aside>
-      <el-main style="margin-left: 2%;">
+      <el-main style="margin-left: 2%;width: 100%;">
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="searchResults.length !== 0" style="display: flex;">
           <div>
-            <!-- 根据查询类型选择组件 -->
             <SingleAuthor
               v-if="isSearchingForAuthors"
               v-for="authorInfo in authorInfos"
@@ -537,9 +536,6 @@ const leaveSuggestion = (index) => {
   display: none;
 }
 
-
-
-
 .autocomplete-container {
   position: absolute; 
   z-index: 1000; 
@@ -551,7 +547,6 @@ const leaveSuggestion = (index) => {
   max-height: 200px; 
   overflow-y: auto; 
 }
-
 
 .autocomplete-item {
   padding: 8px 10px; 
