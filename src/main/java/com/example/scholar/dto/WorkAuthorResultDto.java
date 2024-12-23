@@ -9,4 +9,6 @@ public class WorkAuthorResultDto {
     private String position;
     private AuthorResultDto authorResultDto;
     private String institutionId;
+    private Map<String,InstitutionsResultDto> institutions;
+    private InstitutionsResultDto institution;
 }

@@ -7,6 +7,6 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface InstitutionsMapper {
-    @Select("select * from openalex_institutions where id = #{institutionId}")
+    @Select("select * from institutions where id = #{institutionId}")
     Institutions selectInstitutionsById(String institutionId);
 }

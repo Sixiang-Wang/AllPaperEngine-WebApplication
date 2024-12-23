@@ -36,6 +36,9 @@ public class TokenToUserMethodArgumentResolver implements HandlerMethodArgumentR
             String token = webRequest.getHeader("Authorization");
             // 获取token
             if(token != null){
+                if(token.isEmpty()){
+                    throw new IllegalArgumentException("Token is null");
+                }
                 UserToken userToken = userTokenMapper.selectByToken(token);
                 if(userToken == null || userToken.getExpiretime().getTime() <= System.currentTimeMillis()){
                     // 用户token不存在或者已经过期
@@ -47,7 +50,7 @@ public class TokenToUserMethodArgumentResolver implements HandlerMethodArgumentR
                     throw new IllegalArgumentException("User not found");
                 }
                 return user;
-            } else {
+            }else {
                 throw new IllegalArgumentException("Token not found in request");
             }
         }

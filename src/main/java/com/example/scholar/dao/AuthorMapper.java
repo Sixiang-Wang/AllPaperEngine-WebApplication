@@ -1,12 +1,11 @@
 package com.example.scholar.dao;
 
 
+import com.example.scholar.config.PathConfig;
 import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalex.AuthorShips;
 import com.example.scholar.domain.openalex.Work;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,11 @@ import java.util.List;
 public interface AuthorMapper {
     @Select("select * from openalex.authors where id = #{authorId}")
     Author selectAuthorById(String authorId);
-    @Select("select * from openalex.works_authorships where work_id like #{workId}")
+    @Select("select * from openalex.works_authorships where work_id = #{workId}")
+    @Results({
+            @Result(property = "institution", column = "institution_id",
+            one = @One(select = PathConfig.pathMapper + "InstitutionsMapper.selectInstitutionsById"))
+    })
     List<AuthorShips> selectAuthorsById(String workId);
     @Select("SELECT id FROM openalex.authors WHERE display_name like #{authorName}")
     List<String> getAuthorIdByAuthorName(String authorName);
