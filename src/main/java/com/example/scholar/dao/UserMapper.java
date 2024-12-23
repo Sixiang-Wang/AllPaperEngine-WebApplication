@@ -42,6 +42,7 @@ public interface UserMapper {
             "UPDATE user",
             "<set>",
             "  <if test='name != null and name != \"\"'>name = #{name},</if>",
+            "  <if test='password != null and password != \"\"'>password = #{password},</if>",
             "  <if test='mail != null and mail != \"\"'>mail = #{mail},</if>",
             "  <if test='birthTime != null'>birthTime = #{birthTime},</if>",
             "  <if test='phone != null and phone != \"\"'>phone = #{phone},</if>",

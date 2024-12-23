@@ -687,6 +687,7 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
     @GetMapping(value="/getUserInfo/id")
     @ApiOperation("获取用户详细信息(方便测试版)")
     public R getUserInfo(@RequestParam("userId")int userId){
