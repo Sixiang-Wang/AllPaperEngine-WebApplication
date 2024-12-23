@@ -151,12 +151,6 @@ public class AuthorServiceImpl implements AuthorService {
 
         List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
         List<Work> works = new ArrayList<>();
-        for (String workId : workIds) {
-            Work work = workMapper.getWorkById(workId);
-            if (work != null) {
-                works.add(work);
-            }
-        }
         works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
         int i=0;
         for(i=0;i<works.size();i++) {
@@ -188,16 +182,16 @@ public class AuthorServiceImpl implements AuthorService {
         Author author = authorMapper.selectAuthorById(authorId);
 
         List<String> workIds = authorMapper.getWorkIdsByFirstAuthorId(authorId);
-        List<Work> works = new ArrayList<>();
-        for (String workId : workIds) {
-            Work work = workMapper.getWorkById(workId);
-            if (work != null) {
-                works.add(work);
-            }
-        }
-        works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
+//        List<Work> works = new ArrayList<>();
+//        for (String workId : workIds) {
+//            Work work = workMapper.getWorkById(workId);
+//            if (work != null) {
+//                works.add(work);
+//            }
+//        }
+//        works.sort(Comparator.comparingInt(Work::getCitedByCount).reversed());
 
-        return works.size();
+        return workIds.size();
 
     }
 
