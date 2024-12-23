@@ -8,18 +8,20 @@
       <!-- 侧边栏 -->
       <el-aside width="200px" style="margin-left: 50px; margin-top: 20px;">
         <el-collapse v-model="activeFilter" accordion>
-          <el-collapse-item title="学科筛选" name="1">
-            <el-menu
-              default-active="1"
-              @select="updateSelectedFilter"
-              class="el-menu-vertical-demo"
-            >
-              <el-menu-item index="1" @click="updateSelectedFilter('All')">显示所有</el-menu-item>
-              <el-menu-item index="2" @click="updateSelectedFilter('Physical Sciences')">Physical Sciences</el-menu-item>
-              <el-menu-item index="3" @click="updateSelectedFilter('Social Sciences')">Social Sciences</el-menu-item>
-              <el-menu-item index="4" @click="updateSelectedFilter('Life Sciences')">Life Sciences</el-menu-item>
-              <el-menu-item index="5" @click="updateSelectedFilter('Health Sciences')">Health Sciences</el-menu-item>
-            </el-menu>
+          <el-collapse-item title="Domain" name="1">
+            <el-select v-model="selectedDomain" placeholder="请选择领域" @change="onDomainChange">
+              <el-option v-for="domain in domainOptions" :key="domain" :label="domain" :value="domain" />
+            </el-select>
+          </el-collapse-item>
+          <el-collapse-item title="Field" name="2" v-if="selectedDomain">
+            <el-select v-model="selectedField" placeholder="请选择领域下的学科" @change="onFieldChange">
+              <el-option v-for="field in fieldOptions" :key="field" :label="field" :value="field" />
+            </el-select>
+          </el-collapse-item>
+          <el-collapse-item title="Subfield" name="3" v-if="selectedField">
+            <el-select v-model="selectedSubfield" placeholder="请选择子领域">
+              <el-option v-for="subfield in subfieldOptions" :key="subfield" :label="subfield" :value="subfield" />
+            </el-select>
           </el-collapse-item>
         </el-collapse>
       </el-aside>
@@ -59,88 +61,98 @@ import { Chart, registerables } from 'chart.js';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import axios from "axios";
 
 Chart.register(...registerables);
 
+const apiUrl = "http://116.204.112.5:1145/hotspot/getTopicsWorksCount";
+
+const fetchedWordCloudData = ref([]);
+
+const fetchWordCloudData = async () => {
+  try {
+    const response = await httpUtil.get('/hotspot/getTopicsWorksCount', {
+      params: {
+        domain: selectedDomain.value,
+        field: selectedField.value,
+        subfield: selectedSubfield.value
+      }
+    });
+
+    fetchedWordCloudData.value = response.data.map(item => ({
+      text: item.topicName,
+      size: item.worksCount
+    }));
+
+    wordCloudData.value = fetchedWordCloudData.value;
+
+    nextTick(() => {
+      renderWordCloud();
+    });
+  } catch (error) {
+    console.error("获取词云数据失败:", error);
+  }
+};
+
+onMounted(() => {
+  fetchWordCloudData();
+});
+
 // 示例词云数据
 const wordCloudData = ref([
-  { text: "AI", size: 2, label: "Physical Sciences" },
-  { text: "Machine Learning", size: 3, label: "Physical Sciences" },
-  { text: "Economics", size: 5, label: "Social Sciences" },
-  { text: "Psychology", size: 4, label: "Social Sciences" },
-  { text: "Biology", size: 6, label: "Life Sciences" },
-  { text: "Medicine", size: 7, label: "Health Sciences" },
-  { text: "Vue", size: 10, label: "Physical Sciences" },
-  { text: "JavaScript", size: 15, label: "Physical Sciences" },
-  { text: "React", size: 20, label: "Physical Sciences" },
-  { text: "Python", size: 5, label: "Physical Sciences" },
-  { text: "Data Science", size: 7, label: "Physical Sciences" },
-  { text: "Web Development", size: 30, label: "Physical Sciences" },
-  { text: "Node.js", size: 12, label: "Physical Sciences" },
-  { text: "Java", size: 18, label: "Physical Sciences" },
-  { text: "CSS", size: 4, label: "Physical Sciences" },
-  { text: "HTML", size: 6, label: "Physical Sciences" },
-  { text: "D3.js", size: 8, label: "Physical Sciences" },
-  { text: "Docker", size: 14, label: "Physical Sciences" },
-  { text: "Cloud Computing", size: 25, label: "Physical Sciences" },
-  { text: "Big Data", size: 40, label: "Physical Sciences" },
-  { text: "Blockchain", size: 60, label: "Physical Sciences" },
-  { text: "Cybersecurity", size: 50, label: "Physical Sciences" },
-  { text: "API", size: 10, label: "Physical Sciences" },
-  { text: "Git", size: 9, label: "Physical Sciences" },
-  { text: "GraphQL", size: 13, label: "Physical Sciences" },
-  { text: "Kubernetes", size: 22, label: "Physical Sciences" },
-  { text: "Software Engineering", size: 30, label: "Physical Sciences" },
-  { text: "Frontend", size: 11, label: "Physical Sciences" },
-  { text: "DevOps", size: 20, label: "Physical Sciences" },
-  { text: "TypeScript", size: 17, label: "Physical Sciences" },
-  { text: "Cloud Storage", size: 8, label: "Physical Sciences" },
-  { text: "Java EE", size: 6, label: "Physical Sciences" },
-  { text: "SQL", size: 9, label: "Physical Sciences" },
-  { text: "Graph Databases", size: 25, label: "Physical Sciences" },
-  { text: "NoSQL", size: 28, label: "Physical Sciences" },
-  { text: "Data Visualization", size: 35, label: "Physical Sciences" },
-  { text: "Serverless", size: 18, label: "Physical Sciences" },
-  { text: "CI/CD", size: 12, label: "Physical Sciences" },
-  { text: "Agile", size: 14, label: "Physical Sciences" },
-  { text: "Software Testing", size: 17, label: "Physical Sciences" },
-  { text: "Containerization", size: 22, label: "Physical Sciences" },
-  { text: "Microservices", size: 40, label: "Physical Sciences" },
-  { text: "Automation", size: 19, label: "Physical Sciences" },
-  { text: "Network Security", size: 45, label: "Physical Sciences" },
-  { text: "Quantum Computing", size: 50, label: "Physical Sciences" },
-  { text: "Cloud Infrastructure", size: 38, label: "Physical Sciences" },
-  { text: "Blockchain Development", size: 55, label: "Physical Sciences" },
-  { text: "Digital Transformation", size: 33, label: "Physical Sciences" },
-  { text: "Robotic Process Automation", size: 42, label: "Physical Sciences" },
-  { text: "Sociology", size: 12, label: "Social Sciences" },
-  { text: "Political Science", size: 14, label: "Social Sciences" },
-  { text: "Law", size: 16, label: "Social Sciences" },
-  { text: "History", size: 18, label: "Social Sciences" },
-  { text: "Econometrics", size: 20, label: "Social Sciences" },
-  { text: "Philosophy", size: 22, label: "Social Sciences" },
-  { text: "Anthropology", size: 8, label: "Social Sciences" },
-  { text: "Genetics", size: 24, label: "Life Sciences" },
-  { text: "Biochemistry", size: 28, label: "Life Sciences" },
-  { text: "Ecology", size: 26, label: "Life Sciences" },
-  { text: "Microbiology", size: 30, label: "Life Sciences" },
-  { text: "Neuroscience", size: 32, label: "Life Sciences" },
-  { text: "Pharmacology", size: 15, label: "Life Sciences" },
-  { text: "Cell Biology", size: 14, label: "Life Sciences" },
-  { text: "Nursing", size: 18, label: "Health Sciences" },
-  { text: "Public Health", size: 22, label: "Health Sciences" },
-  { text: "Pediatrics", size: 25, label: "Health Sciences" },
-  { text: "Cardiology", size: 30, label: "Health Sciences" },
-  { text: "Neurology", size: 28, label: "Health Sciences" },
-  { text: "Oncology", size: 35, label: "Health Sciences" },
-  { text: "Health Informatics", size: 19, label: "Health Sciences" }
+  { text: "AI", size: 2},
+  { text: "Machine Learning", size: 3},
+  { text: "Economics", size: 5},
+  { text: "Psychology", size: 4},
+  { text: "Biology", size: 6},
+  { text: "Medicine", size: 7},
+  { text: "Vue", size: 10},
 ]);
+
+const domainOptions = ref(['Life Sciences', 'Physical Sciences', 'Social Sciences', 'Health Sciences']);
+const fieldOptionsMap = ref({
+  'Life Sciences': ['Neuroscience', 'Immunology and Microbiology', 'Agricultural and Biological Sciences', 'Biochemistry, Genetics and Molecular Biology', 'Pharmacology, Toxicology and Pharmaceutics'],
+  'Physical Sciences': ['Engineering', 'Materials Science', 'Chemistry', 'Energy', 'Physics and Astronomy', 'Earth and Planetary Sciences', 'Computer Science', 'Mathematics', 'Environmental Science', 'Chemical Engineering'],
+  'Social Sciences': ['Social Sciences', 'Decision Sciences', 'Psychology', 'Economics, Econometrics and Finance', 'Business, Management and Accounting', 'Arts and Humanities'],
+  'Health Sciences': ['Medicine', 'Nursing', 'Health Professions', 'Dentistry', 'Veterinary', ],
+});
+
+const subfieldOptionsMap = ref({
+  Neuroscience: ['Neurology', 'Behavioral Neuroscience', 'Sensory Systems', 'Cognitive Neuroscience', 'Biological Psychiatry', 'Endocrine and Autonomic Systems', 'Cellular and Molecular Neuroscience', 'Developmental Neuroscience'],
+  'Immunology and Microbiology': ['Applied Microbiology and Biotechnology', 'Parasitology', 'Immunology', 'Microbiology', 'Virology'],
+  'Agricultural and Biological Sciences': ['Aquatic Science', 'Insect Science', 'Plant Science', 'Soil Science', 'Food Science', 'Horticulture', 'Ecology, Evolution', 'Animal Science and Zoology', 'General Agricultural and Biological Sciences', 'Forestry', 'Agronomy and Crop Science'],
+  'Biochemistry, Genetics and Molecular Biology': ['Biotechnology', 'Molecular Biology', 'Structural Biology', 'Clinical Biochemistry', 'Biochemistry', 'Biophysics', 'Cell Biology', 'Aging', 'Cancer Research', 'Genetics', 'Physiology', 'Molecular Medicine', 'Developmental Biology', 'Endocrinology', ],
+  'Pharmacology, Toxicology and Pharmaceutics': ['Toxicology', 'Pharmaceutical Science'],
+});
 
 // 用于绑定到 DOM 元素的 ref
 const wordCloudRef = ref(null);
 const showChart = ref(''); // 默认不显示任何图表
 
 const filteredWordCloudData = ref(wordCloudData.value); // 默认显示全部数据
+
+// 选择状态
+const selectedDomain = ref('');
+const selectedField = ref('');
+const selectedSubfield = ref('');
+
+// 动态更新字段
+const fieldOptions = ref([]);
+const subfieldOptions = ref([]);
+
+// 当选择了一个领域（Domain）时，更新字段（Field）
+const onDomainChange = (domain) => {
+  selectedField.value = '';
+  selectedSubfield.value = '';
+  fieldOptions.value = fieldOptionsMap.value[domain] || [];
+  subfieldOptions.value = [];
+};
+
+// 当选择了一个学科（Field）时，更新子领域（Subfield）
+const onFieldChange = (field) => {
+  selectedSubfield.value = '';
+  subfieldOptions.value = subfieldOptionsMap.value[field] || [];
+};
 
 // 图表数据
 const barChartData = ref({
@@ -305,6 +317,7 @@ const renderPieChart = () => {
 
 // 切换图表类型
 const toggleChart = (chartType) => {
+  fetchWordCloudData();
   if (showChart.value === chartType) {
     showChart.value = '';
   } else {
