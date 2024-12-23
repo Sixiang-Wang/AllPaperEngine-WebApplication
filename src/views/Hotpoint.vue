@@ -4,6 +4,7 @@
       <h1>热点领域分析</h1>
       <p>以下是技术领域中的一些关键技术与概念的词云，词语的大小代表其相关性或热度。</p>
     </el-header>
+
     <el-container>
       <!-- 侧边栏 -->
       <el-aside width="200px" style="margin-left: 50px; margin-top: 20px;">
@@ -25,27 +26,28 @@
           </el-collapse-item>
         </el-collapse>
       </el-aside>
+
       <el-main>
-        <!-- 图表展示按钮 -->
         <div class="chart-buttons">
-          <el-button @click="toggleChart('wordcloud')">词云</el-button>
-          <el-button @click="toggleChart('bar')">柱状图</el-button>
-          <el-button @click="toggleChart('line')">折线图</el-button>
-          <el-button @click="toggleChart('pie')">饼状图</el-button>
-          <el-button @click="exportToExcel()">导出为 Excel</el-button>
-          <el-button @click="exportToPDF()">导出为 PDF</el-button>
+          <el-button @click="analyzeHotspot()">分析该领域热点</el-button>
         </div>
 
-        <!-- 图表展示区域 -->
-        <div v-if="showChart === 'wordcloud'" ref="wordCloudRef"></div>
-        <div v-if="showChart === 'bar'" class="chart-container">
-          <canvas id="barChartCanvas"></canvas>
+        <div v-if="showChart.pie" class="table-container" style="margin-bottom: 60px">
+          <el-table :data="sortedWordCloudData" style="width: 100%" border>
+            <el-table-column label="学科领域" prop="text"></el-table-column>
+            <el-table-column label="论文数量" prop="size"></el-table-column>
+          </el-table>
         </div>
-        <div v-if="showChart === 'line'" class="chart-container">
-          <canvas id="lineChartCanvas"></canvas>
-        </div>
-        <div v-if="showChart === 'pie'" class="chart-container">
-          <canvas id="pieChartCanvas"></canvas>
+        <div class="charts-container">
+          <div v-if="showChart.bar" class="chart-item" style="margin-bottom: 60px">
+            <canvas id="barChartCanvas"></canvas>
+          </div>
+          <div v-if="showChart.line" class="chart-item" style="margin-bottom: 60px">
+            <canvas id="lineChartCanvas"></canvas>
+          </div>
+          <div v-if="showChart.pie" class="chart-item-pie" style="margin-bottom: 60px">
+            <canvas id="pieChartCanvas"></canvas>
+          </div>          
         </div>
       </el-main>
     </el-container>
@@ -53,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, computed } from "vue";
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 import Aside from "@/components/HotspotAside.vue";
@@ -72,43 +74,26 @@ const fetchedWordCloudData = ref([]);
 const fetchWordCloudData = async () => {
   console.log("获取词云数据...");
   try {
-    const response = await httpUtil.get('/hotspot/getTopicsWorksCount', {
-      params: {
-        domainDisplayName: selectedDomain.value,
-        fieldDisplayName: selectedField.value,
-        subfieldDisplayName: selectedSubfield.value
-      }
-    });
+    const response = await httpUtil.get(`/hotspot/getTopicsWorksCount?domainDisplayName=${selectedDomain.value}&fieldDisplayName=${selectedField.value}&subfieldDisplayName=${selectedSubfield.value}`);
 
-    fetchedWordCloudData.value = response.data.map(item => ({
+    fetchedWordCloudData.value = response.data.topics.map(item => ({
       text: item.topicName,
       size: item.worksCount
     }));
 
     wordCloudData.value = fetchedWordCloudData.value;
 
-    nextTick(() => {
-      renderWordCloud();
-    });
+    updateChartData();
+
+
+    console.log(fetchedWordCloudData.value);
   } catch (error) {
     console.error("获取词云数据失败:", error);
   }
 };
 
-onMounted(() => {
-  fetchWordCloudData();
-});
-
 // 示例词云数据
-const wordCloudData = ref([
-  { text: "AI", size: 2},
-  { text: "Machine Learning", size: 3},
-  { text: "Economics", size: 5},
-  { text: "Psychology", size: 4},
-  { text: "Biology", size: 6},
-  { text: "Medicine", size: 7},
-  { text: "Vue", size: 10},
-]);
+const wordCloudData = ref([]);
 
 const domainOptions = ref(['Life Sciences', 'Physical Sciences', 'Social Sciences', 'Health Sciences']);
 const fieldOptionsMap = ref({
@@ -153,7 +138,11 @@ const subfieldOptionsMap = ref({
 
 // 用于绑定到 DOM 元素的 ref
 const wordCloudRef = ref(null);
-const showChart = ref(''); // 默认不显示任何图表
+const showChart = ref({
+  bar: false,
+  line: false,
+  pie: false,
+});
 
 // 选择状态
 const selectedDomain = ref('');
@@ -178,12 +167,34 @@ const onFieldChange = (field) => {
   subfieldOptions.value = subfieldOptionsMap.value[field] || [];
 };
 
+const analyzeHotspot = async () => {
+  const charts = ['bar', 'line', 'pie'];
+
+  // 先获取数据
+  await fetchWordCloudData();  // 等待数据加载完成
+
+  charts.forEach(chart => {
+    showChart.value[chart] = !showChart.value[chart];  // 切换图表的显示状态
+  });
+
+  nextTick(() => {
+    // 如果图表被显示，就渲染它们
+    if (showChart.value.bar) renderBarChart();
+    if (showChart.value.line) renderLineChart();
+    if (showChart.value.pie) renderPieChart();
+  });
+};
+
+const sortedWordCloudData = computed(() => {
+  return [...fetchedWordCloudData.value].sort((a, b) => b.size - a.size);
+});
+
 // 图表数据
 const barChartData = ref({
-  labels: wordCloudData.value.map(item => item.text),
+  labels: fetchedWordCloudData.value.map(item => item.text),
   datasets: [{
-    label: '技术热度',
-    data: wordCloudData.value.map(item => item.size),
+    label: '论文数量',
+    data: fetchedWordCloudData.value.map(item => item.size),
     backgroundColor: 'rgba(54, 162, 235, 0.2)',
     borderColor: 'rgba(54, 162, 235, 1)',
     borderWidth: 1
@@ -192,10 +203,10 @@ const barChartData = ref({
 
 
 const lineChartData = ref({
-  labels: wordCloudData.value.map(item => item.text),
+  labels: fetchedWordCloudData.value.map(item => item.text),
   datasets: [{
-    label: '技术热度趋势',
-    data: wordCloudData.value.map(item => item.size),
+    label: '论文数量',
+    data: fetchedWordCloudData.value.map(item => item.size),
     fill: false,
     borderColor: 'rgba(75, 192, 192, 1)',
     tension: 0.1
@@ -203,9 +214,9 @@ const lineChartData = ref({
 });
 
 const pieChartData = ref({
-  labels: wordCloudData.value.map(item => item.text),
+  labels: fetchedWordCloudData.value.map(item => item.text),
   datasets: [{
-    data: wordCloudData.value.map(item => item.size),
+    data: fetchedWordCloudData.value.map(item => item.size),
     backgroundColor: generateColors(50),
     hoverBackgroundColor: generateColors(50)
   }]
@@ -224,57 +235,56 @@ function generateColors(count) {
 }
 
 const updateChartData = () => {
-  barChartData.value.labels = wordCloudData.value.map(item => item.text);
-  barChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
+  barChartData.value.labels = fetchedWordCloudData.value.map(item => item.text);
+  barChartData.value.datasets[0].data = fetchedWordCloudData.value.map(item => item.size);
 
-  lineChartData.value.labels = wordCloudData.value.map(item => item.text);
-  lineChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
+  lineChartData.value.labels = fetchedWordCloudData.value.map(item => item.text);
+  lineChartData.value.datasets[0].data = fetchedWordCloudData.value.map(item => item.size);
 
-  pieChartData.value.labels = wordCloudData.value.map(item => item.text);
-  pieChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
+  pieChartData.value.labels = fetchedWordCloudData.value.map(item => item.text);
+  pieChartData.value.datasets[0].data = fetchedWordCloudData.value.map(item => item.size);
 };
 
-// 渲染词云
-const renderWordCloud = () => {
-  const layout = cloud()
-    .size([window.innerWidth * 0.6, window.innerHeight * 0.6])
-    .words(wordCloudData.value.map(word => ({ text: word.text, size: word.size })))
-    .font("Impact")
-    .fontSize(d => Math.pow(d.size, 1.2))
-    .rotate(() => Math.floor(Math.random() * 181) - 90)
-    .on("end", drawCloud);
+// // 渲染词云
+// const renderWordCloud = () => {
+//   const layout = cloud()
+//     .size([window.innerWidth * 0.6, window.innerHeight * 0.6])
+//     .words(wordCloudData.value.map(word => ({ text: word.text, size: word.size })))
+//     .font("Impact")
+//     .fontSize(d => Math.pow(d.size, 1.2))
+//     .rotate(() => Math.floor(Math.random() * 181) - 90)
+//     .on("end", drawCloud);
 
-  layout.start();
+//   layout.start();
 
-  // 绘制词云
-  function drawCloud(words) {
-    d3.select(wordCloudRef.value)
-      .append("svg")
-      .attr("width", layout.size()[0])
-      .attr("height", layout.size()[1])
-      .append("g")
-      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-      .selectAll("text")
-      .data(words)
-      .enter()
-      .append("text")
-      .style("font-size", d => d.size + "px")
-      .style("font-family", "Impact")
-      .style("fill", "steelblue")
-      .attr("text-anchor", "middle")
-      .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
-      .text(d => d.text)
-      .on("mouseover", function (event, d) {
-        d3.select(this).style("fill", "orange");
-      })
-      .on("mouseout", function (event, d) {
-        d3.select(this).style("fill", "steelblue");
-      })
-      .on("click", function (event, d) {
-        alert("你点击了: " + d.text); // 可根据需求实现跳转
-      });
-  }
-};
+//   function drawCloud(words) {
+//     d3.select(wordCloudRef.value)
+//       .append("svg")
+//       .attr("width", layout.size()[0])
+//       .attr("height", layout.size()[1])
+//       .append("g")
+//       .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+//       .selectAll("text")
+//       .data(words)
+//       .enter()
+//       .append("text")
+//       .style("font-size", d => d.size + "px")
+//       .style("font-family", "Impact")
+//       .style("fill", "steelblue")
+//       .attr("text-anchor", "middle")
+//       .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
+//       .text(d => d.text)
+//       .on("mouseover", function () {
+//         d3.select(this).style("fill", "orange");
+//       })
+//       .on("mouseout", function () {
+//         d3.select(this).style("fill", "steelblue");
+//       })
+//       .on("click", function (event, d) {
+//         alert("你点击了: " + d.text);
+//       });
+//   }
+// };
 
 // 渲染柱状图
 const renderBarChart = () => {
@@ -321,31 +331,32 @@ const renderPieChart = () => {
 };
 
 // 切换图表类型
-const toggleChart = (chartType) => {
-  fetchWordCloudData();
-  if (showChart.value === chartType) {
-    showChart.value = '';
-  } else {
-    showChart.value = chartType;
-    if (chartType === 'wordcloud') {
-      nextTick(() => {
-        renderWordCloud();
-      });
-    } else if (chartType === 'bar') {
-      nextTick(() => {
-        renderBarChart();
-      });
-    } else if (chartType === 'line') {
-      nextTick(() => {
-        renderLineChart();
-      });
-    } else if (chartType === 'pie') {
-      nextTick(() => {
-        renderPieChart();
-      });
-    }
-  }
-};
+// const toggleChart = (chartType) => {
+//   fetchWordCloudData();
+//   if (showChart.value === chartType) {
+//     showChart.value = '';
+//   } else {
+//     showChart.value = chartType;
+//       // if (chartType === 'wordcloud') {
+//       // nextTick(() => {
+//       //   renderWordCloud();
+//       // });
+//       // } else 
+//     if (chartType === 'bar') {
+//       nextTick(() => {
+//         renderBarChart();
+//       });
+//     } else if (chartType === 'line') {
+//       nextTick(() => {
+//         renderLineChart();
+//       });
+//     } else if (chartType === 'pie') {
+//       nextTick(() => {
+//         renderPieChart();
+//       });
+//     }
+//   }
+// };
 
 // 导出为 Excel
 const exportToExcel = () => {
@@ -359,7 +370,7 @@ const exportToExcel = () => {
 
 // 确保 getTableData 函数是通过 ref 或者直接暴露的
 const getTableData = () => {
-  return wordCloudData.value.map(item => ({
+  return fetchedWordCloudData.value.map(item => ({
     技术名词: item.text,
     热度: item.size
   }));
@@ -428,6 +439,22 @@ el-main {
   padding: 20px;
 }
 
+.chart-item {
+  margin: 20px;
+  width: 100%;
+  max-width: 900px;
+  height: 450px;
+  margin-left: 10%;
+}
+
+.chart-item-pie {
+  margin: 20px;
+  width: 80%;
+  max-width: 900px;
+  height: 450px;
+  margin-left: 30%;
+}
+
 .chart-container {
   margin: 20px;
   width: 80%;
@@ -437,5 +464,11 @@ el-main {
 
 .chart-buttons {
   margin-bottom: 20px;
+}
+
+.table-container {
+  margin-top: 20px;
+  margin-left: 10%;
+  max-width: 80%;
 }
 </style>
