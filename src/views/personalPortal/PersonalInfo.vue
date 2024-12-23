@@ -6,7 +6,8 @@ import router from "@/router/index.js";
 import httpUtil from "@/api/http.js";
 import {useUserIdStore} from "@/store/store.js";
 import * as cookieUtil from "@/utils/cookie.js";
-import {ElMessage} from "element-plus";  // 引入 API 相关功能
+import {ElMessage} from "element-plus";
+import Graph from "@/components/Graph.vue";  // 引入 API 相关功能
 
 // avatar 头像
 const avatar = ref({
@@ -149,27 +150,29 @@ const simpleSearch = async () => {
 
     <el-card style="max-width: 75%; margin-top: 1.5%">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" type="border-card">
-        <el-tab-pane label="成果管理" name="first">
-          <div v-if="isLoading">加载中...</div>
-            <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
-              <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
-              <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
-              <el-table-column prop="cited" label="引用次数" width="90"></el-table-column>
-              <el-table-column>
-                <template #default="scope">
-                  <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column>
-                <template #default="scope">
-                  <el-button @click="deleteClaimed(scope.row.id)" color="#C00000">点击删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-        </el-tab-pane>
 
+        <el-tab-pane label="学术关系网" name="first">
+          <Graph/>
+        </el-tab-pane>
         <el-tab-pane label="学术统计" name="second">Config</el-tab-pane>
-        <el-tab-pane label="学术关系网" name="third">Role</el-tab-pane>
+        <el-tab-pane label="成果管理" name="third">
+          <div v-if="isLoading">加载中...</div>
+          <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
+            <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
+            <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
+            <el-table-column prop="cited" label="引用次数" width="90"></el-table-column>
+            <el-table-column>
+              <template #default="scope">
+                <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column>
+              <template #default="scope">
+                <el-button @click="deleteClaimed(scope.row.id)" color="#C00000">点击删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -210,4 +213,18 @@ const simpleSearch = async () => {
   background-color: #66b1ff;
   border-color: #66b1ff;
 }
+.el-tabs {
+  width: 100%;
+  height: 100%;
+}
+
+.el-tab-pane {
+  height: 100%; /* 确保子组件占满Tab */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  padding: 10px;
+  overflow: hidden; /* 避免溢出 */
+}
+
 </style>

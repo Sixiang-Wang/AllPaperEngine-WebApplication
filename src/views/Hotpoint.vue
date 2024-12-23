@@ -8,18 +8,20 @@
       <!-- 侧边栏 -->
       <el-aside width="200px" style="margin-left: 50px; margin-top: 20px;">
         <el-collapse v-model="activeFilter" accordion>
-          <el-collapse-item title="学科筛选" name="1">
-            <el-menu
-              default-active="1"
-              @select="updateSelectedFilter"
-              class="el-menu-vertical-demo"
-            >
-              <el-menu-item index="1" @click="updateSelectedFilter('All')">显示所有</el-menu-item>
-              <el-menu-item index="2" @click="updateSelectedFilter('Physical Sciences')">Physical Sciences</el-menu-item>
-              <el-menu-item index="3" @click="updateSelectedFilter('Social Sciences')">Social Sciences</el-menu-item>
-              <el-menu-item index="4" @click="updateSelectedFilter('Life Sciences')">Life Sciences</el-menu-item>
-              <el-menu-item index="5" @click="updateSelectedFilter('Health Sciences')">Health Sciences</el-menu-item>
-            </el-menu>
+          <el-collapse-item title="Domain" name="1">
+            <el-select v-model="selectedDomain" placeholder="请选择领域" @change="onDomainChange">
+              <el-option v-for="domain in domainOptions" :key="domain" :label="domain" :value="domain" />
+            </el-select>
+          </el-collapse-item>
+          <el-collapse-item title="Field" name="2" v-if="selectedDomain">
+            <el-select v-model="selectedField" placeholder="请选择领域下的学科" @change="onFieldChange">
+              <el-option v-for="field in fieldOptions" :key="field" :label="field" :value="field" />
+            </el-select>
+          </el-collapse-item>
+          <el-collapse-item title="Subfield" name="3" v-if="selectedField">
+            <el-select v-model="selectedSubfield" placeholder="请选择子领域">
+              <el-option v-for="subfield in subfieldOptions" :key="subfield" :label="subfield" :value="subfield" />
+            </el-select>
           </el-collapse-item>
         </el-collapse>
       </el-aside>
@@ -59,95 +61,129 @@ import { Chart, registerables } from 'chart.js';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import httpUtil from "@/api/http.js";
 
 Chart.register(...registerables);
 
+const apiUrl = "http://116.204.112.5:1145/hotspot/getTopicsWorksCount";
+
+const fetchedWordCloudData = ref([]);
+
+const fetchWordCloudData = async () => {
+  console.log("获取词云数据...");
+  try {
+    const response = await httpUtil.get('/hotspot/getTopicsWorksCount', {
+      params: {
+        domainDisplayName: selectedDomain.value,
+        fieldDisplayName: selectedField.value,
+        subfieldDisplayName: selectedSubfield.value
+      }
+    });
+
+    fetchedWordCloudData.value = response.data.map(item => ({
+      text: item.topicName,
+      size: item.worksCount
+    }));
+
+    wordCloudData.value = fetchedWordCloudData.value;
+
+    nextTick(() => {
+      renderWordCloud();
+    });
+  } catch (error) {
+    console.error("获取词云数据失败:", error);
+  }
+};
+
+onMounted(() => {
+  fetchWordCloudData();
+});
+
 // 示例词云数据
 const wordCloudData = ref([
-  { text: "AI", size: 2, label: "Physical Sciences" },
-  { text: "Machine Learning", size: 3, label: "Physical Sciences" },
-  { text: "Economics", size: 5, label: "Social Sciences" },
-  { text: "Psychology", size: 4, label: "Social Sciences" },
-  { text: "Biology", size: 6, label: "Life Sciences" },
-  { text: "Medicine", size: 7, label: "Health Sciences" },
-  { text: "Vue", size: 10, label: "Physical Sciences" },
-  { text: "JavaScript", size: 15, label: "Physical Sciences" },
-  { text: "React", size: 20, label: "Physical Sciences" },
-  { text: "Python", size: 5, label: "Physical Sciences" },
-  { text: "Data Science", size: 7, label: "Physical Sciences" },
-  { text: "Web Development", size: 30, label: "Physical Sciences" },
-  { text: "Node.js", size: 12, label: "Physical Sciences" },
-  { text: "Java", size: 18, label: "Physical Sciences" },
-  { text: "CSS", size: 4, label: "Physical Sciences" },
-  { text: "HTML", size: 6, label: "Physical Sciences" },
-  { text: "D3.js", size: 8, label: "Physical Sciences" },
-  { text: "Docker", size: 14, label: "Physical Sciences" },
-  { text: "Cloud Computing", size: 25, label: "Physical Sciences" },
-  { text: "Big Data", size: 40, label: "Physical Sciences" },
-  { text: "Blockchain", size: 60, label: "Physical Sciences" },
-  { text: "Cybersecurity", size: 50, label: "Physical Sciences" },
-  { text: "API", size: 10, label: "Physical Sciences" },
-  { text: "Git", size: 9, label: "Physical Sciences" },
-  { text: "GraphQL", size: 13, label: "Physical Sciences" },
-  { text: "Kubernetes", size: 22, label: "Physical Sciences" },
-  { text: "Software Engineering", size: 30, label: "Physical Sciences" },
-  { text: "Frontend", size: 11, label: "Physical Sciences" },
-  { text: "DevOps", size: 20, label: "Physical Sciences" },
-  { text: "TypeScript", size: 17, label: "Physical Sciences" },
-  { text: "Cloud Storage", size: 8, label: "Physical Sciences" },
-  { text: "Java EE", size: 6, label: "Physical Sciences" },
-  { text: "SQL", size: 9, label: "Physical Sciences" },
-  { text: "Graph Databases", size: 25, label: "Physical Sciences" },
-  { text: "NoSQL", size: 28, label: "Physical Sciences" },
-  { text: "Data Visualization", size: 35, label: "Physical Sciences" },
-  { text: "Serverless", size: 18, label: "Physical Sciences" },
-  { text: "CI/CD", size: 12, label: "Physical Sciences" },
-  { text: "Agile", size: 14, label: "Physical Sciences" },
-  { text: "Software Testing", size: 17, label: "Physical Sciences" },
-  { text: "Containerization", size: 22, label: "Physical Sciences" },
-  { text: "Microservices", size: 40, label: "Physical Sciences" },
-  { text: "Automation", size: 19, label: "Physical Sciences" },
-  { text: "Network Security", size: 45, label: "Physical Sciences" },
-  { text: "Quantum Computing", size: 50, label: "Physical Sciences" },
-  { text: "Cloud Infrastructure", size: 38, label: "Physical Sciences" },
-  { text: "Blockchain Development", size: 55, label: "Physical Sciences" },
-  { text: "Digital Transformation", size: 33, label: "Physical Sciences" },
-  { text: "Robotic Process Automation", size: 42, label: "Physical Sciences" },
-  { text: "Sociology", size: 12, label: "Social Sciences" },
-  { text: "Political Science", size: 14, label: "Social Sciences" },
-  { text: "Law", size: 16, label: "Social Sciences" },
-  { text: "History", size: 18, label: "Social Sciences" },
-  { text: "Econometrics", size: 20, label: "Social Sciences" },
-  { text: "Philosophy", size: 22, label: "Social Sciences" },
-  { text: "Anthropology", size: 8, label: "Social Sciences" },
-  { text: "Genetics", size: 24, label: "Life Sciences" },
-  { text: "Biochemistry", size: 28, label: "Life Sciences" },
-  { text: "Ecology", size: 26, label: "Life Sciences" },
-  { text: "Microbiology", size: 30, label: "Life Sciences" },
-  { text: "Neuroscience", size: 32, label: "Life Sciences" },
-  { text: "Pharmacology", size: 15, label: "Life Sciences" },
-  { text: "Cell Biology", size: 14, label: "Life Sciences" },
-  { text: "Nursing", size: 18, label: "Health Sciences" },
-  { text: "Public Health", size: 22, label: "Health Sciences" },
-  { text: "Pediatrics", size: 25, label: "Health Sciences" },
-  { text: "Cardiology", size: 30, label: "Health Sciences" },
-  { text: "Neurology", size: 28, label: "Health Sciences" },
-  { text: "Oncology", size: 35, label: "Health Sciences" },
-  { text: "Health Informatics", size: 19, label: "Health Sciences" }
+  { text: "AI", size: 2},
+  { text: "Machine Learning", size: 3},
+  { text: "Economics", size: 5},
+  { text: "Psychology", size: 4},
+  { text: "Biology", size: 6},
+  { text: "Medicine", size: 7},
+  { text: "Vue", size: 10},
 ]);
+
+const domainOptions = ref(['Life Sciences', 'Physical Sciences', 'Social Sciences', 'Health Sciences']);
+const fieldOptionsMap = ref({
+  'Life Sciences': ['Neuroscience', 'Immunology and Microbiology', 'Agricultural and Biological Sciences', 'Biochemistry, Genetics and Molecular Biology', 'Pharmacology, Toxicology and Pharmaceutics'],
+  'Physical Sciences': ['Engineering', 'Materials Science', 'Chemistry', 'Energy', 'Physics and Astronomy', 'Earth and Planetary Sciences', 'Computer Science', 'Mathematics', 'Environmental Science', 'Chemical Engineering'],
+  'Social Sciences': ['Social Sciences', 'Decision Sciences', 'Psychology', 'Economics, Econometrics and Finance', 'Business, Management and Accounting', 'Arts and Humanities'],
+  'Health Sciences': ['Medicine', 'Nursing', 'Health Professions', 'Dentistry', 'Veterinary', ],
+});
+
+const subfieldOptionsMap = ref({
+  // Life Sciences
+  Neuroscience: ['Neurology', 'Behavioral Neuroscience', 'Sensory Systems', 'Cognitive Neuroscience', 'Biological Psychiatry', 'Endocrine and Autonomic Systems', 'Cellular and Molecular Neuroscience', 'Developmental Neuroscience'],
+  'Immunology and Microbiology': ['Applied Microbiology and Biotechnology', 'Parasitology', 'Immunology', 'Microbiology', 'Virology'],
+  'Agricultural and Biological Sciences': ['Aquatic Science', 'Insect Science', 'Plant Science', 'Soil Science', 'Food Science', 'Horticulture', 'Ecology, Evolution', 'Animal Science and Zoology', 'General Agricultural and Biological Sciences', 'Forestry', 'Agronomy and Crop Science'],
+  'Biochemistry, Genetics and Molecular Biology': ['Biotechnology', 'Molecular Biology', 'Structural Biology', 'Clinical Biochemistry', 'Biochemistry', 'Biophysics', 'Cell Biology', 'Aging', 'Cancer Research', 'Genetics', 'Physiology', 'Molecular Medicine', 'Developmental Biology', 'Endocrinology', ],
+  'Pharmacology, Toxicology and Pharmaceutics': ['Toxicology', 'Pharmaceutical Science', 'Pharmacology', 'Drug Discovery'],
+  // Physical Sciences
+  Engineering: ['Ocean Engineering', 'Architecture', 'Mechanics of Materials', 'Industrial and Manufacturing Engineering', 'General Engineering', 'Safety, Risk, Reliability and Quality', 'Control and Systems Engineering', 'Biomedical Engineering', 'Building and Construction', 'Electrical and Electronic Engineering', 'Civil and Structural Engineering','Media Technology', 'Automotive Engineering', 'Aerospace Engineering', 'Mechanical Engineering', 'Computational Mechanics'],
+  'Materials Science': ['Materials Chemistry', 'Electronic, Optical and Magnetic Materials', 'Surfaces, Coatings and Films', 'Metals and Alloys', 'Ceramics and Composites', 'General Materials Science', 'Polymers and Plastics', 'Biomaterials'],
+  Chemistry: ['Spectroscopy', 'Analytical Chemistry', 'Electrochemistry', 'Inorganic Chemistry', 'Physical and Theoretical Chemistry', 'Organic Chemistry'],
+  Energy: ['Energy Engineering and Power Technology', 'General Energy', 'Fuel Technology', 'Nuclear Energy and Engineering', 'Renewable Energy, Sustainability and the Environment'],
+  'Physics and Astronomy': ['Condensed Matter Physics', 'Atomic and Molecular Physics, and Optics', 'Statistical and Nonlinear Physics', 'Acoustics and Ultrasonics', 'Nuclear and High Energy Physics', 'Astronomy and Astrophysics', 'Radiation', 'Instrumentation'],
+  'Earth and Planetary Sciences': ['Geology', 'Geochemistry and Petrology', 'Geophysics', 'Atmospheric Science', 'Earth-Surface Processes', 'Oceanography', 'Paleontology'],
+  'Computer Science': ['Computational Theory and Mathematics', 'Computer Science Applications', 'Artificial Intelligence', 'Information Systems', 'Computer Vision and Pattern Recognition', 'Hardware and Architecture', 'Software', 'Computer Graphics and Computer-Aided Design', 'Computer Networks and Communications', 'Human-Computer Interaction', 'Signal Processing'],
+  Mathematics: ['Modeling and Simulation', 'Computational Mathematics', 'Algebra and Number Theory', 'Mathematical Physics', 'Theoretical Computer Science', 'Numerical Analysis', 'Geometry and Topology', 'Statistics and Probability', 'Applied Mathematics', 'Discrete Mathematics and Combinatorics'],
+  'Environmental Science': ['Pollution', 'Health', 'Water Science and Technology', 'Industrial and Manufacturing Engineering', 'Environmental Engineering', 'Management, Monitoring, Policy and Law', 'Ecology', 'Global and Planetary Change', 'Ecological Modeling', 'Nature and Landscape Conservation', 'Environmental Chemistry'],
+  'Chemical Engineering': ['Process Chemistry and Technology', 'Bioengineering', 'Chemical Health and Safety', 'Fluid Flow and Transfer Processes', 'Catalysis', 'Filtration and Separation'],
+  // Social Sciences
+  'Social Sciences': ['Political Science and International Relations', 'Law', 'Demography', 'Safety Research', 'Health', 'Human Factors and Ergonomics', 'Transportation', 'Gender Studies', 'Geography, Planning and Development', 'Library and Information Sciences', 'Anthropology', 'Linguistics and Language', 'General Social Sciences', 'Life-span and Life-course Studies', 'Archeology', 'Cultural Studies', 'Education', 'Development', 'Urban Studies', 'Sociology and Political Science', 'Public Administration', 'Communication'],
+  'Decision Sciences': ['General Decision Sciences', 'Management Science and Operations Research', 'Statistics, Probability and Uncertainty', 'Information Systems and Management'],
+  Psychology: ['Developmental and Educational Psychology', 'Experimental and Cognitive Psychology', 'General Psychology', 'Clinical Psychology', 'Neuropsychology and Physiological Psychology', 'Applied Psychology', 'Social Psychology'],
+  'Economics, Econometrics and Finance': ['General Economics, Econometrics and Finance', 'Finance', 'Economics and Econometrics'],
+  'Business, Management and Accounting': ['Organizational Behavior and Human Resource Management', 'Management of Technology and Innovation', 'Industrial relations', 'Management Information Systems', 'Accounting', 'Tourism, Leisure and Hospitality Management', 'Strategy and Management', 'Business and International Management', 'Marketing'],
+  'Arts and Humanities': ['Classics', 'History and Philosophy of Science', 'Literature and Literary Theory', 'Conservation', 'Visual Arts and Performing Arts', 'History', 'Religious studies', 'General Arts and Humanities', 'Archeology', 'Music', 'Museology', 'Philosophy', 'Language and Linguistics'],
+  // Health Sciences
+  Medicine: ['Nephrology', 'Microbiology', 'Oncology', 'Transplantation', 'Otorhinolaryngology', 'Biochemistry', 'Public Health', 'Radiology', 'Epidemiology', 'Urology', 'Obstetrics and Gynecology', 'Orthopedics and Sports Medicine', 'Surgery', 'Hepatology', 'Gastroenterology', 'Genetics', 'Physiology', 'Ophthalmology', 'Pulmonary and Respiratory Medicine', 'Anesthesiology and Pain Medicine', 'Pediatrics, Perinatology and Child Health', 'Complementary and alternative medicine', 'Emergency Medicine', 'Hematology', 'Dermatology', 'Pathology and Forensic Medicine', 'Rheumatology', 'Health Informatics', 'Internal Medicine', 'Psychiatry and Mental health', 'Pharmacology', 'Endocrinology, Diabetes and Metabolism', 'Anatomy', 'Geriatrics and Gerontology', 'Neurology', 'Critical Care and Intensive Care Medicine', 'Family Practice', 'Infectious Diseases', 'Rehabilitation', 'Cardiology and Cardiovascular Medicine', 'Immunology and Allergy', 'Reproductive Medicine'],
+  Nursing: ['Issues, ethics and legal aspects', 'Research and Theory', 'Nutrition and Dietetics', 'Leadership and Management'],
+  'Health Professions': ['Occupational Therapy', 'Speech and Hearing', 'Complementary and Manual Therapy', 'Radiological and Ultrasound Technology', 'General Health Professions', 'Medical Laboratory Technology', 'Pharmacy', 'Health Information Management', 'Emergency Medical Services', 'Physical Therapy, Sports Therapy and Rehabilitation', 'Medical Terminology'],
+  Dentistry: ['Periodontics', 'General Dentistry', 'Oral Surgery', 'Orthodontics'],
+  Veterinary: ['Small Animals', 'Equine'],
+});
 
 // 用于绑定到 DOM 元素的 ref
 const wordCloudRef = ref(null);
 const showChart = ref(''); // 默认不显示任何图表
 
-const filteredWordCloudData = ref(wordCloudData.value); // 默认显示全部数据
+// 选择状态
+const selectedDomain = ref('');
+const selectedField = ref('');
+const selectedSubfield = ref('');
+
+// 动态更新字段
+const fieldOptions = ref([]);
+const subfieldOptions = ref([]);
+
+// 当选择了一个领域（Domain）时，更新字段（Field）
+const onDomainChange = (domain) => {
+  selectedField.value = '';
+  selectedSubfield.value = '';
+  fieldOptions.value = fieldOptionsMap.value[domain] || [];
+  subfieldOptions.value = [];
+};
+
+// 当选择了一个学科（Field）时，更新子领域（Subfield）
+const onFieldChange = (field) => {
+  selectedSubfield.value = '';
+  subfieldOptions.value = subfieldOptionsMap.value[field] || [];
+};
 
 // 图表数据
 const barChartData = ref({
-  labels: filteredWordCloudData.value.map(item => item.text),
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度',
-    data: filteredWordCloudData.value.map(item => item.size),
+    data: wordCloudData.value.map(item => item.size),
     backgroundColor: 'rgba(54, 162, 235, 0.2)',
     borderColor: 'rgba(54, 162, 235, 1)',
     borderWidth: 1
@@ -156,10 +192,10 @@ const barChartData = ref({
 
 
 const lineChartData = ref({
-  labels: filteredWordCloudData.value.map(item => item.text),
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度趋势',
-    data: filteredWordCloudData.value.map(item => item.size),
+    data: wordCloudData.value.map(item => item.size),
     fill: false,
     borderColor: 'rgba(75, 192, 192, 1)',
     tension: 0.1
@@ -167,9 +203,9 @@ const lineChartData = ref({
 });
 
 const pieChartData = ref({
-  labels: filteredWordCloudData.value.map(item => item.text),
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
-    data: filteredWordCloudData.value.map(item => item.size),
+    data: wordCloudData.value.map(item => item.size),
     backgroundColor: generateColors(50),
     hoverBackgroundColor: generateColors(50)
   }]
@@ -187,41 +223,22 @@ function generateColors(count) {
   return colors;
 }
 
-const updateSelectedFilter = (category) => {
-  // 筛选出符合当前选择的学科的数据
-  if (category === "All") {
-    filteredWordCloudData.value = wordCloudData.value;
-  }
-  else {
-    filteredWordCloudData.value = wordCloudData.value.filter(
-      (item) => item.label === category
-    );
-  }
-
-  updateChartData();
-
-  // 重新渲染词云
-  nextTick(() => { 
-    renderWordCloud();
-  });
-};
-
 const updateChartData = () => {
-  barChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
-  barChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+  barChartData.value.labels = wordCloudData.value.map(item => item.text);
+  barChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
 
-  lineChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
-  lineChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+  lineChartData.value.labels = wordCloudData.value.map(item => item.text);
+  lineChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
 
-  pieChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
-  pieChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+  pieChartData.value.labels = wordCloudData.value.map(item => item.text);
+  pieChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
 };
 
 // 渲染词云
 const renderWordCloud = () => {
   const layout = cloud()
     .size([window.innerWidth * 0.6, window.innerHeight * 0.6])
-    .words(filteredWordCloudData.value.map(word => ({ text: word.text, size: word.size })))
+    .words(wordCloudData.value.map(word => ({ text: word.text, size: word.size })))
     .font("Impact")
     .fontSize(d => Math.pow(d.size, 1.2))
     .rotate(() => Math.floor(Math.random() * 181) - 90)
@@ -305,6 +322,7 @@ const renderPieChart = () => {
 
 // 切换图表类型
 const toggleChart = (chartType) => {
+  fetchWordCloudData();
   if (showChart.value === chartType) {
     showChart.value = '';
   } else {
@@ -341,7 +359,7 @@ const exportToExcel = () => {
 
 // 确保 getTableData 函数是通过 ref 或者直接暴露的
 const getTableData = () => {
-  return filteredWordCloudData.value.map(item => ({
+  return wordCloudData.value.map(item => ({
     技术名词: item.text,
     热度: item.size
   }));

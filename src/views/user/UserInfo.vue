@@ -1,53 +1,52 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref,reactive } from "vue";
+import {onMounted, onBeforeUnmount, ref, reactive, computed, nextTick} from "vue";
 import { ArrowRight,Picture,Camera } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
+import http from "@/api/http.js";
+import {ElMessage} from "element-plus";
 
-const avatar = ref({
-  defaultAvatar: defaultAvatar,
-  url: defaultAvatar,
+const avatarUrl = computed(()=>{
+  const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
+  return http.getUrlWithoutSlash() + avatar;
 });
 
-const dialogVisible = ref(false);
 
-const openDialog = () => {
-  dialogVisible.value = true;
-};
 
 const tableData = ref([
   {
     feature: "姓名",
-    value: "Albert Einstein",
+    english: "name",
+    value: "",
     editable: false,
   },
   {
     feature: "生日",
-    value: "1897-03-14",
+    english: 'birthTime',
+    value: "",
     editable: false,
-  },
-  {
-    feature: "性别",
-    value: "男",
-    editable: false,
-  },
+  }
 ]);
+const birthTime = ref("");
 
 const tableData2 = ref([
   {
     feature: "学术领域",
-    value: "理论物理",
+    english: 'academicField',
+    value: "",
     editable: false,
   },
   {
     feature: "在职单位",
-    value: "普林斯顿高等研究院",
+    english: 'company',
+    value: "",
     editable: false,
   },
   {
     feature: "职业",
-    value: "教授",
+    english: 'profession',
+    value: "",
     editable: false,
   },
 ]);
@@ -55,23 +54,22 @@ const tableData2 = ref([
 const tableData3 = ref([
   {
     feature: "电子邮件",
-    value: "0d000721@163.com",
+    english: 'mail',
+    value: "",
     editable: false,
   },
   {
     feature: "电话",
-    value: "12345678910",
+    english: 'phone',
+    value: "",
     editable: false,
   },
 ]);
 onMounted(async()=>{
   try{
-    const res = await httpUtil.get('/user/getUserInfo',{},{
-      Authorization: cookieUtil.getCookie("token")
-    })
-    tableData.value = res.data.tables[0];
-    tableData2.value = res.data.tables[1];
-    tableData3.value = res.data.tables[2];
+    await getUserData()
+
+
   }catch (e){
     console.error(e);
   }
@@ -82,14 +80,28 @@ const saveConfirmVisible = ref(false);
 let originalData = allTables.map(table => JSON.parse(JSON.stringify(table.value)));
 let changedData = [...allTables].map(table => [...table.value]);
 const dataChanged = ref(false);
+const editBirth = ref(false);
 
 const updateEditable = (row) => {
+  console.log(tableData.value);
+
   if (activeRow.value === row) {
-    row.editable = !row.editable;
+    if(row.english!=='birthTime'){
+      row.editable = !row.editable;
+    }
+
   } else {
     if (activeRow.value) activeRow.value.editable = false; // 关闭上一个活动行
-    row.editable = true; // 激活当前行
+    if(row.english!=='birthTime'){
+      row.editable = true; // 激活当前行
+    }
     activeRow.value = row; // 更新活动行
+  }
+
+  if(row.english==='birthTime'){
+    editBirth.value = true;
+    birthTime.value = row.value
+    return
   }
 
   // 检查当前行的数据是否已被修改
@@ -109,6 +121,9 @@ const updateEditable = (row) => {
 };
 
 const handleClickOutside = (event) => {
+  if(activeRow.value.english==='birthTime'){
+    return
+  }
   const target = event.target;
   const isOutside = !target.closest(".el-table"); // 检查是否在表格外部点击
   if (isOutside && activeRow.value) {
@@ -124,30 +139,116 @@ const handleClickOutside = (event) => {
   }
 };
 
-const handleSaveConfirm = (action) => {
+const handleSaveConfirm = async (action) => {
   saveConfirmVisible.value = false;
   if (action === 'confirm') {
     // 用户选择保存
     allTables.forEach((table, index) => {
       table.value = changedData[index].map(rowData => allTables[index].value.find(row => row.feature === rowData.feature) || { ...rowData, editable: false });
     });
+    const allData = allTables.flatMap(table => table.value);
+
+    const user = {};
+    allData.forEach(row => {
+      user[row.english] = row.value; // 动态生成 User 对象属性
+    });
+
+
+    console.log("发送到后端的用户数据:", user);
+
+// 发起请求
+    const res = await httpUtil.postWithHeader('/user/updateUser', user, {
+      Authorization: cookieUtil.getCookie("token")
+    });
+    if(res.code === 200) {
+      ElMessage.success("修改成功!")
+    }
+
   } else {
     // 用户选择取消
-    allTables.forEach((table, index) => {
-      table.value = originalData[index].map(row => ({ ...row, editable: false }));
-    });
+    await getUserData()
+
     activeRow.value = null;
     dataChanged.value = false;
   }
 };
 
+
+
+const getUserData = async () =>{
+  const res = await httpUtil.get('/user/getUserInfo',{},{
+    Authorization: cookieUtil.getCookie("token")
+  })
+
+  tableData.value = tableData.value.map((row, index) => ({
+    ...row,
+    value: res.data.tables[0][index]?.value || row.value, // 更新 value
+  }));
+
+
+  tableData2.value = tableData2.value.map((row, index) => ({
+    ...row,
+    value: res.data.tables[1][index]?.value || row.value,
+  }));
+
+  tableData3.value = tableData3.value.map((row, index) => ({
+    ...row,
+    value: res.data.tables[2][index]?.value || row.value,
+  }));
+}
+
+const updateDate = async () => {
+  // 等待 DOM 更新
+  await nextTick();
+  // 打印选择的日期
+  const date = new Date(birthTime.value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 补足两位
+  const day = String(date.getDate()).padStart(2, '0');       // 补足两位
+  const formattedDate = `${year}-${month}-${day}`;
+  ElMessage.success(`选择的日期是：${formattedDate}`);
+  const res = await httpUtil.post2WithHeader('/user/updateUserBirthTime',
+      { birthTime: formattedDate },  // 这里使用对象传递
+      { Authorization: cookieUtil.getCookie("token") }
+  );
+
+  console.log(res);
+
+  await getUserData()
+
+  // 可选：关闭弹窗
+  editBirth.value = false;
+};
+
+
+
 onMounted(() => {
+  if(localStorage.getItem("avatarReload")==="yes"){
+    ElMessage.success("头像更新中...")
+    setTimeout(() => {
+      window.location.reload();
+      localStorage.setItem("avatarReload", "no");
+    }, 1000); // 延迟 1 秒
+  }
   document.addEventListener("click", handleClickOutside);
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+
+const updateAvatar = () => {
+  return `${http.baseUrl}user/updateUserAvatar?userid=${localStorage.getItem("userId")}`;
+}
+
+const afterUpdateAvatar = () => {
+  avatarUrl.value="/hahashenmedoumeiyou"
+  localStorage.setItem("avatarReload","yes")
+  window.location.reload()
+}
+
+
 </script>
 
 <template>
@@ -160,44 +261,17 @@ onBeforeUnmount(() => {
     <div style="display: flex; align-items: center;">
       <p class="text-item">个人资料照片</p>
       <el-avatar
-          :src="avatar.url"
+          :src="avatarUrl"
           :size="70"
           shape="square"
           fit="cover"
           class="user-avatar"
       />
-      <arrow-right @click="openDialog" style="width: 25px; height: 25px; margin-left: 10px;margin-right: 3%;" />
+      <el-upload :action="updateAvatar()" :on-success="afterUpdateAvatar">
+        <arrow-right style="width: 25px; height: 25px; margin-left: 10px;margin-right: 3%;" />
+      </el-upload>
+
     </div>
-    <el-dialog v-model="dialogVisible" title="> 修改头像" style="width:520px">
-      <el-row>
-        <el-col span="12">
-          <el-button type="text" class="alter-head-button">
-            <el-icon><Picture /></el-icon>
-            <span class = "alter-head-text">选择本地图片</span>
-          </el-button>
-          <el-button type="text" class="alter-head-button">
-            <el-icon><Camera /></el-icon>
-            <span class = "alter-head-text">拍摄照片</span>
-          </el-button>
-        </el-col>
-        <el-col span="1">
-          <el-divider direction="vertical" class="vertical-divider" />
-        </el-col>
-        <el-col span="11">
-          <el-avatar
-            :src="avatar.url"
-            :size="100"
-            shape="square"
-            fit="cover"
-            class="user-avatar"
-            style="margin:50px"
-          />
-        </el-col>
-      </el-row>
-      <span slot="footer" class="dialog-footer" style="margin-left: 42%;margin-top: 40px;">
-        <el-button @click="dialogVisible = false" style="width:100px">更 新</el-button>
-      </span>
-    </el-dialog>
 
     <el-divider style="margin: 0" />
     <el-table :data="tableData" style="width: 100%" :show-header="false">
@@ -218,6 +292,7 @@ onBeforeUnmount(() => {
         </template>
       </el-table-column>
     </el-table>
+
   </el-card>
   <el-card style="max-width: 800px; margin-top: 45px; user-select: none">
     <div class="card-header">
@@ -281,6 +356,28 @@ onBeforeUnmount(() => {
       <el-button type="primary" @click="handleSaveConfirm('confirm')">保存</el-button>
     </span>
   </el-dialog>
+
+
+  <el-dialog
+      title="选择日期"
+      v-model="editBirth"
+      width="300px"
+  >
+    <div style="display: flex;margin-top:15px;flex-direction: column;align-items: center;margin-bottom: 30px;">
+      <el-date-picker
+          v-model="birthTime"
+          type="date"
+          placeholder="Pick a day"
+          style="width: 100%;"
+      />
+    </div>
+
+    <span slot="footer" style="display: flex;justify-content: center;gap: 20px;margin-top: 20px;">
+      <el-button @click="editBirth = false">取消</el-button>
+      <el-button type="primary" @click="updateDate">确定</el-button>
+    </span>
+  </el-dialog>
+
 </template>
 
 <style scoped>
