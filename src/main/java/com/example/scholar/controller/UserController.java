@@ -346,6 +346,28 @@ public class UserController {
             }
         }
 
+    @PostMapping(value = "/updateUser")
+    @ApiOperation("修改User接口")
+    public R updateUser(
+            @RequestHeader("Authorization") String token,
+            @RequestBody User user) {
+        try {
+            CheckResult checkResult = JwtUtils.validateJWT(token);
+            if (!checkResult.isSuccess()) {
+                return R.error("Token无效或已过期");
+            }
+            Claims claims = checkResult.getClaims();
+            int userId = Integer.parseInt(claims.getId());
+            user.setUserid(userId);
+
+            System.out.println(user);
+            userMapper.updateUser(user);
+            return R.ok("用户修改成功");
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
     @RequestMapping(value = "/updatePassword")
     @ApiOperation("后台强制修改密码接口")
     public R updatePassword(

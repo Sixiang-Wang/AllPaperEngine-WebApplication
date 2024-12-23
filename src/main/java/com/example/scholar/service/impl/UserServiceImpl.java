@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectUserById(userId);
         List<List<HashMap<String, Object>>> res = new ArrayList<>();
         List<HashMap<String, Object>> tableData1 = new ArrayList<>();
-        for(int i=0;i<3;i++){
+        for(int i=0;i<2;i++){
             HashMap<String, Object> tmp = new HashMap<>();
             tmp.put("feature", ConstDef.constTable1.get(i));
             switch (i){
@@ -183,9 +183,6 @@ public class UserServiceImpl implements UserService {
                     break;
                 case 1:
                     tmp.put("value", user.getBirthTime());
-                    break;
-                case 2:
-                    tmp.put("value","男");//好像没性别捏
                     break;
             }
             tmp.put("editable", false);

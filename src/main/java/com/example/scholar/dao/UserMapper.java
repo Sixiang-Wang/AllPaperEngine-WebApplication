@@ -37,8 +37,25 @@ public interface UserMapper {
     @Options(useGeneratedKeys = true, keyProperty = "userid")
     int insertUser(User user);
 
-    @Update("UPDATE user SET name = #{name}, mail = #{mail}, birthTime = #{birthTime}, phone = #{phone}, company = #{company}, academicField = #{academicField}, profession = #{profession}, biography = #{biography} WHERE userid = #{userid}")
+    @Update({
+            "<script>",
+            "UPDATE user",
+            "<set>",
+            "  <if test='name != null and name != \"\"'>name = #{name},</if>",
+            "  <if test='mail != null and mail != \"\"'>mail = #{mail},</if>",
+            "  <if test='birthTime != null'>birthTime = #{birthTime},</if>",
+            "  <if test='phone != null and phone != \"\"'>phone = #{phone},</if>",
+            "  <if test='company != null and company != \"\"'>company = #{company},</if>",
+            "  <if test='academicField != null and academicField != \"\"'>academicField = #{academicField},</if>",
+            "  <if test='profession != null and profession != \"\"'>profession = #{profession},</if>",
+            "  <if test='biography != null and biography != \"\"'>biography = #{biography},</if>",
+            "</set>",
+            "WHERE userid = #{userid}",
+            "</script>"
+    })
     int updateUser(User user);
+
+
 
     @Update("UPDATE user SET role=#{role} WHERE userid = #{userid}")
     int updateUserRole(User user);
