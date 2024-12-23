@@ -1,13 +1,15 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref,reactive } from "vue";
+import {onMounted, onBeforeUnmount, ref, reactive, computed} from "vue";
 import { ArrowRight,Picture,Camera } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
+import http from "@/api/http.js";
+import {ElMessage} from "element-plus";
 
-const avatar = ref({
-  defaultAvatar: defaultAvatar,
-  url: defaultAvatar,
+const avatarUrl = computed(()=>{
+  const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
+  return http.getUrlWithoutSlash() + avatar;
 });
 
 const dialogVisible = ref(false);
@@ -19,35 +21,36 @@ const openDialog = () => {
 const tableData = ref([
   {
     feature: "姓名",
-    value: "Albert Einstein",
+    english: "name",
+    value: "",
     editable: false,
   },
   {
     feature: "生日",
-    value: "1897-03-14",
+    english: 'birthTime',
+    value: "",
     editable: false,
-  },
-  {
-    feature: "性别",
-    value: "男",
-    editable: false,
-  },
+  }
 ]);
+const birthTime = ref("");
 
 const tableData2 = ref([
   {
     feature: "学术领域",
-    value: "理论物理",
+    english: 'academicField',
+    value: "",
     editable: false,
   },
   {
     feature: "在职单位",
-    value: "普林斯顿高等研究院",
+    english: 'company',
+    value: "",
     editable: false,
   },
   {
     feature: "职业",
-    value: "教授",
+    english: 'profession',
+    value: "",
     editable: false,
   },
 ]);
@@ -55,12 +58,14 @@ const tableData2 = ref([
 const tableData3 = ref([
   {
     feature: "电子邮件",
-    value: "0d000721@163.com",
+    english: 'mail',
+    value: "",
     editable: false,
   },
   {
     feature: "电话",
-    value: "12345678910",
+    english: 'phone',
+    value: "",
     editable: false,
   },
 ]);
@@ -69,9 +74,27 @@ onMounted(async()=>{
     const res = await httpUtil.get('/user/getUserInfo',{},{
       Authorization: cookieUtil.getCookie("token")
     })
-    tableData.value = res.data.tables[0];
-    tableData2.value = res.data.tables[1];
-    tableData3.value = res.data.tables[2];
+    console.log(res.data);
+
+
+    tableData.value = tableData.value.map((row, index) => ({
+      ...row,
+      value: res.data.tables[0][index]?.value || row.value, // 更新 value
+    }));
+
+    birthTime.value = res.data.tables[0][1]
+
+    tableData2.value = tableData2.value.map((row, index) => ({
+      ...row,
+      value: res.data.tables[1][index]?.value || row.value,
+    }));
+
+    tableData3.value = tableData3.value.map((row, index) => ({
+      ...row,
+      value: res.data.tables[2][index]?.value || row.value,
+    }));
+
+
   }catch (e){
     console.error(e);
   }
@@ -84,6 +107,7 @@ let changedData = [...allTables].map(table => [...table.value]);
 const dataChanged = ref(false);
 
 const updateEditable = (row) => {
+  console.log(tableData.value);
   if (activeRow.value === row) {
     row.editable = !row.editable;
   } else {
@@ -124,18 +148,52 @@ const handleClickOutside = (event) => {
   }
 };
 
-const handleSaveConfirm = (action) => {
+const handleSaveConfirm = async (action) => {
   saveConfirmVisible.value = false;
   if (action === 'confirm') {
     // 用户选择保存
     allTables.forEach((table, index) => {
       table.value = changedData[index].map(rowData => allTables[index].value.find(row => row.feature === rowData.feature) || { ...rowData, editable: false });
     });
+    const allData = allTables.flatMap(table => table.value);
+
+    const user = {};
+    allData.forEach(row => {
+      user[row.english] = row.value; // 动态生成 User 对象属性
+    });
+
+
+    console.log("发送到后端的用户数据:", user);
+
+// 发起请求
+    const res = await httpUtil.postWithHeader('/user/updateUser', user, {
+      Authorization: cookieUtil.getCookie("token")
+    });
+    if(res.code === 200) {
+      ElMessage.success("修改成功!")
+    }
+
   } else {
     // 用户选择取消
-    allTables.forEach((table, index) => {
-      table.value = originalData[index].map(row => ({ ...row, editable: false }));
-    });
+    const res = await httpUtil.get('/user/getUserInfo',{},{
+      Authorization: cookieUtil.getCookie("token")
+    })
+
+    tableData.value = res.data.tables[0].map(row => ({
+      ...row,
+      english: row.english || '' // 确保每行都包含 `english`
+    }));
+
+    tableData2.value = res.data.tables[1].map(row => ({
+      ...row,
+      english: row.english || ''
+    }));
+
+    tableData3.value = res.data.tables[2].map(row => ({
+      ...row,
+      english: row.english || ''
+    }));
+
     activeRow.value = null;
     dataChanged.value = false;
   }
@@ -160,7 +218,7 @@ onBeforeUnmount(() => {
     <div style="display: flex; align-items: center;">
       <p class="text-item">个人资料照片</p>
       <el-avatar
-          :src="avatar.url"
+          :src="avatarUrl"
           :size="70"
           shape="square"
           fit="cover"
@@ -218,6 +276,7 @@ onBeforeUnmount(() => {
         </template>
       </el-table-column>
     </el-table>
+
   </el-card>
   <el-card style="max-width: 800px; margin-top: 45px; user-select: none">
     <div class="card-header">
