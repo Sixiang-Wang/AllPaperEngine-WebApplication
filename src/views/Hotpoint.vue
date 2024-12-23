@@ -25,12 +25,14 @@
             </el-select>
           </el-collapse-item>
         </el-collapse>
+        <div class="chart-buttons" style="margin-top: 20px;">
+          <el-button @click="analyzeHotspot()" type="primary" style="width: 100%;">分析该领域热点</el-button>
+          <el-button @click="exportToPDF" style="width: 100%; margin-top: 10px; margin-left: 0;" type="primary">导出PDF图表</el-button>
+          <el-button @click="exportToExcel" style="width: 100%; margin-top: 10px; margin-left: 0;" type="primary">导出表格</el-button>
+        </div>
       </el-aside>
 
       <el-main>
-        <div class="chart-buttons">
-          <el-button @click="analyzeHotspot()">分析该领域热点</el-button>
-        </div>
 
         <div v-if="showChart.pie" class="table-container" style="margin-bottom: 60px">
           <el-table :data="sortedWordCloudData" style="width: 100%" border>
@@ -84,7 +86,6 @@ const fetchWordCloudData = async () => {
     wordCloudData.value = fetchedWordCloudData.value;
 
     updateChartData();
-
 
     console.log(fetchedWordCloudData.value);
   } catch (error) {
@@ -168,6 +169,7 @@ const onFieldChange = (field) => {
 };
 
 const analyzeHotspot = async () => {
+
   const charts = ['bar', 'line', 'pie'];
 
   // 先获取数据
@@ -377,52 +379,55 @@ const getTableData = () => {
 };
 
 const exportToPDF = () => {
-  let exportContent;
+  // 获取所有图表元素
+  const chartElements = [
+    document.getElementById('barChartCanvas'),  // 条形图
+    document.getElementById('lineChartCanvas'), // 折线图
+    document.getElementById('pieChartCanvas')   // 饼图
+  ];
 
-  // 根据选中的图表类型获取对应的图表元素
-  if (showChart.value === 'bar') {
-    exportContent = document.getElementById('barChartCanvas');
-  } else if (showChart.value === 'line') {
-    exportContent = document.getElementById('lineChartCanvas');
-  } else if (showChart.value === 'pie') {
-    exportContent = document.getElementById('pieChartCanvas');
-  } else {
-    // 如果没有选择任何图表，则提示用户
-    alert("请先选择一个图表类型！");
-    return;
-  }
+  // 创建一个新的 jsPDF 实例
+  const pdf = new jsPDF();
 
-  // 使用 html2canvas 将图表渲染为图片
-  if (!exportContent) {
-    console.error('未找到需要导出的内容');
-    return;
-  }
+  // 设置边距
+  const margin = 10;
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  
+  // 遍历所有图表，依次导出每个图表
+  chartElements.forEach((chartElement, index) => {
+    if (chartElement) {
+      html2canvas(chartElement).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = pdf.getImageProperties(imgData);
+        
+        // 计算每个图表的高度，保持比例
+        const scaledWidth = pdfWidth - 2 * margin; // 缩放后的图片宽度
+        const scaledHeight = (imgProps.height * scaledWidth) / imgProps.width; // 保持比例计算高度
+        
+        // 根据当前页，计算图片的y坐标
+        const yPosition = margin + (index === 0 ? 0 : 10); // 给每个图表之间留一些间距
 
-  html2canvas(exportContent).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF();
+        // 如果不是第一页，添加新的页面
+        if (index > 0) {
+          pdf.addPage();
+        }
 
-    // 获取图片的属性（如宽度和高度）
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        // 将图片添加到 PDF 中
+        pdf.addImage(imgData, 'PNG', margin, yPosition, scaledWidth, scaledHeight);
 
-    // 根据PDF尺寸调整图片大小和位置，确保图片居中显示且保持比例
-    const margin = 10; // 设置边距为10mm
-    const scaledWidth = pdfWidth - 2 * margin; // 计算缩放后的图片宽度
-    const scaledHeight = (imgProps.height * scaledWidth) / imgProps.width; // 保持图片比例计算高度
-    const xPosition = margin; // 图片在PDF中的x坐标
-    const yPosition = (pdf.internal.pageSize.getHeight() - scaledHeight) / 2; // 图片在PDF中居中显示的y坐标
-
-    // 将图片添加到PDF中，并保持比例
-    pdf.addImage(imgData, 'PNG', xPosition, yPosition, scaledWidth, scaledHeight);
-    pdf.save('chart.pdf');
-    console.log('成功导出为 PDF');
-  }).catch(error => {
-    console.error('导出PDF时发生错误:', error);
+        // 最后保存 PDF
+        if (index === chartElements.length - 1) {
+          pdf.save('charts.pdf');
+          console.log('成功导出为 PDF');
+        }
+      }).catch(error => {
+        console.error('导出 PDF 时发生错误:', error);
+      });
+    } else {
+      console.error(`图表元素 #${index + 1} 未找到`);
+    }
   });
 };
-
 
 </script>
 
