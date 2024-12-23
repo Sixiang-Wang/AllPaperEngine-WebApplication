@@ -509,7 +509,6 @@ public class UserController {
     public R addUserFavorite(
             @RequestBody AddUserFavoriteDto addUserFavoriteDto) {  // 修改为 @RequestBody
         try {
-
             HashMap<String, Object> resultMap = userService.addUserFavorite(addUserFavoriteDto.getUserId(), addUserFavoriteDto.getPublicationId(), addUserFavoriteDto.getTags());
 
             if ("收藏添加成功".equals(resultMap.get("msg"))) {

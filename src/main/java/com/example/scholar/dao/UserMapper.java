@@ -51,7 +51,7 @@ public interface UserMapper {
     int updatePassword(int userId,String password);
 
     // 查看某个ID对应的标题
-    @Select("SELECT title FROM openalex_works WHERE id = #{publicationId}")
+    @Select("SELECT title FROM works WHERE id = #{publicationId}")
     String selectPublicationTitle(String publicationId);
 
     // 创建标签
