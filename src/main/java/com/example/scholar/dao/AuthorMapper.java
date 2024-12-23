@@ -29,7 +29,7 @@ public interface AuthorMapper {
     @Update("UPDATE openalex.authors set highQualityWorkCount = #{size},Hnumber = #{hNumber},isInitialized = true, firstPublishCount=#{firstCount} where id = #{authorId}")
     void insertIntoHighQualityWorksCount(String authorId, int size,int hNumber,int firstCount);
 
-    @Select("SELECT work_id FROM openalex.works_authorships WHERE author_id = #{authorId} AND author_position = 'first'")
+    @Select("SELECT work_id FROM openalex.works_authorships WHERE author_id = #{authorId} AND author_position like 'first'")
     List<String> getWorkIdsByFirstAuthorId(String authorId);
     @Select("select * from openalex.authors where display_name LIKE CONCAT('%', #{name}, '%')")
     List<Author> getAuthorsByName(String name);

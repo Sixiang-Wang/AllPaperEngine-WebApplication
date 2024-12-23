@@ -9,6 +9,7 @@ import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
 import com.example.scholar.dto.InstitutionsResultDto;
 import com.example.scholar.dto.WorkAuthorResultDto;
+import com.example.scholar.service.AdminService;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.util.AuthorNameRestore;
 import com.example.scholar.util.JsonDisposer;
@@ -30,6 +31,12 @@ public class AuthorServiceImpl implements AuthorService {
     private WorkMapper workMapper;
     @Resource
     private InstitutionMapper institutionMapper;
+
+    @Override
+    public Author getAuthorById(String id) {
+        return authorMapper.selectAuthorById(id);
+    }
+
     @Override
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {
         List<AuthorShips> authorships = authorMapper.selectAuthorsById(workId);
@@ -46,7 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
                     if (author != null) {
                         AuthorResultDto authorResultDto = new AuthorResultDto();
                         if (author.getDisplayNameAlternatives() != null) {
-                            authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
+                            authorResultDto.setAuthorName(author.getDisplayName());
                         }
                         if (author.getId() != null) {
                             authorResultDto.setAuthorId(author.getId());
@@ -129,7 +136,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
 
-    }
+
 
     @Override
     public int getCitedCountByAuthorId(String authorId) {
@@ -160,7 +167,7 @@ public class AuthorServiceImpl implements AuthorService {
         return i;
     }
 
-    }
+
 
     @Override
     public List<Work> getFirstPublishWorkByAuthorId(String authorId) {
@@ -206,7 +213,7 @@ public class AuthorServiceImpl implements AuthorService {
         for (Author author : list) {
             AuthorResultDto authorResultDto = new AuthorResultDto();
             authorResultDto.setAuthorId(author.getId());
-            authorResultDto.setAuthorName(AuthorNameRestore.restoreAuthorName(author.getDisplayNameAlternatives()));
+            authorResultDto.setAuthorName(author.getDisplayName());
             authorResultDto.setWorksCount(author.getWorksCount());
             authorResultDto.setCitedByCount(author.getCitedByCount());
             authorResultDto.setWorksApiUrl(author.getWorksApiUrl());
