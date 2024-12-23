@@ -5,6 +5,7 @@ import {useRoute} from "vue-router";
 const props = defineProps({
   id: String,
   title: String,
+  date: String
 })
 const route = useRoute();
 const goToPaper = (id)=>{
@@ -17,6 +18,7 @@ const goToPaper = (id)=>{
   <div>
     <el-divider/>
     <span class="recommend-text" @click="goToPaper(id)">{{ props.title }}</span>
+    <span class="recommend-date">{{ props.date }}</span>
   </div>
 </template>
 
@@ -36,5 +38,10 @@ const goToPaper = (id)=>{
   color: #1F578F;
   cursor: pointer;
   text-decoration-line: underline;
+}
+.recommend-date {
+  color: #7a7a7a;
+  font-size: 12px;
+  margin-top: 1%;
 }
 </style>

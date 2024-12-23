@@ -71,6 +71,9 @@ onMounted(async() =>{
     button_index.value = "退出";
   }
   try{
+    if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token")===''){
+      return;
+    }
     const res = await httpUtil.get('/message/isRedPoint',{},{Authorization: cookieUtil.getCookie("token")});
     isRedPoint.value = res.data.isRed;
   }catch (e){
@@ -80,6 +83,9 @@ onMounted(async() =>{
 })
 
 const preLogin = async ()=>{
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    return;
+  }
   const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
   console.log(res);
   userStore.setUsername(res.data.username);
@@ -137,6 +143,7 @@ const handleDrawer = ()=>{
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/hotpoint">热点分析</el-menu-item>
+    <el-menu-item index="/user/info">用户主页</el-menu-item>
     <el-menu-item index="5">联系我吗</el-menu-item>
     <div class="header-menu-right" >
       <div class="message-icon-container">

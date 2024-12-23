@@ -1,15 +1,15 @@
 // 引入axios
 import axios from 'axios';
 import store from '@/api/index.js'
-//let baseUrl = "http://localhost:1145/"
-let baseUrl="http://116.204.112.5:1145/";
+let baseUrl = "http://localhost:1145/"
+// let baseUrl="http://116.204.112.5:1145/";
 // 创建axios实例
 const httpService = axios.create({
   // url前缀-'http:xxx.xxx'
   // baseURL: process.env.BASE_API, // 需自定义
   baseURL:baseUrl,
   // 请求超时时间
-  timeout: 3000 // 需自定义
+  timeout: 9000 // 需自定义
 });
 
 //添加请求和响应拦截器

@@ -123,7 +123,7 @@ const getWork = async (workId) => {
     }
   } catch (error) {
     console.error("Failed to fetch data:", error);
-    title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
+    // title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
 
   }
 };
@@ -166,9 +166,11 @@ onMounted(async () => {
       commentNum.value = comments.value.length;
 
       //获取推荐
-      const resCommends = await httpUtil.get('/test/recommend');
+      const resCommends = await httpUtil.get('/suggest/works',{
+        id: workId
+      });
       console.log('获取'+resCommends.data)
-      recommends.value = resCommends.data.recommends;
+      recommends.value = resCommends.data.suggests;
       console.log(recommends.value);
     }
 )
@@ -493,7 +495,10 @@ const recommends = ref([]);
       <div class="left-part">
         <!-- Header Section -->
         <div class="header">
-          <h1 v-html="title"></h1>
+          <div v-if="title === ''">
+            <el-skeleton :rows="2" animated/>
+          </div>
+          <h1 v-else v-html="title"></h1>
 
           <p>
             <span v-for="(author, index) in auth" :key="index">
@@ -526,7 +531,10 @@ const recommends = ref([]);
         <div class="abstract">
           <strong>Abstract:</strong>
           <br>
-          <div v-html="abstract"></div>
+          <div v-if="abstract === ''">
+            <el-skeleton :rows="4" animated />
+          </div>
+          <div v-else v-html="abstract"></div>
         </div>
         <div class="option-part">
 
