@@ -74,9 +74,9 @@ const fetchWordCloudData = async () => {
   try {
     const response = await httpUtil.get('/hotspot/getTopicsWorksCount', {
       params: {
-        domain: selectedDomain.value,
-        field: selectedField.value,
-        subfield: selectedSubfield.value
+        domainDisplayName: selectedDomain.value,
+        fieldDisplayName: selectedField.value,
+        subfieldDisplayName: selectedSubfield.value
       }
     });
 
