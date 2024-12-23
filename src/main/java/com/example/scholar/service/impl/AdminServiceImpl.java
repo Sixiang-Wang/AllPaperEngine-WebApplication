@@ -73,6 +73,8 @@ public class AdminServiceImpl implements AdminService {
 
 
 
+
+
     //下面真用不着:(
 //    @Resource
 //    private UserApplicationMapper userApplicationMapper;
