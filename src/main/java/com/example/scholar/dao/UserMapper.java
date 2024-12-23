@@ -46,7 +46,7 @@ public interface UserMapper {
             "  <if test='birthTime != null'>birthTime = #{birthTime},</if>",
             "  <if test='phone != null and phone != \"\"'>phone = #{phone},</if>",
             "  <if test='company != null and company != \"\"'>company = #{company},</if>",
-            "  <if test='academicField != null and academicField != \"\"'>academicField = #{academicField},</if>",
+            "  <if test='academicField != null'>academicField = #{academicField},</if>",
             "  <if test='profession != null and profession != \"\"'>profession = #{profession},</if>",
             "  <if test='biography != null and biography != \"\"'>biography = #{biography},</if>",
             "</set>",

@@ -233,6 +233,7 @@ public class UserServiceImpl implements UserService {
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
+            return resultMap;
         }
         if(birthTime != null){
             existingUser.setBirthTime(birthTime);
