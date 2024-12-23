@@ -155,8 +155,6 @@ const subfieldOptionsMap = ref({
 const wordCloudRef = ref(null);
 const showChart = ref(''); // 默认不显示任何图表
 
-const filteredWordCloudData = ref(wordCloudData.value); // 默认显示全部数据
-
 // 选择状态
 const selectedDomain = ref('');
 const selectedField = ref('');
@@ -182,10 +180,10 @@ const onFieldChange = (field) => {
 
 // 图表数据
 const barChartData = ref({
-  labels: filteredWordCloudData.value.map(item => item.text),
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度',
-    data: filteredWordCloudData.value.map(item => item.size),
+    data: wordCloudData.value.map(item => item.size),
     backgroundColor: 'rgba(54, 162, 235, 0.2)',
     borderColor: 'rgba(54, 162, 235, 1)',
     borderWidth: 1
@@ -194,10 +192,10 @@ const barChartData = ref({
 
 
 const lineChartData = ref({
-  labels: filteredWordCloudData.value.map(item => item.text),
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
     label: '技术热度趋势',
-    data: filteredWordCloudData.value.map(item => item.size),
+    data: wordCloudData.value.map(item => item.size),
     fill: false,
     borderColor: 'rgba(75, 192, 192, 1)',
     tension: 0.1
@@ -205,9 +203,9 @@ const lineChartData = ref({
 });
 
 const pieChartData = ref({
-  labels: filteredWordCloudData.value.map(item => item.text),
+  labels: wordCloudData.value.map(item => item.text),
   datasets: [{
-    data: filteredWordCloudData.value.map(item => item.size),
+    data: wordCloudData.value.map(item => item.size),
     backgroundColor: generateColors(50),
     hoverBackgroundColor: generateColors(50)
   }]
@@ -225,41 +223,22 @@ function generateColors(count) {
   return colors;
 }
 
-const updateSelectedFilter = (category) => {
-  // 筛选出符合当前选择的学科的数据
-  if (category === "All") {
-    filteredWordCloudData.value = wordCloudData.value;
-  }
-  else {
-    filteredWordCloudData.value = wordCloudData.value.filter(
-      (item) => item.label === category
-    );
-  }
-
-  updateChartData();
-
-  // 重新渲染词云
-  nextTick(() => { 
-    renderWordCloud();
-  });
-};
-
 const updateChartData = () => {
-  barChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
-  barChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+  barChartData.value.labels = wordCloudData.value.map(item => item.text);
+  barChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
 
-  lineChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
-  lineChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+  lineChartData.value.labels = wordCloudData.value.map(item => item.text);
+  lineChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
 
-  pieChartData.value.labels = filteredWordCloudData.value.map(item => item.text);
-  pieChartData.value.datasets[0].data = filteredWordCloudData.value.map(item => item.size);
+  pieChartData.value.labels = wordCloudData.value.map(item => item.text);
+  pieChartData.value.datasets[0].data = wordCloudData.value.map(item => item.size);
 };
 
 // 渲染词云
 const renderWordCloud = () => {
   const layout = cloud()
     .size([window.innerWidth * 0.6, window.innerHeight * 0.6])
-    .words(filteredWordCloudData.value.map(word => ({ text: word.text, size: word.size })))
+    .words(wordCloudData.value.map(word => ({ text: word.text, size: word.size })))
     .font("Impact")
     .fontSize(d => Math.pow(d.size, 1.2))
     .rotate(() => Math.floor(Math.random() * 181) - 90)
@@ -380,7 +359,7 @@ const exportToExcel = () => {
 
 // 确保 getTableData 函数是通过 ref 或者直接暴露的
 const getTableData = () => {
-  return filteredWordCloudData.value.map(item => ({
+  return wordCloudData.value.map(item => ({
     技术名词: item.text,
     热度: item.size
   }));
