@@ -50,7 +50,8 @@ const handleOpen = (key, keyPath) => {
 const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
-const ifAuthentication = ref(localStorage.getItem("ifScholar"));
+const ifAuthentication = ref(localStorage.getItem("ifAuthentication"));
+console.log(ifAuthentication.value);
 </script>
 
 
