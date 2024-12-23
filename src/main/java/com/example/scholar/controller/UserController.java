@@ -206,7 +206,7 @@ public class UserController {
         @ApiOperation("修改用户生日接口")
         public R updateUserBirthTime(
                 @RequestHeader("Authorization") String token,  // 从请求头获取 JWT token
-                @RequestParam(required = false) LocalDate birthTime) {
+                @RequestParam(required = false) String birthTime) {
 
             try {
                 // 验证 token 并获取 userId
@@ -218,7 +218,9 @@ public class UserController {
                 Claims claims = checkResult.getClaims();
                 int userId = Integer.parseInt(claims.getId()); // 从 token 中提取 userId
 
-                HashMap<String, Object> resultMap = userService.updateUserBirthTime(userId, birthTime);
+
+                LocalDate date = LocalDate.parse(birthTime);
+                HashMap<String, Object> resultMap = userService.updateUserBirthTime(userId,date);
                 if ("用户生日更新成功".equals(resultMap.get("msg"))) {
                     return R.ok("用户生日更新成功");
                 } else {
@@ -345,6 +347,28 @@ public class UserController {
                 return R.error(e.toString());
             }
         }
+
+    @PostMapping(value = "/updateUser")
+    @ApiOperation("修改User接口")
+    public R updateUser(
+            @RequestHeader("Authorization") String token,
+            @RequestBody User user) {
+        try {
+            CheckResult checkResult = JwtUtils.validateJWT(token);
+            if (!checkResult.isSuccess()) {
+                return R.error("Token无效或已过期");
+            }
+            Claims claims = checkResult.getClaims();
+            int userId = Integer.parseInt(claims.getId());
+            user.setUserid(userId);
+
+            System.out.println(user);
+            userMapper.updateUser(user);
+            return R.ok("用户修改成功");
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
 
     @RequestMapping(value = "/updatePassword")
     @ApiOperation("后台强制修改密码接口")
@@ -509,7 +533,6 @@ public class UserController {
     public R addUserFavorite(
             @RequestBody AddUserFavoriteDto addUserFavoriteDto) {  // 修改为 @RequestBody
         try {
-
             HashMap<String, Object> resultMap = userService.addUserFavorite(addUserFavoriteDto.getUserId(), addUserFavoriteDto.getPublicationId(), addUserFavoriteDto.getTags());
 
             if ("收藏添加成功".equals(resultMap.get("msg"))) {

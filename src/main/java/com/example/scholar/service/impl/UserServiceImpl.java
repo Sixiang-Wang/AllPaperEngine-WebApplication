@@ -16,6 +16,8 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.example.scholar.config.SystemConst.tokenValidTime;
 
@@ -174,7 +176,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectUserById(userId);
         List<List<HashMap<String, Object>>> res = new ArrayList<>();
         List<HashMap<String, Object>> tableData1 = new ArrayList<>();
-        for(int i=0;i<3;i++){
+        for(int i=0;i<2;i++){
             HashMap<String, Object> tmp = new HashMap<>();
             tmp.put("feature", ConstDef.constTable1.get(i));
             switch (i){
@@ -183,9 +185,6 @@ public class UserServiceImpl implements UserService {
                     break;
                 case 1:
                     tmp.put("value", user.getBirthTime());
-                    break;
-                case 2:
-                    tmp.put("value","男");//好像没性别捏
                     break;
             }
             tmp.put("editable", false);
@@ -236,6 +235,7 @@ public class UserServiceImpl implements UserService {
         User existingUser = userMapper.selectUserById(userId);
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
+            return resultMap;
         }
         if(birthTime != null){
             existingUser.setBirthTime(birthTime);
@@ -552,7 +552,9 @@ public class UserServiceImpl implements UserService {
     public List<HashMap<String, Object>> viewAllFavoritesWithTags(int userId, List<String> tags) {
         List<HashMap<String, Object>> resultList = userMapper.findFavoritesWithAnyTags(userId, tags);
         for (HashMap<String, Object> favorite : resultList) {
-            favorite.put("title", userMapper.selectPublicationTitle(favorite.get("publicationid").toString()));
+            String wid = extractIdentifierFromUrl(favorite.get("publicationid").toString());
+            //String wid = "W2215230524";
+            favorite.put("title", userMapper.selectPublicationTitle(wid));
         }
         return resultList;
     }
@@ -624,6 +626,32 @@ public class UserServiceImpl implements UserService {
             resultMap.put("msg", "清空浏览历史失败");
         }
         return resultMap;
+    }
+
+    public static String extractIdentifierFromUrl(String input) {
+        // 首先检查是否已经是W开头的标识符
+        if (input != null && input.startsWith("W") && input.length() > 1 && isNumeric(input.substring(1))) {
+            return input;
+        }
+        Pattern pattern = Pattern.compile("/(W\\d+)");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            // 返回匹配到的第一个标识符
+            return matcher.group(1);
+        } else {
+            // 如果没有找到匹配项，则返回null
+            return null;
+        }
+    }
+
+    private static boolean isNumeric(String str) {
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
