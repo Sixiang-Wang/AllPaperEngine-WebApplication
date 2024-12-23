@@ -2,10 +2,7 @@ package com.example.scholar.repository;
 
 import com.example.scholar.domain.openalexElasticsearch.Works;
 import org.elasticsearch.client.ElasticsearchClient;
-import org.springframework.data.elasticsearch.annotations.Highlight;
-import org.springframework.data.elasticsearch.annotations.HighlightField;
-import org.springframework.data.elasticsearch.annotations.HighlightParameters;
-import org.springframework.data.elasticsearch.annotations.Query;
+import org.springframework.data.elasticsearch.annotations.*;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
@@ -25,8 +22,6 @@ public interface ElasticSearchRepository extends ElasticsearchRepository<Works, 
     @Highlight(
             fields = {
                     @HighlightField(name = "title"),
-//                    @HighlightField(name = "keywordsText"),
-//                    @HighlightField(name = "abstract")
             },
             parameters = @HighlightParameters(
                     preTags = {"<span style='color:red'>"},
@@ -34,8 +29,9 @@ public interface ElasticSearchRepository extends ElasticsearchRepository<Works, 
                     numberOfFragments = 0
             )
     )
-//    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstractText(String title, String keywords_text, String abstract_text);
     List<SearchHit<Works>> findByTitle(String title);
+//    List<SearchHit<Works>> findByTitleOrKeywordsTextOrAbstractText(String title, String keywords_text, String abstract_text);
+
 
 
 

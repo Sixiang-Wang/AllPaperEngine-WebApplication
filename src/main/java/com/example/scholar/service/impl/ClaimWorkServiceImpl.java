@@ -78,7 +78,7 @@ public class ClaimWorkServiceImpl implements ClaimWorkService {
             List<WorkAuthorResultDto> authorList = authorService.getAuthorsByWorkId(userClaimedWork.getWorkId());
             List<String> authorNameList=new ArrayList<>();
             for(WorkAuthorResultDto workAuthorResultDto:authorList){
-                authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName().get(0));
+                authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName());
             }
             claimResult.setAuthorList(authorNameList);
             claimResultList.add(claimResult);

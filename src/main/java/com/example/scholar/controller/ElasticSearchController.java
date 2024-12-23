@@ -17,8 +17,18 @@ public class ElasticSearchController {
     @Resource
     private ElasticWorkService elasticWorkService;
 
+    @GetMapping(value="/works/getByTitleTest")
+    public R getWorksByTtile(@RequestParam("title") String title){
+        try{
+            return R.ok().put("works",elasticWorkService.searchByTitleTest(title));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
     @GetMapping(value="/works/getByTitle")
-    public R getConceptsByWorkId(@RequestParam("title") String title){
+    public R getWorksByTitle(@RequestParam("title") String title){
         try{
             return R.ok().put("works",elasticWorkService.searchByTitle(title));
         }catch (Exception e){

@@ -108,7 +108,7 @@ public class ComplaintServiceImpl implements ComplaintService {
             List<WorkAuthorResultDto> authorList = authorService.getAuthorsByWorkId(complaint.getWorkId());
             List<String> authorNameList=new ArrayList<>();
             for(WorkAuthorResultDto workAuthorResultDto:authorList){
-                authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName().get(0));
+                authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName());
             }
 
             allComplaint.setAuthList(authorNameList);

@@ -8,5 +8,5 @@ import java.util.Map;
 public class WorkAuthorResultDto {
     private String position;
     private AuthorResultDto authorResultDto;
-    private Map<String,InstitutionsResultDto> institutions;
+    private String institutionId;
 }

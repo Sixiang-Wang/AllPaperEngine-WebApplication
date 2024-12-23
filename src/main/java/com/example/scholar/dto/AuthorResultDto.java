@@ -6,7 +6,7 @@ import java.util.ArrayList;
 @Data
 public class AuthorResultDto {
     private String authorId;
-    private ArrayList<String> authorName;
+    private String authorName;
     private int worksCount;
     private int citedByCount;
     private String worksApiUrl;

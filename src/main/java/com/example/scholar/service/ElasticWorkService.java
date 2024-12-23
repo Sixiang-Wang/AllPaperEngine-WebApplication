@@ -22,6 +22,8 @@ public interface ElasticWorkService {
      * @param title 标题
      * @return 返回高亮显示的结果集
      */
+    List<SearchHit<Works>> searchByTitleTest(String title);
+
     List<SearchHit<Works>> searchByTitle(String title);
 
     int getLenthOfFindTitleOrKeywordsTextOrAbstract(String searchTerm);

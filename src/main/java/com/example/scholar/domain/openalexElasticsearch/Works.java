@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "openalex_works_index")
+@Document(indexName = "works_index")
 @Data
 public class Works {
 

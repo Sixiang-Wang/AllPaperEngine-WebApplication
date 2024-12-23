@@ -42,6 +42,16 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     @Resource
     private SearchedWorkMapper elasticWorkMapper;
 
+
+    @Override
+    public List<SearchHit<Works>> searchByTitleTest(String title) {
+        List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
+//        List<Works> worksList = searchHits.stream()
+//                .map(SearchHit::getContent)
+//                .collect(Collectors.toList());
+        return searchHits;
+    }
+
     @Override
     public List<SearchHit<Works>> searchByTitle(String title) {
         List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
