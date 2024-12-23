@@ -61,7 +61,7 @@ import { Chart, registerables } from 'chart.js';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import axios from "axios";
+import httpUtil from "@/api/http.js";
 
 Chart.register(...registerables);
 
@@ -70,6 +70,7 @@ const apiUrl = "http://116.204.112.5:1145/hotspot/getTopicsWorksCount";
 const fetchedWordCloudData = ref([]);
 
 const fetchWordCloudData = async () => {
+  console.log("获取词云数据...");
   try {
     const response = await httpUtil.get('/hotspot/getTopicsWorksCount', {
       params: {
@@ -118,11 +119,36 @@ const fieldOptionsMap = ref({
 });
 
 const subfieldOptionsMap = ref({
+  // Life Sciences
   Neuroscience: ['Neurology', 'Behavioral Neuroscience', 'Sensory Systems', 'Cognitive Neuroscience', 'Biological Psychiatry', 'Endocrine and Autonomic Systems', 'Cellular and Molecular Neuroscience', 'Developmental Neuroscience'],
   'Immunology and Microbiology': ['Applied Microbiology and Biotechnology', 'Parasitology', 'Immunology', 'Microbiology', 'Virology'],
   'Agricultural and Biological Sciences': ['Aquatic Science', 'Insect Science', 'Plant Science', 'Soil Science', 'Food Science', 'Horticulture', 'Ecology, Evolution', 'Animal Science and Zoology', 'General Agricultural and Biological Sciences', 'Forestry', 'Agronomy and Crop Science'],
   'Biochemistry, Genetics and Molecular Biology': ['Biotechnology', 'Molecular Biology', 'Structural Biology', 'Clinical Biochemistry', 'Biochemistry', 'Biophysics', 'Cell Biology', 'Aging', 'Cancer Research', 'Genetics', 'Physiology', 'Molecular Medicine', 'Developmental Biology', 'Endocrinology', ],
-  'Pharmacology, Toxicology and Pharmaceutics': ['Toxicology', 'Pharmaceutical Science'],
+  'Pharmacology, Toxicology and Pharmaceutics': ['Toxicology', 'Pharmaceutical Science', 'Pharmacology', 'Drug Discovery'],
+  // Physical Sciences
+  Engineering: ['Ocean Engineering', 'Architecture', 'Mechanics of Materials', 'Industrial and Manufacturing Engineering', 'General Engineering', 'Safety, Risk, Reliability and Quality', 'Control and Systems Engineering', 'Biomedical Engineering', 'Building and Construction', 'Electrical and Electronic Engineering', 'Civil and Structural Engineering','Media Technology', 'Automotive Engineering', 'Aerospace Engineering', 'Mechanical Engineering', 'Computational Mechanics'],
+  'Materials Science': ['Materials Chemistry', 'Electronic, Optical and Magnetic Materials', 'Surfaces, Coatings and Films', 'Metals and Alloys', 'Ceramics and Composites', 'General Materials Science', 'Polymers and Plastics', 'Biomaterials'],
+  Chemistry: ['Spectroscopy', 'Analytical Chemistry', 'Electrochemistry', 'Inorganic Chemistry', 'Physical and Theoretical Chemistry', 'Organic Chemistry'],
+  Energy: ['Energy Engineering and Power Technology', 'General Energy', 'Fuel Technology', 'Nuclear Energy and Engineering', 'Renewable Energy, Sustainability and the Environment'],
+  'Physics and Astronomy': ['Condensed Matter Physics', 'Atomic and Molecular Physics, and Optics', 'Statistical and Nonlinear Physics', 'Acoustics and Ultrasonics', 'Nuclear and High Energy Physics', 'Astronomy and Astrophysics', 'Radiation', 'Instrumentation'],
+  'Earth and Planetary Sciences': ['Geology', 'Geochemistry and Petrology', 'Geophysics', 'Atmospheric Science', 'Earth-Surface Processes', 'Oceanography', 'Paleontology'],
+  'Computer Science': ['Computational Theory and Mathematics', 'Computer Science Applications', 'Artificial Intelligence', 'Information Systems', 'Computer Vision and Pattern Recognition', 'Hardware and Architecture', 'Software', 'Computer Graphics and Computer-Aided Design', 'Computer Networks and Communications', 'Human-Computer Interaction', 'Signal Processing'],
+  Mathematics: ['Modeling and Simulation', 'Computational Mathematics', 'Algebra and Number Theory', 'Mathematical Physics', 'Theoretical Computer Science', 'Numerical Analysis', 'Geometry and Topology', 'Statistics and Probability', 'Applied Mathematics', 'Discrete Mathematics and Combinatorics'],
+  'Environmental Science': ['Pollution', 'Health', 'Water Science and Technology', 'Industrial and Manufacturing Engineering', 'Environmental Engineering', 'Management, Monitoring, Policy and Law', 'Ecology', 'Global and Planetary Change', 'Ecological Modeling', 'Nature and Landscape Conservation', 'Environmental Chemistry'],
+  'Chemical Engineering': ['Process Chemistry and Technology', 'Bioengineering', 'Chemical Health and Safety', 'Fluid Flow and Transfer Processes', 'Catalysis', 'Filtration and Separation'],
+  // Social Sciences
+  'Social Sciences': ['Political Science and International Relations', 'Law', 'Demography', 'Safety Research', 'Health', 'Human Factors and Ergonomics', 'Transportation', 'Gender Studies', 'Geography, Planning and Development', 'Library and Information Sciences', 'Anthropology', 'Linguistics and Language', 'General Social Sciences', 'Life-span and Life-course Studies', 'Archeology', 'Cultural Studies', 'Education', 'Development', 'Urban Studies', 'Sociology and Political Science', 'Public Administration', 'Communication'],
+  'Decision Sciences': ['General Decision Sciences', 'Management Science and Operations Research', 'Statistics, Probability and Uncertainty', 'Information Systems and Management'],
+  Psychology: ['Developmental and Educational Psychology', 'Experimental and Cognitive Psychology', 'General Psychology', 'Clinical Psychology', 'Neuropsychology and Physiological Psychology', 'Applied Psychology', 'Social Psychology'],
+  'Economics, Econometrics and Finance': ['General Economics, Econometrics and Finance', 'Finance', 'Economics and Econometrics'],
+  'Business, Management and Accounting': ['Organizational Behavior and Human Resource Management', 'Management of Technology and Innovation', 'Industrial relations', 'Management Information Systems', 'Accounting', 'Tourism, Leisure and Hospitality Management', 'Strategy and Management', 'Business and International Management', 'Marketing'],
+  'Arts and Humanities': ['Classics', 'History and Philosophy of Science', 'Literature and Literary Theory', 'Conservation', 'Visual Arts and Performing Arts', 'History', 'Religious studies', 'General Arts and Humanities', 'Archeology', 'Music', 'Museology', 'Philosophy', 'Language and Linguistics'],
+  // Health Sciences
+  Medicine: ['Nephrology', 'Microbiology', 'Oncology', 'Transplantation', 'Otorhinolaryngology', 'Biochemistry', 'Public Health', 'Radiology', 'Epidemiology', 'Urology', 'Obstetrics and Gynecology', 'Orthopedics and Sports Medicine', 'Surgery', 'Hepatology', 'Gastroenterology', 'Genetics', 'Physiology', 'Ophthalmology', 'Pulmonary and Respiratory Medicine', 'Anesthesiology and Pain Medicine', 'Pediatrics, Perinatology and Child Health', 'Complementary and alternative medicine', 'Emergency Medicine', 'Hematology', 'Dermatology', 'Pathology and Forensic Medicine', 'Rheumatology', 'Health Informatics', 'Internal Medicine', 'Psychiatry and Mental health', 'Pharmacology', 'Endocrinology, Diabetes and Metabolism', 'Anatomy', 'Geriatrics and Gerontology', 'Neurology', 'Critical Care and Intensive Care Medicine', 'Family Practice', 'Infectious Diseases', 'Rehabilitation', 'Cardiology and Cardiovascular Medicine', 'Immunology and Allergy', 'Reproductive Medicine'],
+  Nursing: ['Issues, ethics and legal aspects', 'Research and Theory', 'Nutrition and Dietetics', 'Leadership and Management'],
+  'Health Professions': ['Occupational Therapy', 'Speech and Hearing', 'Complementary and Manual Therapy', 'Radiological and Ultrasound Technology', 'General Health Professions', 'Medical Laboratory Technology', 'Pharmacy', 'Health Information Management', 'Emergency Medical Services', 'Physical Therapy, Sports Therapy and Rehabilitation', 'Medical Terminology'],
+  Dentistry: ['Periodontics', 'General Dentistry', 'Oral Surgery', 'Orthodontics'],
+  Veterinary: ['Small Animals', 'Equine'],
 });
 
 // 用于绑定到 DOM 元素的 ref
