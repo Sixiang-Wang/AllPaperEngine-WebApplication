@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onBeforeUnmount, ref, reactive, computed} from "vue";
+import {onMounted, onBeforeUnmount, ref, reactive, computed, nextTick} from "vue";
 import { ArrowRight,Picture,Camera } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 import * as httpUtil from "@/api/http.js";
@@ -71,28 +71,7 @@ const tableData3 = ref([
 ]);
 onMounted(async()=>{
   try{
-    const res = await httpUtil.get('/user/getUserInfo',{},{
-      Authorization: cookieUtil.getCookie("token")
-    })
-    console.log(res.data);
-
-
-    tableData.value = tableData.value.map((row, index) => ({
-      ...row,
-      value: res.data.tables[0][index]?.value || row.value, // 更新 value
-    }));
-
-    birthTime.value = res.data.tables[0][1]
-
-    tableData2.value = tableData2.value.map((row, index) => ({
-      ...row,
-      value: res.data.tables[1][index]?.value || row.value,
-    }));
-
-    tableData3.value = tableData3.value.map((row, index) => ({
-      ...row,
-      value: res.data.tables[2][index]?.value || row.value,
-    }));
+    await getUserData()
 
 
   }catch (e){
@@ -105,15 +84,28 @@ const saveConfirmVisible = ref(false);
 let originalData = allTables.map(table => JSON.parse(JSON.stringify(table.value)));
 let changedData = [...allTables].map(table => [...table.value]);
 const dataChanged = ref(false);
+const editBirth = ref(false);
 
 const updateEditable = (row) => {
   console.log(tableData.value);
+
   if (activeRow.value === row) {
-    row.editable = !row.editable;
+    if(row.english!=='birthTime'){
+      row.editable = !row.editable;
+    }
+
   } else {
     if (activeRow.value) activeRow.value.editable = false; // 关闭上一个活动行
-    row.editable = true; // 激活当前行
+    if(row.english!=='birthTime'){
+      row.editable = true; // 激活当前行
+    }
     activeRow.value = row; // 更新活动行
+  }
+
+  if(row.english==='birthTime'){
+    editBirth.value = true;
+    birthTime.value = row.value
+    return
   }
 
   // 检查当前行的数据是否已被修改
@@ -133,6 +125,9 @@ const updateEditable = (row) => {
 };
 
 const handleClickOutside = (event) => {
+  if(activeRow.value.english==='birthTime'){
+    return
+  }
   const target = event.target;
   const isOutside = !target.closest(".el-table"); // 检查是否在表格外部点击
   if (isOutside && activeRow.value) {
@@ -175,28 +170,55 @@ const handleSaveConfirm = async (action) => {
 
   } else {
     // 用户选择取消
-    const res = await httpUtil.get('/user/getUserInfo',{},{
-      Authorization: cookieUtil.getCookie("token")
-    })
-
-    tableData.value = res.data.tables[0].map(row => ({
-      ...row,
-      english: row.english || '' // 确保每行都包含 `english`
-    }));
-
-    tableData2.value = res.data.tables[1].map(row => ({
-      ...row,
-      english: row.english || ''
-    }));
-
-    tableData3.value = res.data.tables[2].map(row => ({
-      ...row,
-      english: row.english || ''
-    }));
+    await getUserData()
 
     activeRow.value = null;
     dataChanged.value = false;
   }
+};
+
+
+
+const getUserData = async () =>{
+  const res = await httpUtil.get('/user/getUserInfo',{},{
+    Authorization: cookieUtil.getCookie("token")
+  })
+
+  tableData.value = tableData.value.map((row, index) => ({
+    ...row,
+    value: res.data.tables[0][index]?.value || row.value, // 更新 value
+  }));
+
+
+  tableData2.value = tableData2.value.map((row, index) => ({
+    ...row,
+    value: res.data.tables[1][index]?.value || row.value,
+  }));
+
+  tableData3.value = tableData3.value.map((row, index) => ({
+    ...row,
+    value: res.data.tables[2][index]?.value || row.value,
+  }));
+}
+
+const updateDate = async () => {
+  // 等待 DOM 更新
+  await nextTick();
+  // 打印选择的日期
+  const formattedDate = new Date(birthTime.value).toLocaleDateString().replace(/\//g, '-');
+
+  ElMessage.success(`选择的日期是：${formattedDate}`);
+  const res = await httpUtil.post2WithHeader('/user/updateUserBirthTime',
+      { birthTime: formattedDate },  // 这里使用对象传递
+      { Authorization: cookieUtil.getCookie("token") }
+  );
+
+  console.log(res);
+
+  await getUserData()
+
+  // 可选：关闭弹窗
+  editBirth.value = false;
 };
 
 onMounted(() => {
@@ -340,6 +362,27 @@ onBeforeUnmount(() => {
       <el-button type="primary" @click="handleSaveConfirm('confirm')">保存</el-button>
     </span>
   </el-dialog>
+
+  <el-dialog
+      title="选择日期"
+      v-model="editBirth"
+      width="300px"
+  >
+    <div style="display: flex;margin-top:15px;flex-direction: column;align-items: center;margin-bottom: 30px;">
+      <el-date-picker
+          v-model="birthTime"
+          type="date"
+          placeholder="Pick a day"
+          style="width: 100%;"
+      />
+    </div>
+
+    <span slot="footer" style="display: flex;justify-content: center;gap: 20px;margin-top: 20px;">
+      <el-button @click="editBirth = false">取消</el-button>
+      <el-button type="primary" @click="updateDate">确定</el-button>
+    </span>
+  </el-dialog>
+
 </template>
 
 <style scoped>

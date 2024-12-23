@@ -131,6 +131,22 @@ export function postWithHeader(url, params = {}, headers = {}) {
   });
 }
 
+export function post2WithHeader(url, params = {}, headers = {}) {
+  return new Promise((resolve, reject) => {
+    httpService({
+      url: url,
+      method: 'post',
+      params: params,
+      headers: headers
+
+    }).then(response => {
+      resolve(response);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
+
 /*
  *  文件上传
  *  url:请求地址
