@@ -114,7 +114,7 @@ public class AuthorController {
             return R.error(e.toString());
         }
     }
-    @GetMapping("/getByName")
+    @GetMapping("/getByAuthorsName")
     public R getAuthorsByName(@RequestParam("name")String name){
         try{
             return R.ok().put("authors", authorService.getAuthorsByName(name));
@@ -127,6 +127,15 @@ public class AuthorController {
     public R getAuthorsById(@RequestParam("id")String id){
         try{
             return R.ok().put("authors", authorService.getAuthorById(id));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping("/getSpecificById")
+    public R getSpecificAuthorById(@RequestParam("id")String id){
+        try{
+            return R.ok().put("author", authorService.getSpecificAuthorById(id));
         }catch (Exception e){
             return R.error(e.toString());
         }

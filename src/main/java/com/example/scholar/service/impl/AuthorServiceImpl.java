@@ -5,8 +5,10 @@ import com.example.scholar.dao.InstitutionMapper;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalex.AuthorShips;
+import com.example.scholar.domain.openalex.Institutions;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
+import com.example.scholar.dto.AuthorSpecificResultDto;
 import com.example.scholar.dto.InstitutionsResultDto;
 import com.example.scholar.dto.WorkAuthorResultDto;
 import com.example.scholar.service.AdminService;
@@ -36,6 +38,28 @@ public class AuthorServiceImpl implements AuthorService {
     public Author getAuthorById(String id) {
         return authorMapper.selectAuthorById(id);
     }
+
+    @Override
+    public AuthorSpecificResultDto getSpecificAuthorById(String id) {
+        Author author = authorMapper.selectAuthorById(id);
+        AuthorSpecificResultDto authorSpecificResultDto = new AuthorSpecificResultDto();
+
+        if(author!=null){
+            authorSpecificResultDto.setAuthor(author);
+
+            String institutionId = authorMapper.getInstitutionIdByAuthorId(author.getId());
+
+            Institutions institutions = institutionMapper.getInstitutionById(institutionId);
+            if(institutions!=null){
+                authorSpecificResultDto.setInstitutions(institutions);
+            }
+
+            return authorSpecificResultDto;
+        }else{
+            return null;
+        }
+    }
+
 
     @Override
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {

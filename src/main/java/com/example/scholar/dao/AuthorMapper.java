@@ -24,6 +24,9 @@ public interface AuthorMapper {
     @Select("SELECT work_id FROM openalex.works_authorships WHERE author_id = #{authorId}")
     List<String> getWorkIdsByAuthorId(String authorId);
 
+    @Select("SELECT institution_id FROM openalex.works_authorships WHERE author_id = #{authorId} limit 1")
+    String getInstitutionIdByAuthorId(String authorId);
+
     //
 
     @Update("UPDATE openalex.authors set highQualityWorkCount = #{size},Hnumber = #{hNumber},isInitialized = true, firstPublishCount=#{firstCount} where id = #{authorId}")
