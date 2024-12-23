@@ -11,8 +11,9 @@ import testhttp from "@/api/http.js";
 
 const activeName = ref('1')
 
-const userId = localStorage.getItem("userId");
-// const userId = ref(1);
+// const userId = ref(localStorage.getItem("userId"));
+const userId = ref(1);
+let tags = ref([]);
 const selectedTags = ref([]);
 const route = useRoute();
 let buttonLabels = ref([]);
@@ -45,8 +46,6 @@ function OnDeleteButtonClicked(id){
     type: 'warning'
   }).then(async () => {
     // 用户点击确认后执行的代码
-    console.log(userId.value);
-    console.log(id);
     await httpUtil.get('user/deleteUserFavorite', {
       userId: userId.value,
       publicationId: id
@@ -65,13 +64,13 @@ const goToPaper = (id)=> {
 }
 const UpdateFavorite = async () => {
   let res = ([]);
-  // console.log(selectedTags.value.length);
-  console.log(selectedTags.value);
-  let tags = ([]);
-  tags = await httpUtil.get('user/viewAllTags', {
+  let res2 = ([]);
+  res2 = await httpUtil.get('user/viewAllTags', {
     userId: userId.value
   });
-  tags.data.tags.forEach((item, index) => {
+  if(res2.data.code === 200)
+    tags.value = res2.data.tags
+  tags.value.forEach((item, index) => {
     buttonLabels.value[index] = item.tag;
   });
   if(selectedTags.value.length === 0)
@@ -85,12 +84,14 @@ const UpdateFavorite = async () => {
     });
     console.log(res.data.favoriteList);
   }
-
-  // 截取res.data.timestamp的前10位
-  res.data.favoriteList.forEach((item) => {
-    item.timestamp = item.timestamp.substring(0, 10);
-  });
-  tableData.value = res.data.favoriteList;
+  if(res.data.code === 200)
+  {
+    // 截取res.data.timestamp的前10位
+    res.data.favoriteList.forEach((item) => {
+      item.timestamp = item.timestamp.substring(0, 10);
+    });
+    tableData.value = res.data.favoriteList;
+  }
 };
 onMounted(async () => {
   await UpdateFavorite();
