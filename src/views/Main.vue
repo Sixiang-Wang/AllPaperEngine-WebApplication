@@ -27,6 +27,8 @@ import {ElMessage} from "element-plus";
   const displayedText = ref("A"); // 动态显示的文字
   const fullText2 = "ower Your Academic Journey";
   const displayedText2 = ref("P"); // 动态显示的文字
+
+  // 这个函数暂时保留其他三个接口，但是前端中并不会调用
   const search = async () => {
     if(searchInput.value === ''){
       ElMessage.warning("请先输入搜索内容！");
@@ -375,9 +377,6 @@ const leaveSuggestion = (index) => {
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="主题" value="1"/>
-        <el-option label="篇名" value="2"/>
-        <el-option label="关键词" value="3"/>
-        <el-option label="摘要" value="4"/>
         <el-option label="学者" value="5"/>
       </el-select>
 
