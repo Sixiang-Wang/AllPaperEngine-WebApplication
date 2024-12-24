@@ -25,6 +25,7 @@ const totalLength = ref(0);
 let searchResults = ref([]);
 
 const simpleSearch = async () => {
+  console.log(searchType.value);
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
@@ -38,14 +39,18 @@ const simpleSearch = async () => {
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
 
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
+        totalLength.value = res.data.page;
 
         for(let result of searchResults.value){
           if(result.highlightFields.hasOwnProperty('title')){
@@ -79,11 +84,14 @@ const simpleSearch = async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -118,11 +126,14 @@ const simpleSearch = async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -185,31 +196,38 @@ const simpleSearch = async () => {
       }
       //searchResults = res;
       break;
+    case '5'://查找学者
+      if(searchInput.value===null||searchInput.value === '') {
+        const res = await httpUtil.get('/openalex/get/page', {
+          page: currentPage.value
+        });
+        console.log("search in openalex/get/page");
+        searchResults.value = res.data.works;
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+      } else {
+        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
+          authorName: searchInput.value
+        });
+        authorIds.value = res.data.getAuthorIdByAuthorName || [];
+        console.log(authorIds.value);
+        totalLength.value = authorIds.value.length;
+        authorInfos.value = [];
+        for (let authorId of authorIds.value) {
+          const authorRes = await httpUtil.get('/author/getById', {
+            id: authorId
+          });
+          console.log(1);
+          console.log(authorRes.data.authors);
+          authorInfos.value.push(authorRes.data.authors);
+        }
+        searchResults.value = authorInfos.value;
+        console.log(authorInfos);
+      }
+      break;
   }
   isSearched.value = true;
 }
-
-/*
-const simpleSearch = async() => {
-  if(simpleSearchInput.value.length===0){
-    ElMessage.warning("请输入搜索内容！")
-    return;
-  }
-  const res = await httpUtil.get('/search/getWorkByTitleWord',{
-    page: currentPage.value,
-    word: simpleSearchInput.value
-  })
-  console.log(res.data);
-  searchedPapers.value = res.data.works;
-  console.log(searchedPapers.value);
-  isSearched.value = true;
-  // 给每一行初始化 isSelected 属性
-  searchedPapers.value.forEach(paper => {
-    paper.isSelected = false;
-  });
-  isSearched.value = true;
-}
-*/
 const goToPaper = (id)=>{
   router.push({path:'/paper', query:{id: id}})
 }
@@ -368,9 +386,6 @@ onMounted(()=>{
           <template #prepend>
             <el-select v-model="searchType" style="width: 115px">
               <el-option label="标题" value="1"/>
-              <el-option label="篇名" value="2"/>
-              <el-option label="关键词" value="3"/>
-              <el-option label="摘要" value="4"/>
             </el-select>
           </template>
         </el-input>

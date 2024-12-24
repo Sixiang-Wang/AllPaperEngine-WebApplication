@@ -457,9 +457,7 @@ const leaveSuggestion = (index) => {
             <template #prepend>
               <el-select v-model="searchType" style="width: 115px; background-color:#FFFFFF;">
                 <el-option label="主题" value="1"/>
-                <el-option label="篇名" value="2"/>
-                <el-option label="关键词" value="3"/>
-                <el-option label="摘要" value="4"/>
+                <el-option label="学者" value="5"/>
               </el-select>
             </template>
           </el-input>

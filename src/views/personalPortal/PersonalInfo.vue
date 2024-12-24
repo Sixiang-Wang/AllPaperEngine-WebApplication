@@ -5,12 +5,13 @@ import defaultAvatar from "@/assets/image/user.gif";
 import router from "@/router/index.js";
 import httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
-import {ElMessage} from "element-plus";  // 引入 API 相关功能
+import {ElMessage} from "element-plus";
+import http from "@/api/http.js";  // 引入 API 相关功能
 
 // avatar 头像
-const avatar = ref({
-  defaultAvatar: defaultAvatar,
-  url: defaultAvatar,
+const avatarUrl = computed(()=>{
+  const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
+  return http.getUrlWithoutSlash() + avatar;
 });
 
 const userId = localStorage.getItem("userId");
@@ -107,7 +108,7 @@ const simpleSearch = async () => {
         <el-col :span="12">
           <el-row>
             <el-avatar
-                :src="avatar.url"
+                :src="avatarUrl"
                 :size="70"
                 shape="square"
                 fit="cover"
@@ -134,19 +135,13 @@ const simpleSearch = async () => {
             <el-col :span="5" style="font-size:small">0</el-col>
           </el-row>
           <el-row style="margin-top:3%">
-            <el-col :span="7" style="font-size:small">总发文量</el-col>
+            <el-col :span="7" style="font-size:small">高影响力论文数</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
-            <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
-          </el-row>
-          <el-row style="margin-top:3%">
-            <el-col :span="7" style="font-size:small">总发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
-            <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
+            <el-col :span="7" style="font-size:small">总被引用数</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
           </el-row>
           <el-row style="margin-top:3%">
-            <el-col :span="7" style="font-size:small">总发文量</el-col>
+            <el-col :span="7" style="font-size:small">H指数</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
             <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
