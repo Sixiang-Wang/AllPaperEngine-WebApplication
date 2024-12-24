@@ -4,19 +4,15 @@
     <div class="author-left" style="display: flex; align-items: center;">
       <el-avatar :src="avatar" :size="120" />
       <div class="author-info" style="margin-left: 20px;">
-        <h2>{{ name }}</h2>
-        <!-- <p class="description">{{ description }}</p> -->
-        <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
+        <h2>{{ author.name }}</h2>
+        <p class="description">{{ author.description }}</p>
         <el-button type="primary" @click="followAuthor" class="follow-button">关注</el-button>
       </div>
     </div>
 
     <div class="author-right" style="flex: 1; text-align: center; padding-left: 40px;">
-      <p><strong>引用次数：{{ citedByCount }}</strong></p>
-      <p><strong>成果总数：{{ worksCount }}</strong></p>
-      <p>H指数：{{ H_index }}</p>
-      <p>第一作者发文量：{{ firstAuthor }}</p>
-      <p>高影响力论文发文量：{{ highInflu }}</p>
+      <p><strong>引用次数：{{ author.citedByCount }}</strong></p>
+      <p><strong>成果总数：{{ author.worksCount }}</strong></p>
     </div>
   </div>
 
@@ -26,8 +22,9 @@
       <h3>发表文章</h3>
       <el-timeline>
         <el-timeline-item
-          v-for="(publication, index) in publications"
+          v-for="(publication, index) in author.publications"
           :key="publication.id"
+          :citedByCount="publication.citedByCount"
           :timestamp="publication.publicationDate"
           :color="index % 2 === 0 ? 'primary' : 'warning'"
           placement="top"
@@ -38,7 +35,7 @@
                 <a @click="viewPublication(row.id)" class="publication-link">{{ row.title }}</a>
               </template>
             </el-table-column>
-            <!-- <el-table-column prop="description" /> -->
+            <el-table-column prop="description" />
             <el-table-column>
               <template v-slot="scope">
                 <span>引用次数: {{ scope.row.citedByCount }}</span>
@@ -53,64 +50,71 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import router from "@/router/index.js";
+import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 export default {
-  created() {
-    // 从路由查询参数中获取数据
-    this.id = this.$route.query.id;
-    this.name = this.$route.query.name;
-    // 获取其他参数
-    this.workPlace = this.$route.query.workPlace;
-    this.area = this.$route.query.area;
-    this.avatar = this.$route.query.avatar;
-    this.citedByCount = this.$route.query.citedByCount;
-    this.worksCount = this.$route.query.worksCount;
-    this.H_index = this.$route.query.H_index;
-    this.firstAuthor = this.$route.query.firstAuthor;
-    this.highInflu = this.$route.query.highInflu;
-  },
   setup() {
-    const publications = ref([]);
     const route = useRoute();
+    const publications = ref([]);
 
-    const fetchPublications = async () => {
+    const author = ref({
+      id: '114514',
+      name: '王思翔',
+      description: '全栈工程师',
+      avatar: '',
+      citedByCount: 10,
+      worksCount: 20,
+      publications: [
+        { id: 1, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 2, title: 'Ciallo～(∠・ω< )⌒☆', description: '柚子厨蒸鹅心', date: '2024-03-22', cited: 20 },
+        { id: 3, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 4, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 5, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
+        { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
+      ],
+  });
+
+    const fetchAuthorDetails = async (id) => {
       try {
-        const res = await axios.get('/author/getWorksByAuthorId', {
-          params: { authorId: route.query.id }
-        });
-        console.log(1);
-        console.log(res.data);
-        console.log(2);
-        publications.value = res.data.getWorksByAuthorId || [];
-        console.log(publications.value);
-        console.log(3);
+        const response = await httpUtil.get(`/author/getById?id=${id}`);
+        const data = response.data.authors;
+        console.log('data: ', data);
+        author.value = {
+          ...author.value,
+          name: data.displayName,
+          citedByCount: data.citedByCount,
+          worksCount: data.worksCount,
+        };
       } catch (error) {
-        console.error('Error fetching publications:', error);
+        console.error('获取作者信息错误', error);
+      }
+    };
+
+    const fetchAuthorPublications = async (id) => {
+      try {
+        const response = await httpUtil.get(`/author/getWorksByAuthorId?authorId=${id}`);
+        author.value = {
+          ...author.value,
+          publications : response.data.getWorksByAuthorId,
+        };
+  
+      } catch (error) {
+        console.error('获取作者作品信息错误', error);
       }
     };
 
     onMounted(() => {
-      fetchPublications();
+      const authorId = route.query.id;
+      fetchAuthorDetails(authorId);
+      fetchAuthorPublications(authorId);
     });
 
-    const viewPublication = (id) => {
-      console.log('Viewing publication with id:', id);
-      // Add your logic to view the publication details
-    };
-
-    const followAuthor = () => {
-      console.log('Following author:', name);
-      // Add your logic to follow the author
-    };
-
     return {
+      author,
       publications,
-      viewPublication,
-      followAuthor
     };
   }
 };
