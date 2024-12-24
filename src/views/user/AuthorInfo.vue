@@ -55,9 +55,11 @@
 <script>
 import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
+import router from "@/router/index.js";
 import { ref, onMounted } from 'vue';
 
 export default {
+
   setup() {
     const route = useRoute();
     const publications = ref([]);
@@ -118,9 +120,15 @@ export default {
       fetchAuthorPublications(authorId);
     });
 
+    const viewPublication = (id) => {
+      console.log(`Viewing publication with ID: ${id}`);
+      router.push({path: '/paper', query: {id: id}})
+    };
+
     return {
       author,
       publications,
+      viewPublication,
     };
   }
 };
