@@ -13,6 +13,7 @@ let searchInput = ref("");
 let searchType = ref('1');
 const totalLength = ref(0);
 let searchResults = ref([]);
+let authorIds = ref([]);
 let suggestions = ref([]);
 let showAutoComplete = ref(false);
 const route = useRoute();
@@ -133,6 +134,7 @@ const search = async () => {
           title: searchInput.value,
           page: currentPage.value
         })
+
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = res.data.page;
@@ -282,27 +284,33 @@ const search = async () => {
       //searchResults = res;
       break;
     case '5'://查找学者
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
+      if(searchInput.value===null||searchInput.value === '') {
+        const res = await httpUtil.get('/openalex/get/page', {
+        page: currentPage.value
+      });
         console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
+      } else {
+        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
+          authorName: searchInput.value
+        });
+        authorIds.value = res.data.getAuthorIdByAuthorName || [];
+        console.log(authorIds.value);
+        totalLength.value = authorIds.value.length;
+        authorInfos.value = [];
+        for (let authorId of authorIds.value) {
+          const authorRes = await httpUtil.get('/author/getById', {
+            id: authorId
+          });
+          console.log(1);
+          console.log(authorRes.data.authors);
+          authorInfos.value.push(authorRes.data.authors);
+        }
+        searchResults.value = authorInfos.value;
+        console.log(authorInfos);
       }
-      // else {
-      //   const res = await httpUtil.get('/author/getAuthorIdByAuthorName', { 
-      //     name: searchInput.value,
-      //     page: currentPage.value
-      //   })
-
-      //   searchResults.value = res.data.works || [];
-      //   console.log(searchResults.value);
-      //   totalLength.value = searchResults.value.length;
-      // }
-      searchResults.value = authorInfos.value;
-      totalLength.value = searchResults.value.length;
       break;
   }
 }
@@ -479,27 +487,26 @@ const leaveSuggestion = (index) => {
       </el-aside>
       <el-main style="margin-left: 2%;width: 100%;">
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
+        <div v-if="isSearchingForAuthors" style="height: 20px;"></div>
         <div v-if="searchResults.length !== 0" style="display: flex;">
           <div>
             <SingleAuthor
+            style="width: 800px;"
               v-if="isSearchingForAuthors"
               v-for="authorInfo in authorInfos"
               :key="authorInfo.id"
               :id="authorInfo.id"
-              :name="authorInfo.name"
-              :workPlace="authorInfo.workPlace"
-              :area="authorInfo.area"
-              :avatar="authorInfo.avatar"
-              :citedByCount="authorInfo.citedByCount"
-              :worksCount="authorInfo.worksCount"
-              :H_index="authorInfo.H_index"
-              :firstAuthor="authorInfo.firstAuthor"
-              :highInflu="authorInfo.highInflu"
-              :publications="authorInfo.publications"
+              :name="authorInfo.displayName || '未知学者'"
+              :citedByCount="authorInfo.citedByCount || 0"
+              :worksCount="authorInfo.worksCount || 0"
+              :worksApiUrl="authorInfo.worksApiUrl || ''"
+              :firstAuthor="authorInfo.firstPublishCount || 0"
+              :highInflu="authorInfo.highQualityWorkCount || 0"
+              :H_index="authorInfo.hnumber || 0"
             />
-            <SingleResult 
-                style="width: 1200px; "
-                v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
+            <SingleResult
+            style="width: 1400px;"
+            v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                           :content="result.content.abstractText"
                           :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
           </div>

@@ -53,7 +53,7 @@ const OnDeleteButtonClicked = async (id) => {
 }
 const goToPaper = async (id)=> {
   console.log(id)
-  console.log(userId)
+  console.log(userId.value)
   await httpUtil.post('user/addHistory', {
     publicationId: id,
     timestamp: getCurrentDateTime(),

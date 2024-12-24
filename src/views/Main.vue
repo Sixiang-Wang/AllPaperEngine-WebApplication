@@ -215,16 +215,15 @@ import {ElMessage} from "element-plus";
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
+      }else {
+        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', { 
+          authorName: searchInput.value,
+          timeout: 20000
+        })
+        searchResults.value = res.data.getAuthorIdByAuthorName || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
       }
-      // }else {
-      //   const res = await httpUtil.get('/author/getAuthorIdByAuthorName', { 
-      //     name: searchInput.value,
-      //     page: currentPage.value
-      //   })
-      //   searchResults.value = res.data.works || [];
-      //   console.log(searchResults.value);
-      //   totalLength.value = searchResults.value.length;
-      // }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
       break;
   }
@@ -328,20 +327,18 @@ const handleInputChange = async () => {
         break;
       case '5':
         //学者 
-        //以下在有接口之前是假的
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteScholarWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const scholarSuggest = res.data.suggestions.suggest.scholarSuggest;
-        if(scholarSuggest && scholarSuggest.length>0){
-          console.log(scholarSuggest);
-          suggestions  = scholarSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
-        }
-        break;
-        
+        // res = await httpUtil.get('/elasticSearch/works/autoCompleteScholarWithCompletionSuggester', {
+        //   searchContent: searchInput.value 
+        // });
+        // const scholarSuggest = res.data.suggestions.suggest.scholarSuggest;
+        // if(scholarSuggest && scholarSuggest.length>0){
+        //   console.log(scholarSuggest);
+        //   suggestions  = scholarSuggest[0].options.map(option => option.text);
+        //   showAutoComplete = true;
+        // }else{
+        //   showAutoComplete = false;
+        // }
+        // break;
     }
     
   } else {
