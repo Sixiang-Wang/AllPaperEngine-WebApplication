@@ -182,8 +182,29 @@ onMounted(async () => {
       console.log('获取' + resCommends.data)
       recommends.value = resCommends.data.suggests;
       console.log(recommends.value);
+
+  await httpUtil.post2('user/addHistory', {
+    publicationId: workId,
+    tstring : getCurrentDateTime(),
+    userId: userId.value
+  });
     }
 )
+
+const padZero = (num) => {
+  return num < 10 ? '0' + num : num;
+}
+const getCurrentDateTime = () =>{
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = padZero(now.getMonth() + 1); // 月份是从0开始的
+  const day = padZero(now.getDate());
+  const hours = padZero(now.getHours());
+  const minutes = padZero(now.getMinutes());
+  const seconds = padZero(now.getSeconds());
+  // 构建 $date-time 格式的字符串
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
 
 const getReference = async () => {
   try {
