@@ -653,7 +653,7 @@ public class UserController {
     }
 
     // 删除某条浏览历史
-    @GetMapping("/deleteHistory/{id}")
+    @GetMapping("/deleteHistory")
     @ApiOperation("删除某条浏览历史接口")
     public R deleteHistory(@RequestParam int userId,
                            @RequestParam String publicationId) {
