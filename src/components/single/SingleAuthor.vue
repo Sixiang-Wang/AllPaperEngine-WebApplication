@@ -2,7 +2,10 @@
     <div class="author-details">
         <div class="author-header">
         <div class="author-left">
-          <el-avatar :src="avatar" :size="80" />
+<!--          <el-avatar :src="avatar" :size="80" />-->
+          <el-avatar :size="80" :style="avatarStyle">
+            <span>{{ name.charAt(0).toUpperCase() }}</span>
+          </el-avatar>
             <div class="author-info">
               <h2 class="hover-effect" @click="goToAuthorInfo">{{ name }}</h2>
               <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
@@ -85,7 +88,34 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
         required: true
       },
     },
+    data(){
+      return {
+        avatarColor: this.getRandomColor(),
+      };
+    },
+    computed: {
+      avatarStyle() {
+        return {
+          backgroundColor: this.avatarColor,
+          color: "#fff",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontSize: "40px",
+          fontWeight: "bold",
+          textTransform: "uppercase",
+        };
+      },
+    },
     methods: {
+      getRandomColor() {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      },
       followAuthor() {
         console.log(`Following author: ${this.name}`);
       },
@@ -138,6 +168,18 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
 </script>
   
 <style scoped>
+.avatarClass {
+  color: rgba(255, 255, 255, 0.86);
+  background-color: #476ec8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 60px; /* 正确的字体大小 */
+  font-weight: bold; /* 加粗字体 */
+  text-transform: uppercase; /* 转换为大写 */
+}
+
+
 .author-details {
 margin-bottom: 0px;
 }
