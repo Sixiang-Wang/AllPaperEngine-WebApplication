@@ -20,7 +20,7 @@ const route = useRoute();
 let hoveredIndex = ref(null);
 const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取
 let isSearchingForAuthors = ref(false);
-
+let isSearchingForResearchers = ref(false);
 const pageSize = computed(() => Math.ceil(totalLength.value / 20));
 
 const authorInfos = ref([
@@ -112,6 +112,7 @@ const updateSearchResults = async () => {
 
 const search = async () => {
   isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
+  isSearchingForResearchers = (searchType.value === '6');
   console.log(searchType.value);
   switch (searchType.value) {
     case '1'://按标题查找
@@ -335,6 +336,7 @@ watch(route, (newRoute) => {
 const handleInputChange = async () => {
   console.log(searchInput.value)
   isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
+  isSearchingForResearchers = (searchType.value === '6');
   if (searchInput.value == '') {
     showAutoComplete = false;
   } else {

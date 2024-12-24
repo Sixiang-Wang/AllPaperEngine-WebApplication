@@ -8,21 +8,36 @@ import {ElButton, ElMessageBox, ElMessage} from 'element-plus';
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 import testhttp from "@/api/http.js";
-import * as cookieUtil from "@/utils/cookie.js";
 
 const activeName = ref('1')
 
-// const userId = ref(localStorage.getItem("userId"));
-const userId = ref();
+const userId = ref(localStorage.getItem("userId"));
+// const userId = ref(1);
 let tags = ref([]);
 const selectedTags = ref([]);
 const route = useRoute();
 let buttonLabels = ref([]);
 const buttonStates = ref(Array(12).fill(false));
 // 设置四种按钮的颜色
-const buttonColors = ref(['#9c69fc', '#5bc8f3', '#ffab73', '#a4f65c']);
+const startColor = ref('#ff0000')
+const endColor = ref('#60ffe2')
+const tagColors = ref([])
+const colorNum = ref(0)
 const tableData = ref()
-const test = ['test1'];
+const padZero = (num) => {
+  return num < 10 ? '0' + num : num;
+}
+const getCurrentDateTime = () =>{
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = padZero(now.getMonth() + 1); // 月份是从0开始的
+  const day = padZero(now.getDate());
+  const hours = padZero(now.getHours());
+  const minutes = padZero(now.getMinutes());
+  const seconds = padZero(now.getSeconds());
+  // 构建 $date-time 格式的字符串
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
 const ChangeTagList = (index) => {
   if(buttonStates.value[index]){
     selectedTags.value.push(buttonLabels.value[index]);
@@ -59,18 +74,57 @@ function OnDeleteButtonClicked(id){
     console.log("Delete Error");
   });
 }
-const goToPaper = (id)=> {
+const goToPaper = async (id)=> {
   // console.log(id)
-  router.push({path: '/paper', query: {id: id, input: route.query.input}})
-}
-const UpdateFavorite = async () => {
-  let res = ([]);
-  let res2 = ([]);
-  res2 = await httpUtil.get('user/viewAllTags', {
+  await httpUtil.post2('user/addHistory', {
+    publicationId: id,
+    tstring : getCurrentDateTime(),
     userId: userId.value
   });
-  if(res2.data.code === 200)
+  await router.push({path: '/paper', query: {id: id, input: route.query.input}})
+}
+
+const gradientColors = () => {
+  let colors = [];
+  let startRGB = hexToRgb(startColor.value);
+  let endRGB = hexToRgb(endColor.value);
+
+  for (let i = 0; i <= colorNum.value; i++) {
+    let ratio = i / colorNum.value;
+    let r = Math.round(startRGB.r + (endRGB.r - startRGB.r) * ratio);
+    let g = Math.round(startRGB.g + (endRGB.g - startRGB.g) * ratio);
+    let b = Math.round(startRGB.b + (endRGB.b - startRGB.b) * ratio);
+    colors.push(`rgb(${r}, ${g}, ${b})`);
+  }
+
+  return colors;
+}
+
+const hexToRgb = (hex) => {
+  let r = parseInt(hex.slice(1, 3), 16);
+  let g = parseInt(hex.slice(3, 5), 16);
+  let b = parseInt(hex.slice(5, 7), 16);
+  return { r, g, b };
+}
+
+const SearchTagColor = (tag) => {
+  let index = tags.value.findIndex((item) => item.tag === tag);
+  if(index >= 0)
+    return tagColors.value[index];
+  else
+    return '#000000';
+}
+const UpdateFavorite = async () => {
+  let res = ([])
+  let res2 = ([])
+  res2 = await httpUtil.get('user/viewAllTags', {
+    userId: userId.value
+  })
+  if(res2.data.code === 200) {
     tags.value = res2.data.tags
+    colorNum.value = tags.value.length
+    tagColors.value = gradientColors()
+  }
   tags.value.forEach((item, index) => {
     buttonLabels.value[index] = item.tag;
   });
@@ -95,14 +149,7 @@ const UpdateFavorite = async () => {
   }
 };
 onMounted(async () => {
-  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
-    ElMessage.error("请先登录！");
-    setTimeout(()=>{
-      router.push('/login');
-    },500);
-  }
-
-  userId.value = localStorage.getItem("userId");
+  // userId.value = localStorage.getItem("userId");
   await UpdateFavorite();
 })
 </script>
@@ -125,7 +172,7 @@ onMounted(async () => {
               <el-button v-for="(tag, index) in scope.row.tags.split(',').slice(0, 4)"
                          :key="tag"
                          style="font-size: 16px; padding: 3px 6px; margin: 3px;"
-                         :color="buttonColors[index]">
+                         :color="SearchTagColor(tag)">
                 <span style="color: white">{{ tag }}</span>
               </el-button>
             </template>
