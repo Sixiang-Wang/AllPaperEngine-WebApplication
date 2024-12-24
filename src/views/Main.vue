@@ -27,6 +27,8 @@ import {ElMessage} from "element-plus";
   const displayedText = ref("A"); // 动态显示的文字
   const fullText2 = "ower Your Academic Journey";
   const displayedText2 = ref("P"); // 动态显示的文字
+
+  // 这个函数暂时保留其他三个接口，但是前端中并不会调用
   const search = async () => {
     if(searchInput.value === ''){
       ElMessage.warning("请先输入搜索内容！");
@@ -45,11 +47,14 @@ import {ElMessage} from "element-plus";
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -86,11 +91,14 @@ import {ElMessage} from "element-plus";
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -125,11 +133,14 @@ import {ElMessage} from "element-plus";
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -165,10 +176,10 @@ import {ElMessage} from "element-plus";
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
-          page: currentPage.value
-        })
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
 
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
@@ -223,14 +234,7 @@ import {ElMessage} from "element-plus";
   const advancedSearch = () => {
     router.push({ path: "/advancedSearch" });
   }
-const preLogin = async ()=>{
-  const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
-  console.log(res);
-  userStore.setUsername(res.data.username);
-  tokenStore.setToken(res.data.token);
-  userIdStore.setUserId(res.data.userId);
-  cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
-  }
+
   onMounted(() => {
     let index = 0;
     let index2 = 0;
@@ -373,9 +377,6 @@ const leaveSuggestion = (index) => {
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="主题" value="1"/>
-        <el-option label="篇名" value="2"/>
-        <el-option label="关键词" value="3"/>
-        <el-option label="摘要" value="4"/>
         <el-option label="学者" value="5"/>
       </el-select>
 

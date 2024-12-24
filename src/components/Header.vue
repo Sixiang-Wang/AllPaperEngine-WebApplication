@@ -88,7 +88,8 @@ onMounted(async() =>{
   }catch (e){
     console.error(e);
   }
-
+  console.log("token:")
+  console.log(cookieUtil.getCookie("token"))
 })
 
 const preLogin = async ()=>{

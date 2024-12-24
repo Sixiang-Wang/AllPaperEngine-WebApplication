@@ -1,6 +1,6 @@
 import {createRouter, createWebHashHistory, createWebHistory} from "vue-router";
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes: [
         {
             path: "/",
@@ -119,6 +119,11 @@ const router = createRouter({
             path: '/authorInfo',
             name: 'authorInfo',
             component: ()=> import('@/views/user/AuthorInfo.vue')
+        },
+        {
+            path: '/find/password',
+            name: 'findPassword',
+            component: ()=> import('@/views/FindPassword.vue')
         },
         {
             path: '/institutionInfo',

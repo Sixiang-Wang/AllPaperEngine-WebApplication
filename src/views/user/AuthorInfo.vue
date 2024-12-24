@@ -26,7 +26,7 @@
       <h3>发表文章</h3>
       <el-timeline>
         <el-timeline-item
-          v-for="(publication, index) in publications"
+          v-for="(publication, index) in author.publications"
           :key="publication.id"
           :timestamp="publication.publicationDate"
           :color="index % 2 === 0 ? 'primary' : 'warning'"

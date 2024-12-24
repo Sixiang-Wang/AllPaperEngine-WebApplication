@@ -66,7 +66,9 @@ const checkCaptcha = () => {
 const goToRegister = () => {
   router.push('/register');
 }
-
+const goToForget = ()=>{
+  router.push('/find/password');
+}
 onMounted(() => {
   identifyCode.value = '';
   makeCode(identifyCodes, 4);
@@ -154,6 +156,9 @@ const login =  async() => {
       <el-button @keyup.enter="login" @click="login" type="primary" style="width: 100%; height:40px;">登录</el-button>
       <el-button @click="goToRegister"  style="width: 100%; height:40px;">注册</el-button>
     </div>
+    <div style="margin-left: 82%">
+      <span class="forget" @click="goToForget">忘记密码？</span>
+    </div>
   </div>
 </template>
 
@@ -161,5 +166,10 @@ const login =  async() => {
 @import "@/css/basic.css";
 @import "@/css/login.css";
 
-
+.forget {
+  color: #1F578F;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div class="institution-info">
       <el-card class="institution-card">
-        <h2>{{ institution.name }}</h2>
+        <h2>{{ institution.displayName }}</h2>
         <p>{{ institution.description }}</p>
       </el-card>
   
@@ -26,7 +26,7 @@
   </template>
 
 <script>
-import axios from 'axios'; 
+import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { ElCard, ElTag, ElDivider } from 'element-plus';
@@ -40,9 +40,9 @@ components: {
 },
 
 setup() {
+    const route = useRoute();
     const institution = ref({
-        name: '北京航空航天大学',
-        description: '好'
+        displayName: '北京航空航天大学',
       });
   
     const scholars = ref([
@@ -71,19 +71,20 @@ setup() {
     };
 
     const fetchInstitutionData = async (id) => {
+      console.log('Fetching institution data...', id);
       try {
-        const institutionResponse = await axios.get(`/api/institution/${id}`);
-        institution.value = institutionResponse.data;
-
-        const scholarsResponse = await axios.get(`/api/institution/${id}/scholars`);
-        scholars.value = scholarsResponse.data;
+        const response = await httpUtil.get(`institution/getInstitutionById?id=${id}`);
+        institution.value = response.data.getInstitutionById;
+        console.log('Institution data:', institution.value);
+        const response2 = await httpUtil.get(`institution/getInstitutionScholars?id=${id}`);
+        scholars.value = response2.data.getInstitutionScholars;
       } catch (error) {
-        console.error('获取数据失败', error);
+        console.error('Error fetching institution data:', error);
       }
     };
 
     onMounted(() => {
-      const institutionId = route.params.id;
+      const institutionId = route.query.id;
       fetchInstitutionData(institutionId);
     });
 

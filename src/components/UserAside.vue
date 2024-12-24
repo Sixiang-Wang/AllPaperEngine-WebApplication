@@ -20,7 +20,7 @@
       </el-menu-item>
       <el-menu-item index="/user/academicClaim" v-if="ifAuthentication">
         <el-icon class="aside-icon"><document /></el-icon>
-        <span class="fontStyle">成果管理</span>
+        <span class="fontStyle">成果认领</span>
       </el-menu-item>
       <el-menu-item index="/user/personalInfo" v-if="ifAuthentication">
         <el-icon class="aside-icon"><data-line/></el-icon>
