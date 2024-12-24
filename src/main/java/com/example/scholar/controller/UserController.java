@@ -757,12 +757,14 @@ public class UserController {
 
     @GetMapping("/setNameReal")
     @ApiOperation("设置用户真名")
-    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal){
+    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal,@RequestParam("authorId")String authorId){
         try {
             User user = userMapper.selectUserById(userId);
             if(user!=null){
+                user.setAuthorId(authorId);
                 user.setNameReal(nameReal);
                 userMapper.updateUserNameReal(user);
+                userMapper.updateUserAuthor(user);
                 return R.ok("success").put("user",user);
             }else {
                 return R.error("get user failed");

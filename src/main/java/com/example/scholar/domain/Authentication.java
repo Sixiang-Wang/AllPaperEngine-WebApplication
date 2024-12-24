@@ -12,5 +12,6 @@ public class Authentication {
     private String workplace;
     private String field;
     private String mail;
+    private String authorId;
 
 }
