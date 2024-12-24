@@ -23,7 +23,8 @@ public interface ElasticWorkService {
      * @param title 标题
      * @return 返回高亮显示的结果集
      */
-    List<SearchHit<Works>> searchByTitleTest(String title);
+    void searchByTitleTest(String title);
+    List<SearchHit<Works>> searchByTitleByPage(String title, int page);
 
     List<SearchHit<Works>> searchByTitle(String title);
 
@@ -46,6 +47,10 @@ public interface ElasticWorkService {
     Json AutoCompleteKeywordsWithCompletionSuggester(String searchContent) throws IOException;
     Json AutoFixKeywordsSuggester(String searchContent) throws IOException;
 
+
+
+
+    Json AutoCompleteAuthorWithCompletionSuggester(String searchContent) throws IOException;
 
     /**
      * AdvancedSearch param:每个类型三个列表 分别是 AndTopic OrTopic NotTopic

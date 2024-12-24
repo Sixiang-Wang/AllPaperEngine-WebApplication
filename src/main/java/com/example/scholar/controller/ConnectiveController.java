@@ -36,11 +36,11 @@ public class ConnectiveController {
             return R.error(e.toString());
         }
     }
-    @GetMapping(value="/getSortedLanguages")
+    @GetMapping(value="/getSortedInstitutions")
     public R sortLanguages(){
         try{
-            List<String> languages = connectiveService.sortLanguages();
-            return R.ok().put("languages", languages);
+            List<String> institutions = connectiveService.sortInstitutions();
+            return R.ok().put("institutions", institutions);
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -76,10 +76,10 @@ public class ConnectiveController {
             return R.error(e.toString());
         }
     }
-    @GetMapping(value="/getWorksByLanguage")
-    public R getWorksByLanguage(@RequestParam("language") String language){
+    @GetMapping(value="/getWorksByInstitution")
+    public R getWorksByLanguage(@RequestParam("institution") String institution){
         try {
-            List<Works> works = connectiveService.getWorksByLanguage(language);
+            List<Works> works = connectiveService.getWorksByInstitution(institution);
             return R.ok().put("works",works);
         }catch (Exception e){
             return R.error(e.toString());

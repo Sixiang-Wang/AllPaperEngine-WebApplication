@@ -42,6 +42,7 @@ public interface UserMapper {
             "UPDATE user",
             "<set>",
             "  <if test='name != null and name != \"\"'>name = #{name},</if>",
+            "  <if test='password != null and password != \"\"'>password = #{password},</if>",
             "  <if test='mail != null and mail != \"\"'>mail = #{mail},</if>",
             "  <if test='birthTime != null'>birthTime = #{birthTime},</if>",
             "  <if test='phone != null and phone != \"\"'>phone = #{phone},</if>",
@@ -61,6 +62,12 @@ public interface UserMapper {
     int updateUserRole(User user);
     @Update("UPDATE user SET name_real=#{nameReal} WHERE userid = #{userid}")
     int updateUserNameReal(User user);
+
+    @Update("UPDATE user SET author_id=#{authorId} WHERE userid = #{userid}")
+    int updateUserAuthor(User user);
+
+    @Update("UPDATE user SET author_name=#{authorName} WHERE userid = #{userid}")
+    int updateUserAuthorName(User user);
 
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
     int updateUserName(User user);
@@ -120,7 +127,7 @@ public interface UserMapper {
 
     // 添加一条历史记录
     @Insert("INSERT INTO user_browser_history (userid, publicationid, timestamp) VALUES (#{userId}, #{publicationId}, #{timestamp})")
-    int addUserBrowserHistory(int userId, String publicationId, LocalDateTime timestamp);
+    int addUserBrowserHistory(int userId, String publicationId, String timestamp);
 
     // 删除一条历史记录
     @Delete("DELETE FROM user_browser_history WHERE userid = #{userId} AND publicationid = #{publicationId}")
@@ -136,7 +143,7 @@ public interface UserMapper {
 
     // 修改已有记录的时间戳
     @Update("UPDATE user_browser_history SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int updateUserBrowserHistoryTimestamp(int userId, String publicationId, LocalDateTime timestamp);
+    int updateUserBrowserHistoryTimestamp(int userId, String publicationId, String timestamp);
 
     // 查看所有标签
     @Select("SELECT * FROM user_favorite_tag WHERE userid = #{userId}")
@@ -184,5 +191,13 @@ public interface UserMapper {
 
     @Delete("DELETE FROM user WHERE userid = #{userId}")
     int deleteUser(int userId);
+
+    @Select("select * from user where author_name like CONCAT('%', #{name}, '%') and if_show = true")
+    List<User> selectScholarsByAuthorName(String name);
+
+    @Select("select display_name from institutions where id = #{id} limit 1")
+    String getNameByInstitutionId(String id);
+    @Select("select distinct institution_id from works_authorships where author_id = #{id} limit 1")
+    String getInstitutionIdByAuthorId(String id);
 
 }

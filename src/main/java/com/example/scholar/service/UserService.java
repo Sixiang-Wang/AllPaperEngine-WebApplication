@@ -2,6 +2,7 @@ package com.example.scholar.service;
 
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.myenum.AcademicFieldType;
+import com.example.scholar.dto.ScholarDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -13,6 +14,8 @@ import java.util.List;
 public interface UserService {
     List<User> getAll();
     int getCount();
+    List<ScholarDto> getScholarsByName(String name);
+    String getAuthorIdByUser(int userId);
     HashMap<String, Object> login(String mail, String password);
     HashMap<String, Object> register(String name, String password, String mail);
     HashMap<String, Object> setUserDetails(int userId, String avatar, LocalDate birthTime, String biography,
@@ -38,7 +41,8 @@ public interface UserService {
     HashMap<String, Object> deleteUserFavorite(int userId, String publicationId);
 
     // 添加浏览历史
-    HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
+//    HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
+    HashMap<String, Object> addHistory(int userId, String publicationId, String tString);
 
     // 退出登录
     HashMap<String, Object> logout(int userId);

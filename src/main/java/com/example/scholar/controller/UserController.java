@@ -615,9 +615,9 @@ public class UserController {
     @DateTimeFormat
     public R addHistory(@RequestParam int userId,
                         @RequestParam String publicationId,
-                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
+                        @RequestParam String tstring) {
         try {
-            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, timestamp);
+            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, tstring);
             if ("浏览历史添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("History added successfully");
             } else {
@@ -642,6 +642,14 @@ public class UserController {
         } catch (Exception e) {
             return R.error(e.toString());
         }
+    }
+    @GetMapping(value="/getScholars")
+    public R getScholars(@RequestParam("name")String name){
+            try{
+                return R.ok().put("scholars",userService.getScholarsByName(name));
+            }catch (Exception e){
+                return R.error(e.toString());
+            }
     }
 
     // 删除某条浏览历史
@@ -687,6 +695,7 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+
     @GetMapping(value="/getUserInfo/id")
     @ApiOperation("获取用户详细信息(方便测试版)")
     public R getUserInfo(@RequestParam("userId")int userId){
@@ -756,12 +765,16 @@ public class UserController {
 
     @GetMapping("/setNameReal")
     @ApiOperation("设置用户真名")
-    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal){
+    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal,@RequestParam("authorId")String authorId,@RequestParam("authorName")String authorName){
         try {
             User user = userMapper.selectUserById(userId);
             if(user!=null){
+                user.setAuthorId(authorId);
                 user.setNameReal(nameReal);
+                user.setAuthorName(authorName);
                 userMapper.updateUserNameReal(user);
+                userMapper.updateUserAuthor(user);
+                userMapper.updateUserAuthorName(user);
                 return R.ok("success").put("user",user);
             }else {
                 return R.error("get user failed");

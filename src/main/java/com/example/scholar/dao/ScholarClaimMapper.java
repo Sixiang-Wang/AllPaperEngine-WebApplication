@@ -18,11 +18,11 @@ public interface ScholarClaimMapper {
     void deleteClaimedWorks(int id);
     @Select("select count(*) from user where userid = #{id} and role = 1")
     int checkIfScholar(int id);
-    @Select("select count(*) from user_claim where work_id = #{workId} and available = 1")
+    @Select("select count(*) from user_claim where work_id = #{workId}")
     int checkIfClaimed(String workId);
-    @Select("select count(*) from openalex_works where id = #{workId}")
+    @Select("select count(*) from works where id = #{workId}")
     int checkIfWorkExist(String workId);
-    @Update("update user_claim SET available = 1 WHERE id = #{id}")
+    @Update("update user_claim SET available = 1 WHERE id = #{id} ")
     int ableClaim(int id);
     @Update("update user_claim SET available = 0 WHERE id = #{id}")
     int disableClaim(int id);

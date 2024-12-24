@@ -1,7 +1,6 @@
 package com.example.scholar.service;
 
 import com.example.scholar.domain.openalex.Author;
-import com.example.scholar.domain.openalex.AuthorShips;
 import com.example.scholar.domain.openalex.Work;
 import com.example.scholar.dto.AuthorResultDto;
 import com.example.scholar.dto.AuthorSpecificResultDto;
@@ -26,4 +25,6 @@ public interface AuthorService {
     List<Work> getWorksByAuthorName(String authorName);
 
     List<AuthorResultDto> getAuthorsByName(String name);
+
+    List<AuthorResultDto> get100AuthorsByName(String name);
 }

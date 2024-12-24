@@ -14,7 +14,7 @@ public interface AuthenticationMapper {
 
 
     @Select("select * from user_authentication")
-    List<Authentication> allAuthenticationById();
+    List<Authentication> allAuthentication();
 
     @Select("insert into user_authentication (userid, name_real,workplace,field,mail) VALUES (#{userId},#{nameReal},#{workplace},#{field},#{mail})")
     void putAuthentication(int userId,String nameReal,String workplace,String field,String mail);
@@ -23,5 +23,8 @@ public interface AuthenticationMapper {
     void deleteAuthentication(int id);
     @Update("update user_authentication set author_id = #{id} where userid = #{userId}")
     void updateRelateUserAuthor(int userId, String id);
+
+    @Update("update user_authentication set author_name = #{name} where userid = #{userId}")
+    void updateRelateUserAuthorName(int userId, String name);
 
 }

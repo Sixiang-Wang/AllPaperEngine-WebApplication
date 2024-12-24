@@ -14,11 +14,13 @@ import org.apache.ibatis.jdbc.SQL;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
@@ -26,8 +28,12 @@ import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.elasticsearch.search.suggest.completion.FuzzyOptions;
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import springfox.documentation.spring.web.json.Json;
 
@@ -36,6 +42,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -53,6 +62,8 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     @Resource
     private SearchedWorkMapper elasticWorkMapper;
 
+    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Resource
     private ElasticWorkService elasticWorkService;
@@ -517,13 +528,89 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
 
     @Override
-    public List<SearchHit<Works>> searchByTitleTest(String title) {
-        List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
-//        List<Works> worksList = searchHits.stream()
-//                .map(SearchHit::getContent)
-//                .collect(Collectors.toList());
-        return searchHits;
+    public void searchByTitleTest(String title) {
+        // 每页显示的记录数
+        int pageSize = 100;
+        int page = 5;
+        elasticWorkMapper.clearSearchWork();
+
+//        for(int i = 1; i < page; i++) {
+//            // 使用 Elasticsearch 的分页功能
+//            Query query = new NativeSearchQueryBuilder()
+//                    .withQuery(QueryBuilders.matchQuery("title", title))
+//                    .withHighlightFields(new HighlightBuilder.Field("title")
+//                            .preTags("<span style='color:red'>")
+//                            .postTags("</span>")
+//                            .numOfFragments(0))
+//                    .withPageable(PageRequest.of(i - 1, pageSize)) // 分页设置
+//                    .build();
+//            SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
+//            // 下面是用于生成关键词表的
+//            List<Works> worksList = (searchHits.getSearchHits()).stream()
+//                    .map(SearchHit::getContent)
+//                    .collect(Collectors.toList());
+//            System.out.println(worksList.size());
+//            for(Works work: worksList)
+//            {
+//                String work_id = work.getId();
+//                String type = work.getType();
+//                Integer year = work.getPublication_year();
+//                String topic_id = elasticWorkMapper.getTopicIdByWorkId(work_id);
+//                String keyword = elasticWorkMapper.getKeywordsById(topic_id);
+//                List<String> institutions = elasticWorkMapper.getInstitutionNamesByWorkId(work_id);
+//                for(String institution: institutions)
+//                {
+//                    elasticWorkMapper.insertSearchWork(work_id, "keywordText", type, institution, year);
+//                }
+//                ObjectMapper mapper = new ObjectMapper();
+//                try {
+//                    List<String> keywords = mapper.readValue(keyword, List.class);
+//                    for (String keywordText : keywords) {
+//                        elasticWorkMapper.insertSearchWork(work_id, keywordText, type, institution, year);
+//                    }
+//                } catch (JsonProcessingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
     }
+    public static long count = 0;
+    @Override
+    public List<SearchHit<Works>> searchByTitleByPage(String title, int page) {
+        // 每页显示的记录数
+        int pageSize = 20;
+        int from = (page - 1) * pageSize; // 起始记录
+
+        // 使用 Elasticsearch 的分页功能
+        Query query = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.matchQuery("title", title))
+                .withHighlightFields(new HighlightBuilder.Field("title")
+                        .preTags("<span style='color:red'>")
+                        .postTags("</span>")
+                        .numOfFragments(0))
+                .withPageable(PageRequest.of(page - 1, pageSize)) // 分页设置
+                .build();
+        count = 0;
+        try{
+            Query tmpQuery = new NativeSearchQueryBuilder()
+                    .withQuery(QueryBuilders.matchQuery("title", title))
+                    .withHighlightFields(new HighlightBuilder.Field("title")
+                            .preTags("<span style='color:red'>")
+                            .postTags("</span>")
+                            .numOfFragments(0))
+                    .build();
+            SearchHits<Works> tmp = elasticsearchRestTemplate.search(query, Works.class);
+            count = tmp.getTotalHits();
+        }catch (Exception e){
+            count = 10000;
+        }
+        SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
+
+        // 返回当前页的搜索结果
+        return searchHits.getSearchHits();
+    }
+
 
     @Override
     public List<SearchHit<Works>> searchByTitle(String title) {
@@ -585,7 +672,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                     List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
                     System.out.println(keywordMaps);
                     for (Map<String, Object> keywordMap : keywordMaps) {
-                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("displayname"), type, language, year);
+                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language, year);
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -622,35 +709,35 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
         try {
             // 创建SearchRequest
-            SearchRequest searchRequest = new SearchRequest("openalexworksindexaddingcompletion1");
+            SearchRequest searchRequest = new SearchRequest("works_index");
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
             // 创建SuggestBuilder
             SuggestBuilder suggestBuilder = new SuggestBuilder();
 
-            // 添加titlesuggest
-            CompletionSuggestionBuilder titleSuggestion = SuggestBuilders.completionSuggestion("title.suggestfield")
+            // 添加title_suggest
+            CompletionSuggestionBuilder titleSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
                     .prefix(searchContent)
                     .size(10);
-            suggestBuilder.addSuggestion("titlesuggest", titleSuggestion);
+            suggestBuilder.addSuggestion("title_suggest", titleSuggestion);
 
             // 添加abstractSuggest
-            CompletionSuggestionBuilder abstractSuggestion = SuggestBuilders.completionSuggestion("abstract.suggestfield")
-                    .prefix(searchContent)
-                    .size(10);
-            suggestBuilder.addSuggestion("abstractSuggest", abstractSuggestion);
+//            CompletionSuggestionBuilder abstractSuggestion = SuggestBuilders.completionSuggestion("abstract.suggest_field")
+//                    .prefix(searchContent)
+//                    .size(10);
+//            suggestBuilder.addSuggestion("abstractSuggest", abstractSuggestion);
 
-            // 添加displaynamesuggest
-            CompletionSuggestionBuilder displayNameSuggestion = SuggestBuilders.completionSuggestion("displayname.suggestfield")
-                    .prefix(searchContent)
-                    .size(10);
-            suggestBuilder.addSuggestion("displaynamesuggest", displayNameSuggestion);
+//            // 添加display_name_suggest
+//            CompletionSuggestionBuilder displayNameSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
+//                    .prefix(searchContent)
+//                    .size(10);
+//            suggestBuilder.addSuggestion("display_name_suggest", displayNameSuggestion);
 
-            // 添加keywordstextSuggest
-            CompletionSuggestionBuilder keywordsTextSuggestion = SuggestBuilders.completionSuggestion("keywordstext.suggestfield")
-                    .prefix(searchContent)
-                    .size(10);
-            suggestBuilder.addSuggestion("keywordstextSuggest", keywordsTextSuggestion);
+//            // 添加keywordstextSuggest
+//            CompletionSuggestionBuilder keywordsTextSuggestion = SuggestBuilders.completionSuggestion("keywordstext.suggest_field")
+//                    .prefix(searchContent)
+//                    .size(10);
+//            suggestBuilder.addSuggestion("keywordstextSuggest", keywordsTextSuggestion);
 
             // 设置SuggestBuilder到SearchSourceBuilder
             sourceBuilder.suggest(suggestBuilder);
@@ -951,6 +1038,55 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         return null;
     }
 
+    @Override
+    public Json AutoCompleteAuthorWithCompletionSuggester(String searchContent) throws IOException {
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(new HttpHost("116.204.112.5", 9200, "http")));
+
+        try {
+            // Create SearchRequest
+            SearchRequest searchRequest = new SearchRequest("authors_index");
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+            // Create SuggestBuilder
+            SuggestBuilder suggestBuilder = new SuggestBuilder();
+
+            // Add author_suggest
+            CompletionSuggestionBuilder authorSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
+                    .prefix(searchContent)
+                    .size(10)
+                    .skipDuplicates(true)
+                    .analyzer("ik_smart");
+
+            suggestBuilder.addSuggestion("author_suggest", authorSuggestion);
+
+            // Set SuggestBuilder to SearchSourceBuilder
+            sourceBuilder.suggest(suggestBuilder);
+
+            // Set SearchSourceBuilder to SearchRequest
+            searchRequest.source(sourceBuilder);
+
+            // Execute search request
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            // Process search results
+            Suggest suggest = searchResponse.getSuggest();
+
+            return new Json(suggest.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Close client
+            try {
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
 
 
 
