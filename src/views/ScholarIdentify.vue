@@ -92,39 +92,26 @@ const oneToTwo = async() => {
     ElMessage.error("请输入邮箱！");
     return;
   }
-  if (form.value.verificationCode !== form.value.sentCode || !verificationCodeisValid.value) {
+  // if (form.value.verificationCode !== form.value.sentCode || !verificationCodeisValid.value) {
+  //
+  //   ElMessage.error("验证码不正确或已过期");
+  //   return;
+  // }
 
-    ElMessage.error("验证码不正确或已过期");
-    return;
-  }
-  try{
-    const res = await httpUtil.get("/authentication/put/token",{
-      nameReal: form.value.name,
-      workplace: form.value.organization,
-      field: form.value.researchField,
-      mail: form.value.email
-    },{Authorization: cookieUtil.getCookie("token")});
-    console.log(res.data);
-    if(res.data.msg === 'success'){
-      ElMessage.success("提交成功！");
-      currentStep.value = '2';
-    }else{
-      ElMessage.warning("提交失败；请稍后再试")
-    }
-  }catch (e){
-    ElMessage.error("提交失败，请稍后再试");
-    console.error(e);
-  }
+  currentStep.value = '2';
 }
+
+const twoToThree = () => {
+  currentStep.value = '3';
+}
+
 const adminOneToTwo = () => {
   currentStep.value = '2';
 }
 const adminTwoToOne = () => {
   currentStep.value = '1';
 }
-const twoToThree = () => {
-  currentStep.value = '3';
-}
+
 const threeToTwo = () => {
   currentStep.value = '2';
 }
@@ -170,7 +157,7 @@ const search = async()=>{
     ifTable.value = true;
     try{
       console.log(input.value);
-      const res = await httpUtil.get('/author/getByName',{
+      const res = await httpUtil.get('/author/get100AuthorsByName',{
         name: input.value
       })
       authorResults.value = res.data.authors;
@@ -179,9 +166,11 @@ const search = async()=>{
     }
 }
 const id = ref();
+const authorName = ref();
 const handleRowDbClick = (row)=>{
 
   id.value = row.authorId;
+  authorName.value = row.authorName;
   console.log("id.value"+id.value);
 }
 const rowStyle=({row})=>{
@@ -199,7 +188,8 @@ const submitAndJump = async()=>{
       workplace: form.value.organization,
       field: form.value.researchField,
       mail: form.value.email,
-      authorId: id.value
+      authorId: id.value,
+      authorName: authorName.value
     })
     console.log(res.data);
     if(res.data.msg === 'success'){
@@ -242,15 +232,15 @@ const submitAndJump = async()=>{
             <el-form-item label="工作邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱验证" prop="verificationCode">
-              <el-input v-model="form.verificationCode" placeholder="请输入验证码">
-                <template #append>
-                  <el-button :disabled="isCounting" @click="startCountdown" style="width: 130px">
-                    {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}
-                  </el-button>
-                </template>
-              </el-input>
-            </el-form-item>
+<!--            <el-form-item label="邮箱验证" prop="verificationCode">-->
+<!--              <el-input v-model="form.verificationCode" placeholder="请输入验证码">-->
+<!--                <template #append>-->
+<!--                  <el-button :disabled="isCounting" @click="startCountdown" style="width: 130px;color: #ffffff;background-color: #1F578F">-->
+<!--                    {{ isCounting ? `${countdown}秒后重发` : '获取验证码' }}-->
+<!--                  </el-button>-->
+<!--                </template>-->
+<!--              </el-input>-->
+<!--            </el-form-item>-->
           </el-form>
           <div style="display: flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="oneToTwo">点击提交</el-button>
@@ -285,7 +275,7 @@ const submitAndJump = async()=>{
           </span>
           <div style="margin-top: 3%; max-height: 200px; overflow-y: auto;">
             <el-table :data="authorResults" v-if="ifTable" :row-style="rowStyle" @row-click="handleRowDbClick" show-overflow-tooltip>
-              <el-table-column prop="authorName[0]" label="作者姓名" width="180" />
+              <el-table-column prop="authorName" label="作者姓名" width="180" />
               <el-table-column prop="worksCount" label="论文数量" width="180" />
               <el-table-column prop="citedByCount" label="被引用数" width="180" />
             </el-table>
