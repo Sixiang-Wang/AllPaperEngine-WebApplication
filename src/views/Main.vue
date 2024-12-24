@@ -338,9 +338,7 @@ const handleInputChange = async () => {
         // }
         // break;
     }
-    
   } else {
-    autocompleteSuggestions = [];
     showAutoComplete = false;
   }
 };
