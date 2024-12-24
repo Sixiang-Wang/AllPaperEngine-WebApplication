@@ -37,7 +37,7 @@ public class ConnectiveController {
         }
     }
     @GetMapping(value="/getSortedInstitutions")
-    public R sortLanguages(){
+    public R sortInstitutions(){
         try{
             List<String> institutions = connectiveService.sortInstitutions();
             return R.ok().put("institutions", institutions);
