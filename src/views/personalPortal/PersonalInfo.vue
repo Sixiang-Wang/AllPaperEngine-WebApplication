@@ -16,7 +16,7 @@ const avatarUrl = computed(()=>{
 
 const userId = localStorage.getItem("userId");
 const userName = localStorage.getItem("userName");
-const AuthorId = ref("");
+let authorId = ref([]);
 let user = ref([]);
 console.log(userName);
 
@@ -42,6 +42,7 @@ let firstPublishWorkCount = ref([]);
 let firstHighQualityWorksCount = ref([]);
 let HNumber = ref([]);
 let citedCount = ref([]);
+let worksCount = ref([]);
 
 // 获取个人成果
 onMounted(async () => {
@@ -54,7 +55,6 @@ onMounted(async () => {
   }
   try {
     const res = await httpUtil.get('/claim/get/personal', { scholarId: userId });
-    console.log(res)
     if (res.data && res.data.works) {
       myAchievement.value = res.data.works;
     }
@@ -65,8 +65,21 @@ onMounted(async () => {
   }
 
   // firstPublishWorkCount = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: userId.value});
+
+  user = await httpUtil.get("/user/getById", {userId: userId});
+  authorId = user.data.user.authorId;
+  let firstPublishWorkCountdata = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: authorId});
+  firstPublishWorkCount = firstPublishWorkCountdata.data.getFirstPublishWorkCountByAuthorId;
+  let firstHighQualityWorksCountdata = await httpUtil.get("/author/getHighQualityWorksCountByAuthorId", {authorId: authorId});
+  firstHighQualityWorksCount = firstHighQualityWorksCountdata.data.getFirstHighQualityWorksCountByAuthorId;
+  let HNumberData = await httpUtil.get("/author/getHNumberByAuthorId", {authorId: authorId});
+  HNumber = HNumberData.data.getHNumberByAuthorId;
+  let citedCountData = await httpUtil.get("/author/getCitedCountByAuthorId", {authorId: authorId});
+  citedCount = citedCountData.data.getCitedCountByAuthorId;
+  let worksCountData = await httpUtil.get("/author/getWorksCountByAuthorId", {authorId: authorId});
+  worksCount = worksCountData.data.getWorksCountByAuthorId;
   console.log(firstPublishWorkCount);
-  
+
 });
 
 // 跳转到具体论文页面
@@ -133,19 +146,19 @@ const simpleSearch = async () => {
           <el-text style="font-size: medium">根据您所认领的文献计算，各项指标如下：</el-text>
           <el-row style="margin-top:3%">
             <el-col :span="7" style="font-size:small">总发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
+            <el-col :span="5" style="font-size:small">{{ worksCount }}</el-col>
             <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
+            <el-col :span="5" style="font-size:small">{{ firstPublishWorkCount }}</el-col>
           </el-row>
           <el-row style="margin-top:3%">
             <el-col :span="7" style="font-size:small">高影响力论文数</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
+            <el-col :span="5" style="font-size:small">{{ firstHighQualityWorksCount }}</el-col>
             <el-col :span="7" style="font-size:small">总被引用数</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
+            <el-col :span="5" style="font-size:small">{{ citedCount }}</el-col>
           </el-row>
           <el-row style="margin-top:3%">
             <el-col :span="7" style="font-size:small">H指数</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
+            <el-col :span="5" style="font-size:small">{{HNumber}}}</el-col>
           </el-row>
         </el-col>
       </el-row>

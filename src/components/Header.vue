@@ -51,6 +51,7 @@ const goToLogin = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('userId');
+    localStorage.removeItem('authorId');
     ElMessage.success("已退出登录！");
     router.push('/main');
     location.reload();
@@ -102,6 +103,7 @@ const preLogin = async ()=>{
     localStorage.setItem("token", '');
     localStorage.setItem("userId", '');
     localStorage.setItem("userName", '');
+    localStorage.setItem("authorId", '')
     return
   }
   localStorage.setItem("avatar",'');
@@ -116,6 +118,7 @@ const preLogin = async ()=>{
   localStorage.setItem("userId", res.data.userId);
   localStorage.setItem("avatar",'');
   localStorage.setItem("avatar",res.data.avatar);
+  localStorage.setItem("authorId", res.data.authorId);
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
 }
 
