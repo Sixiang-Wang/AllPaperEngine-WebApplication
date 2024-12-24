@@ -16,7 +16,7 @@ const avatarUrl = computed(()=>{
 
 const userId = localStorage.getItem("userId");
 const userName = localStorage.getItem("userName");
-let authorId = ref([]);
+const authorId = ref([]);
 let user = ref([]);
 console.log(userName);
 
@@ -38,11 +38,11 @@ const searchedPapers = ref([]);
 
 const isLoading = ref(true);
 
-let firstPublishWorkCount = ref([]);
-let firstHighQualityWorksCount = ref([]);
-let HNumber = ref([]);
-let citedCount = ref([]);
-let worksCount = ref([]);
+const firstPublishWorkCount = ref(0);
+const firstHighQualityWorksCount = ref(0);
+const HNumber = ref(0);
+const citedCount = ref(0);
+const worksCount = ref(0);
 
 // 获取个人成果
 onMounted(async () => {
@@ -67,18 +67,23 @@ onMounted(async () => {
   // firstPublishWorkCount = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: userId.value});
 
   user = await httpUtil.get("/user/getById", {userId: userId});
-  authorId = user.data.user.authorId;
-  let firstPublishWorkCountdata = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: authorId});
-  firstPublishWorkCount = firstPublishWorkCountdata.data.getFirstPublishWorkCountByAuthorId;
-  let firstHighQualityWorksCountdata = await httpUtil.get("/author/getHighQualityWorksCountByAuthorId", {authorId: authorId});
-  firstHighQualityWorksCount = firstHighQualityWorksCountdata.data.getFirstHighQualityWorksCountByAuthorId;
-  let HNumberData = await httpUtil.get("/author/getHNumberByAuthorId", {authorId: authorId});
-  HNumber = HNumberData.data.getHNumberByAuthorId;
-  let citedCountData = await httpUtil.get("/author/getCitedCountByAuthorId", {authorId: authorId});
-  citedCount = citedCountData.data.getCitedCountByAuthorId;
-  let worksCountData = await httpUtil.get("/author/getWorksCountByAuthorId", {authorId: authorId});
-  worksCount = worksCountData.data.getWorksCountByAuthorId;
+  authorId.value = user.data.user.authorId;
+  let firstPublishWorkCountdata = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: authorId.value});
+  firstPublishWorkCount.value = firstPublishWorkCountdata.data.getFirstPublishWorkCountByAuthorId;
+  let firstHighQualityWorksCountdata = await httpUtil.get("/author/getHighQualityWorksCountByAuthorId", {authorId: authorId.value});
+  firstHighQualityWorksCount.value = firstHighQualityWorksCountdata.data.getHighQualityWorksCountByAuthorId;
+  let HNumberData = await httpUtil.get("/author/getHNumberByAuthorId", {authorId: authorId.value});
+  HNumber.value = HNumberData.data.getHNumberByAuthorId;
+  let citedCountData = await httpUtil.get("/author/getCitedCountByAuthorId", {authorId: authorId.value});
+  citedCount.value = citedCountData.data.getCitedCountByAuthorId;
+  let worksCountData = await httpUtil.get("/author/getWorksCountByAuthorId", {authorId: authorId.value});
+  worksCount.value = worksCountData.data.getWorksCountByAuthorId;
   console.log(firstPublishWorkCount);
+  console.log(firstHighQualityWorksCount);
+  console.log(HNumber);
+  console.log(citedCount);
+  console.log(worksCount);
+  console.log(authorId);
 
 });
 
@@ -132,7 +137,7 @@ const simpleSearch = async () => {
             />
             <div style="margin-left: 10%; margin-top: 5%">
               <el-text style="font-size: large">{{userName}}</el-text><br>
-              <el-text style="font-size: small">学者ID：1000000</el-text>
+              <el-text style="font-size: small">学者ID：{{ authorId }}</el-text>
             </div>
           </el-row>
           <el-row style="margin-top: 15%">
@@ -158,7 +163,7 @@ const simpleSearch = async () => {
           </el-row>
           <el-row style="margin-top:3%">
             <el-col :span="7" style="font-size:small">H指数</el-col>
-            <el-col :span="5" style="font-size:small">{{HNumber}}}</el-col>
+            <el-col :span="5" style="font-size:small">{{ HNumber }}</el-col>
           </el-row>
         </el-col>
       </el-row>
@@ -184,7 +189,6 @@ const simpleSearch = async () => {
             </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="学术统计" name="second">Config</el-tab-pane>
         <el-tab-pane label="学术关系网" name="third">Role</el-tab-pane>
       </el-tabs>
     </el-card>
