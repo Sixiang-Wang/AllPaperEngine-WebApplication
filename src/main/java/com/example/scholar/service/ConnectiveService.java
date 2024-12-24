@@ -17,5 +17,6 @@ public interface ConnectiveService {
     List<Works> getWorksByPublicationYear(int publicationYear);
     List<Works> getWorksByType(String type);
     List<Works> getWorksByInstitution(String language);
+    List<Works> getWorksByConditions(String keyword, String type, String institution, Integer year);
 
 }

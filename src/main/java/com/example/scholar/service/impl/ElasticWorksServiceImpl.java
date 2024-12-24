@@ -5,6 +5,7 @@ import com.example.scholar.domain.openalexElasticsearch.Works;
 import com.example.scholar.repository.ElasticSearchRepository;
 import com.example.scholar.service.ElasticWorkService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
@@ -40,7 +41,6 @@ import java.util.stream.Collectors;
 
 @Service("ElasticWorkService")
 public class ElasticWorksServiceImpl implements ElasticWorkService {
-
     @Autowired
     private ElasticsearchOperations elasticsearchOperations;
     @Resource
@@ -50,53 +50,63 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
-    @Override
-    public void searchByTitleTest(String title) {
-        // 每页显示的记录数
-        int pageSize = 100;
-        int page = 5;
-        elasticWorkMapper.clearSearchWork();
 
-//        for(int i = 1; i < page; i++) {
-//            // 使用 Elasticsearch 的分页功能
-//            Query query = new NativeSearchQueryBuilder()
-//                    .withQuery(QueryBuilders.matchQuery("title", title))
-//                    .withHighlightFields(new HighlightBuilder.Field("title")
-//                            .preTags("<span style='color:red'>")
-//                            .postTags("</span>")
-//                            .numOfFragments(0))
-//                    .withPageable(PageRequest.of(i - 1, pageSize)) // 分页设置
-//                    .build();
-//            SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
-//            // 下面是用于生成关键词表的
-//            List<Works> worksList = (searchHits.getSearchHits()).stream()
-//                    .map(SearchHit::getContent)
-//                    .collect(Collectors.toList());
-//            System.out.println(worksList.size());
-//            for(Works work: worksList)
-//            {
-//                String work_id = work.getId();
-//                String type = work.getType();
-//                Integer year = work.getPublication_year();
-//                String topic_id = elasticWorkMapper.getTopicIdByWorkId(work_id);
-//                String keyword = elasticWorkMapper.getKeywordsById(topic_id);
-//                List<String> institutions = elasticWorkMapper.getInstitutionNamesByWorkId(work_id);
-//                for(String institution: institutions)
-//                {
-//                    elasticWorkMapper.insertSearchWork(work_id, "keywordText", type, institution, year);
-//                }
-//                ObjectMapper mapper = new ObjectMapper();
-//                try {
-//                    List<String> keywords = mapper.readValue(keyword, List.class);
-//                    for (String keywordText : keywords) {
-//                        elasticWorkMapper.insertSearchWork(work_id, keywordText, type, institution, year);
-//                    }
-//                } catch (JsonProcessingException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
+    @Override
+    public List<SearchHit<Works>> searchByTitleTest(String title) {
+        List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
+//        List<Works> worksList = searchHits.stream()
+//                .map(SearchHit::getContent)
+//                .collect(Collectors.toList());
+        return searchHits;
+    }
+
+    @Override
+    public void searchAssistant(String title) {
+        // 每页显示的记录数
+        elasticWorkMapper.clearSearchWork();
+        // 使用 Elasticsearch 的分页功能
+        Query bmpQuery = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.matchQuery("title", title))
+                .withHighlightFields(new HighlightBuilder.Field("title")
+                        .preTags("<span style='color:red'>")
+                        .postTags("</span>")
+                        .numOfFragments(0))
+                .withPageable(PageRequest.of(0, 400)) // 分页设置
+                .build();
+        SearchHits<Works> searchHits = elasticsearchRestTemplate.search(bmpQuery, Works.class);
+        // 下面是用于生成关键词表的
+        List<Works> worksList = (searchHits.getSearchHits()).stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+        System.out.println(worksList.size());
+        for(Works work: worksList)
+        {
+            String work_id = work.getId();
+            String type = work.getType();
+            Integer year = work.getPublication_year();
+            String topic_id = elasticWorkMapper.getTopicIdByWorkId(work_id);
+            String keyword = elasticWorkMapper.getKeywordsById(topic_id);
+            String institution = elasticWorkMapper.getInstitutionNameByWorkId(work_id);
+            elasticWorkMapper.insertSearchWork(work_id, null, type, institution, year);
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                // 确保 keyword 是一个合法的 JSON 字符串，比如 ["key1", "key2"]
+                if (keyword != null && !keyword.isEmpty()) {
+                    // 反序列化 JSON 字符串为 List<String>
+                    List<String> keywords = mapper.readValue(keyword, new TypeReference<List<String>>() {});
+
+                    // 遍历关键字并逐个更新
+                    for (String keywordText : keywords) {
+                        if (keywordText != null && !keywordText.isEmpty()) {
+                            elasticWorkMapper.updateKeywordText(work_id, keywordText.trim());
+                        }
+                    }
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                System.err.println("JSON 解析失败: " + e.getMessage());
+            }
+        }
     }
     public static long count = 0;
     @Override

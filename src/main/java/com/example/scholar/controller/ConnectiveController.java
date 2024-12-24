@@ -96,5 +96,19 @@ public class ConnectiveController {
         }
     }
 
+    @GetMapping(value = "/getWorksByConditions")
+    public R getWorksByConditions(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "institution", required = false) String institution,
+            @RequestParam(value = "publicationYear", required = false) Integer publicationYear) {
+        try {
+            List<Works> works = connectiveService.getWorksByConditions(keyword, type, institution, publicationYear);
+            return R.ok().put("works", works);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 
 }
