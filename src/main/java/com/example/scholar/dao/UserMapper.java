@@ -125,7 +125,7 @@ public interface UserMapper {
 
     // 添加一条历史记录
     @Insert("INSERT INTO user_browser_history (userid, publicationid, timestamp) VALUES (#{userId}, #{publicationId}, #{timestamp})")
-    int addUserBrowserHistory(int userId, String publicationId, LocalDateTime timestamp);
+    int addUserBrowserHistory(int userId, String publicationId, String timestamp);
 
     // 删除一条历史记录
     @Delete("DELETE FROM user_browser_history WHERE userid = #{userId} AND publicationid = #{publicationId}")
@@ -141,7 +141,7 @@ public interface UserMapper {
 
     // 修改已有记录的时间戳
     @Update("UPDATE user_browser_history SET timestamp = #{timestamp} WHERE userid = #{userId} AND publicationid = #{publicationId}")
-    int updateUserBrowserHistoryTimestamp(int userId, String publicationId, LocalDateTime timestamp);
+    int updateUserBrowserHistoryTimestamp(int userId, String publicationId, String timestamp);
 
     // 查看所有标签
     @Select("SELECT * FROM user_favorite_tag WHERE userid = #{userId}")

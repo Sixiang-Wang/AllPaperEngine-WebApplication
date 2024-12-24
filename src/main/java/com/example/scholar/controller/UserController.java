@@ -615,9 +615,9 @@ public class UserController {
     @DateTimeFormat
     public R addHistory(@RequestParam int userId,
                         @RequestParam String publicationId,
-                        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime timestamp) {
+                        @RequestParam String tstring) {
         try {
-            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, timestamp);
+            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, tstring);
             if ("浏览历史添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("History added successfully");
             } else {
