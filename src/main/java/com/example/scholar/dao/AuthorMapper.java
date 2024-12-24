@@ -36,4 +36,13 @@ public interface AuthorMapper {
     List<String> getWorkIdsByFirstAuthorId(String authorId);
     @Select("select * from openalex.authors where display_name LIKE CONCAT('%', #{name}, '%')")
     List<Author> getAuthorsByName(String name);
+
+    // 在openalex.authors查找authorIdList中的作者信息
+    @Select("<script>" +
+            "SELECT * FROM openalex.authors WHERE id IN " +
+            "<foreach item='item' index='index' collection='list' open='(' separator=',' close=')'>" +
+            "#{item}" +
+            "</foreach>" +
+            "</script>")
+    List<Author> selectAuthorByIdList(List<String> authorIdList);
 }
