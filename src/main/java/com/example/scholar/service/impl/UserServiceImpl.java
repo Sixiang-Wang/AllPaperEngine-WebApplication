@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public int getCount() {
         return userMapper.getCount();
+    }
+
+    @Override
+    public String getAuthorIdByUser(int userId) {
+        return userMapper.selectUserById(userId).getAuthorId();
     }
 
     @Override
@@ -559,12 +565,40 @@ public class UserServiceImpl implements UserService {
         return resultList;
     }
 
+//    @Override
+//    public HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp) {
+//        HashMap<String, Object> resultMap = new HashMap<>();
+//        User existingUser = userMapper.selectUserById(userId);
+//        int result;
+//        System.out.println(timestamp);
+//        if (existingUser == null) {
+//            resultMap.put("msg", "User not found");
+//            return resultMap;
+//        }
+//        int isExist = userMapper.checkUserBrowserHistory(userId, publicationId);
+//        if (isExist > 0) {// 如果已有相同浏览记录，就只更新时间戳
+//            result = userMapper.updateUserBrowserHistoryTimestamp(userId, publicationId, timestamp);
+//        } else {// 没有的话就直接添加
+//            result = userMapper.addUserBrowserHistory(userId, publicationId, timestamp);
+//        }
+//        if (result > 0) {
+//            resultMap.put("msg", "浏览历史添加成功");
+//        }
+//        else {
+//            resultMap.put("msg", "浏览历史添加失败");
+//        }
+//        return resultMap;
+//    }
+
     @Override
-    public HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp) {
+    public HashMap<String, Object> addHistory(int userId, String publicationId, String tString) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         int result;
+
+        LocalDateTime timestamp = parseDateTimeString(tString);
         System.out.println(timestamp);
+
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
@@ -652,6 +686,16 @@ public class UserServiceImpl implements UserService {
             }
         }
         return true;
+    }
+
+    public static LocalDateTime parseDateTimeString(String dateTimeString) {
+        // 定义与输入字符串格式相匹配的格式化模式
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        // 使用格式化器将字符串解析为LocalDateTime对象
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, formatter);
+
+        return localDateTime;
     }
 
 }

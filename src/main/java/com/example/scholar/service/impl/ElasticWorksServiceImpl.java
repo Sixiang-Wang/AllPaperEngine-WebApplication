@@ -10,7 +10,10 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
@@ -18,8 +21,14 @@ import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.elasticsearch.search.suggest.completion.FuzzyOptions;
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import springfox.documentation.spring.web.json.Json;
 
@@ -42,7 +51,8 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     @Resource
     private SearchedWorkMapper elasticWorkMapper;
 
-
+    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Override
     public List<SearchHit<Works>> searchByTitleTest(String title) {
         List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
@@ -51,6 +61,42 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 //                .collect(Collectors.toList());
         return searchHits;
     }
+    public static long count = 0;
+    @Override
+    public List<SearchHit<Works>> searchByTitleByPage(String title, int page) {
+        // 每页显示的记录数
+        int pageSize = 20;
+        int from = (page - 1) * pageSize; // 起始记录
+
+        // 使用 Elasticsearch 的分页功能
+        Query query = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.matchQuery("title", title))
+                .withHighlightFields(new HighlightBuilder.Field("title")
+                        .preTags("<span style='color:red'>")
+                        .postTags("</span>")
+                        .numOfFragments(0))
+                .withPageable(PageRequest.of(page - 1, pageSize)) // 分页设置
+                .build();
+        count = 0;
+        try{
+            Query tmpQuery = new NativeSearchQueryBuilder()
+                    .withQuery(QueryBuilders.matchQuery("title", title))
+                    .withHighlightFields(new HighlightBuilder.Field("title")
+                            .preTags("<span style='color:red'>")
+                            .postTags("</span>")
+                            .numOfFragments(0))
+                    .build();
+            SearchHits<Works> tmp = elasticsearchRestTemplate.search(query, Works.class);
+            count = tmp.getTotalHits();
+        }catch (Exception e){
+            count = 10000;
+        }
+        SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
+
+        // 返回当前页的搜索结果
+        return searchHits.getSearchHits();
+    }
+
 
     @Override
     public List<SearchHit<Works>> searchByTitle(String title) {

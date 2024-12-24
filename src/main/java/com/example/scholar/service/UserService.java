@@ -13,6 +13,7 @@ import java.util.List;
 public interface UserService {
     List<User> getAll();
     int getCount();
+    String getAuthorIdByUser(int userId);
     HashMap<String, Object> login(String mail, String password);
     HashMap<String, Object> register(String name, String password, String mail);
     HashMap<String, Object> setUserDetails(int userId, String avatar, LocalDate birthTime, String biography,
@@ -38,7 +39,8 @@ public interface UserService {
     HashMap<String, Object> deleteUserFavorite(int userId, String publicationId);
 
     // 添加浏览历史
-    HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
+    //HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
+    HashMap<String, Object> addHistory(int userId, String publicationId, String tString);
 
     // 退出登录
     HashMap<String, Object> logout(int userId);

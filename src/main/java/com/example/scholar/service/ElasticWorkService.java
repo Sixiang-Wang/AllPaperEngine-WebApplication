@@ -23,6 +23,7 @@ public interface ElasticWorkService {
      * @return 返回高亮显示的结果集
      */
     List<SearchHit<Works>> searchByTitleTest(String title);
+    List<SearchHit<Works>> searchByTitleByPage(String title, int page);
 
     List<SearchHit<Works>> searchByTitle(String title);
 
