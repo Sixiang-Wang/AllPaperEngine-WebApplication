@@ -1,5 +1,5 @@
 <script setup xmlns="http://www.w3.org/1999/html">
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import defaultAvatar from "@/assets/image/user.gif";
 import { useRoute } from 'vue-router';
@@ -10,10 +10,14 @@ import * as httpUtil from "@/api/http.js";
 import http from "@/api/http.js";
 import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
 
+
+const haveAvatar = ref(false)
+
 const avatarUrl = computed(()=>{
   const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
   return http.getUrlWithoutSlash() + avatar;
 });
+
 
 const button_index = ref("登录");
 const userStore = useUserStore();
@@ -104,7 +108,7 @@ const preLogin = async ()=>{
     localStorage.setItem("userName", '');
     return
   }
-  localStorage.setItem("avatar",'');
+
   const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
   console.log(res);
 
@@ -114,14 +118,22 @@ const preLogin = async ()=>{
   localStorage.setItem("userName", res.data.username);
   localStorage.setItem("token", res.data.token);
   localStorage.setItem("userId", res.data.userId);
-  localStorage.setItem("avatar",'');
+
   localStorage.setItem("avatar",res.data.avatar);
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
+  cookieUtil.setCookie("avatar", res.data.avatar);
+
+  haveAvatar.value = true
+
+  const res2 = await http.get('/user/ifScholar',{userId: res.data.userId});
+  localStorage.setItem("ifAuthentication",res2.data.judge === 1);
+  ifAuth.value = res2.data.judge === 1;
+
+
 }
 
+const ifAuth = ref(false);
 
-
-const ifAuthentication = ref(localStorage.getItem("ifAuthentication"));
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
@@ -135,7 +147,7 @@ const handleDrawer = ()=>{
   drawer.value = !drawer.value;
 }
 
-
+const errorHandler = () => true
 </script>
 
 <template>
@@ -150,7 +162,7 @@ const handleDrawer = ()=>{
       :ellipsis="false"
   >
     <div class="header-menu-left" @click="back">
-      <img src="@/assets/image/logo.png" style="width: 45px; height: 45px;margin-top: 8px"/>
+      <img src="@/assets/image/logo.png"  style="width: 45px; height: 45px;margin-top: 8px"/>
       <div style="font-size:9.5px;font-family: espano;text-align: center;margin-top: -14px;color: #06008c;user-select: none">
         AllPaper
         <br>
@@ -162,9 +174,10 @@ const handleDrawer = ()=>{
 
     <el-sub-menu index="3">
       <template #title>作者服务</template>
-      <el-menu-item index="/user/personalInfo" v-if="ifAuthentication">个人门户</el-menu-item>
-      <el-menu-item index="/user/academicClaim">学术成果认领</el-menu-item>
-      <el-menu-item index="/scholarIdentify" v-if="ifAuthentication">学者认证</el-menu-item>
+      <el-menu-item index="/user/personalInfo" v-if="ifAuth">个人门户</el-menu-item>
+      <el-menu-item index="/user/academicClaim" v-if="ifAuth">学术成果认领</el-menu-item>
+      <el-menu-item index="/scholarIdentify" v-if="ifAuth">更新认证</el-menu-item>
+      <el-menu-item index="/scholarIdentify" v-else>学者认证</el-menu-item>
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/hotpoint">热点分析</el-menu-item>
@@ -180,7 +193,13 @@ const handleDrawer = ()=>{
         <!-- 红色原点 -->
         <div class="sss" v-if="isRedPoint"></div>
       </div>
-      <el-avatar :src="avatarUrl" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
+
+      <el-avatar :src="avatarUrl" v-if="haveAvatar" shape="circle" class="user-avatar" @click="goToUserInfo" @error="errorHandler">
+        <img
+            src="http://116.204.112.5:1145/img/avatar/default.png"
+        />
+      </el-avatar>
+
       <span :style="{ color: textColor }">
         {{ user_name ? `欢迎, ${user_name}` : "点此登录" }}
       </span>

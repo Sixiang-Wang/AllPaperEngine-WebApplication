@@ -3,12 +3,12 @@
         <div class="author-header">
         <div class="author-left">
           <el-avatar :src="avatar" :size="80" />
-          <div class="author-info">
-              <h2>{{ name }}</h2>
+            <div class="author-info">
+              <h2 @click="goToAuthorInfo">{{ name }}</h2>
               <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
               <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
               <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
-          </div>
+            </div>
         </div>
 
         <div class="author-middle" >
@@ -35,6 +35,7 @@
   
 <script>
 import axios from 'axios';
+import router from "@/router/index.js";
   export default {
     name: 'SingleAuthor',
     props: {
@@ -82,43 +83,7 @@ import axios from 'axios';
         type: Number,
         required: true
       },
-      // publications: {
-      //   type: Array,
-      //   required: true,
-      //   default: () => []
-      // }
     },
-
-    // name: 'AuthorDetails',
-    // data() {
-    //   return {
-    //     id: '114514',
-    //     name: '王思翔',
-    //     workPlace: '北京航空航天大学',
-    //     area: '软件工程，计算机科学与技术',
-    //     avatar: '',
-    //     citedByCount: 10,
-    //     worksCount: 20,
-    //     H_index:99,
-    //     firstAuthor:5,
-    //     highInflu:15,
-    //     publications: [
-    //         { id: 1, title: 'REVISEVAL IMPROVING LLM-AS-A-JUDGE VIA  RESPONSE-ADAPTED REFERENCES.', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-    //         { id: 2, title: 'Ciallo～(∠・ω< )⌒☆', description: '柚子厨蒸鹅心', date: '2024-03-22', cited: 20 },
-    //         { id: 3, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-    //         { id: 4, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-    //         { id: 5, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-    //         { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-    //         { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
-    //     ],
-    //   };
-    // },
-    /*
-    created() {
-      this.fetchAuthorDetails();
-      this.fetchAuthorPublications();
-    },
-    */
     methods: {
       followAuthor() {
         console.log(`Following author: ${this.name}`);
@@ -149,9 +114,27 @@ import axios from 'axios';
             console.error('获取作者作品信息错误', error);
           });
       },
-    },
-  };
-  </script>
+    goToAuthorInfo() {
+      router.push({
+        name: 'authorInfo',
+        path: '/authorInfo',
+        query: {
+          id: this.id,
+          name: this.name,
+          workPlace: this.workPlace,
+          area: this.area,
+          avatar: this.avatar,
+          citedByCount: this.citedByCount,
+          worksCount: this.worksCount,
+          H_index: this.H_index,
+          firstAuthor: this.firstAuthor,
+          highInflu: this.highInflu
+        }
+      });
+    }
+  }
+};
+</script>
   
 <style scoped>
 .author-details {
