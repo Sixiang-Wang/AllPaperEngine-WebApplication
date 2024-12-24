@@ -43,12 +43,18 @@ public class NetServiceImpl implements NetService {
                 // 获取每条workId对应的相关作者
                 for (String authorTmpId : tmp) {
                     AuthorForNet authorForNet = netMapper.selectAuthorById(authorTmpId);
+                    if(authorForNet == null || authorForNet.getDisplayNameAlterNatives() == null){
+                        continue;
+                    }
                     // 获取authorForNet对象
-                    authorForNet.setName(getFirstArray(authorForNet.getDisplayNameAlterNatives()));
+                        authorForNet.setName(getFirstArray(authorForNet.getDisplayNameAlterNatives()));
                     authorForNet.setType(NetDataType.WORK_RELATED);
                     res.add(authorForNet);
                 }
             }
+        }
+        if(res.size()>6){
+            res = res.subList(0,7);
         }
         AuthorForNet authorForNet = netMapper.selectAuthorById(authorId);
 
@@ -61,10 +67,26 @@ public class NetServiceImpl implements NetService {
             List<AuthorForNet> institutionAuthors = netMapper.getRelatedAuthorsByInstitution(institution);
             for(AuthorForNet author: institutionAuthors){
                 author.setType(NetDataType.INSTITUTION_RELATED);
+                author.setName(author.getDisplayName());
             }
             res.addAll(institutionAuthors);
         }
+
+        for(int i= 0;i<res.size();i++){
+            for(int j=1;j<res.size();j++){
+                if(res.get(i).getName()==null){
+                    res.remove(i);
+                    break;
+                }
+                if(res.get(i).getName().equals(res.get(j).getName())){
+                    res.remove(j);
+                }
+            }
+        }
         // 设置相关作者
+        if(res.size()>10){
+            res = res.subList(0,11);
+        }
         authorForNet.setRelatedAuthors(res);
         return authorForNet;
     }
