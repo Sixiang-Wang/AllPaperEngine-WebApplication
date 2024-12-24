@@ -565,40 +565,12 @@ public class UserServiceImpl implements UserService {
         return resultList;
     }
 
-//    @Override
-//    public HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp) {
-//        HashMap<String, Object> resultMap = new HashMap<>();
-//        User existingUser = userMapper.selectUserById(userId);
-//        int result;
-//        System.out.println(timestamp);
-//        if (existingUser == null) {
-//            resultMap.put("msg", "User not found");
-//            return resultMap;
-//        }
-//        int isExist = userMapper.checkUserBrowserHistory(userId, publicationId);
-//        if (isExist > 0) {// 如果已有相同浏览记录，就只更新时间戳
-//            result = userMapper.updateUserBrowserHistoryTimestamp(userId, publicationId, timestamp);
-//        } else {// 没有的话就直接添加
-//            result = userMapper.addUserBrowserHistory(userId, publicationId, timestamp);
-//        }
-//        if (result > 0) {
-//            resultMap.put("msg", "浏览历史添加成功");
-//        }
-//        else {
-//            resultMap.put("msg", "浏览历史添加失败");
-//        }
-//        return resultMap;
-//    }
-
     @Override
-    public HashMap<String, Object> addHistory(int userId, String publicationId, String tString) {
+    public HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp) {
         HashMap<String, Object> resultMap = new HashMap<>();
         User existingUser = userMapper.selectUserById(userId);
         int result;
-
-        LocalDateTime timestamp = parseDateTimeString(tString);
         System.out.println(timestamp);
-
         if (existingUser == null) {
             resultMap.put("msg", "User not found");
             return resultMap;
@@ -617,6 +589,34 @@ public class UserServiceImpl implements UserService {
         }
         return resultMap;
     }
+
+//    @Override
+//    public HashMap<String, Object> addHistory(int userId, String publicationId, String tString) {
+//        HashMap<String, Object> resultMap = new HashMap<>();
+//        User existingUser = userMapper.selectUserById(userId);
+//        int result;
+//
+//        LocalDateTime timestamp = parseDateTimeString(tString);
+//        System.out.println(timestamp);
+//
+//        if (existingUser == null) {
+//            resultMap.put("msg", "User not found");
+//            return resultMap;
+//        }
+//        int isExist = userMapper.checkUserBrowserHistory(userId, publicationId);
+//        if (isExist > 0) {// 如果已有相同浏览记录，就只更新时间戳
+//            result = userMapper.updateUserBrowserHistoryTimestamp(userId, publicationId, timestamp);
+//        } else {// 没有的话就直接添加
+//            result = userMapper.addUserBrowserHistory(userId, publicationId, timestamp);
+//        }
+//        if (result > 0) {
+//            resultMap.put("msg", "浏览历史添加成功");
+//        }
+//        else {
+//            resultMap.put("msg", "浏览历史添加失败");
+//        }
+//        return resultMap;
+//    }
 
     @Override
     public List<HashMap<String, Object>> viewAllHistory(int userId) {

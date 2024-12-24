@@ -104,10 +104,12 @@ public class ClaimWorkServiceImpl implements ClaimWorkService {
             workResultDto.setCited(work.getCitedByCount());
             workResultDto.setId(work.getId());
             workResultDto.setPublicationDate(work.getPublicationDate());
-            workResultDto.setPaperInformation(workService.ToMainInformation(work));
+
             //这里后续需要修改
             workResultDto.setGrants(work.getGrants());
-            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
+            //注释内容使用了旧端口,打开注释会释放bug恶魔
+            //workResultDto.setPaperInformation(workService.ToMainInformation(work));
+            //workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
             workResultDtos.add(workResultDto);
         }
         return workResultDtos;

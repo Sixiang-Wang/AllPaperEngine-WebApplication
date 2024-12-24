@@ -9,8 +9,8 @@ import java.util.Map;
 @Mapper
 public interface SearchedWorkMapper {
 
-    @Insert("INSERT INTO search_work(publicationid, keywordText, type, worklanguage, publicationYear) VALUES (#{id}, #{keywordText}, #{type}, #{language}, #{publicationYear})")
-    int insertSearchWork(String id, String keywordText, String type, String language, Integer publicationYear);
+    @Insert("INSERT INTO search_work(workid, keywordText, type, institution, publicationYear) VALUES (#{id}, #{keywordText}, #{type}, #{institution}, #{publicationYear})")
+    int insertSearchWork(String id, String keywordText, String type, String institution, Integer publicationYear);
 
     @Select("select * from search_work")
     List<Map<String, Object>> getAllWorks();
@@ -19,38 +19,50 @@ public interface SearchedWorkMapper {
             "FROM search_work " +
             "GROUP BY keywordText " +
             "ORDER BY COUNT(*) DESC " +
-            "LIMIT 100000")
+            "LIMIT 20")
     List<String> getCollectiveNum();
 
     @Select("SELECT type " +
             "FROM search_work " +
             "GROUP BY type " +
-            "ORDER BY COUNT(DISTINCT publicationid) DESC " +
-            "LIMIT 100000")
+            "ORDER BY COUNT(DISTINCT workid) DESC " +
+            "LIMIT 20")
     List<String> getTypeNum();
 
-    @Select("SELECT worklanguage " +
+    @Select("SELECT institution " +
             "FROM search_work " +
-            "GROUP BY worklanguage " +
-            "ORDER BY COUNT(DISTINCT publicationid) DESC " +
-            "LIMIT 100000")
-    List<String> getLanguageNum();
+            "GROUP BY institution " +
+            "ORDER BY COUNT(DISTINCT workid) DESC " +
+            "LIMIT 20")
+    List<String> getInstitutionNum();
 
     @Select("SELECT publicationYear " +
             "FROM search_work " +
             "GROUP BY publicationYear " +
-            "ORDER BY publicationYear DESC " +
-            "LIMIT 100000")
+            "ORDER BY COUNT(DISTINCT workid) DESC " +
+            "LIMIT 20")
     List<Integer> getPublictionYearsNum();
+
+    @Select("select topic_id from works_topics where work_id = #{work_id}")
+    String getTopicIdByWorkId(String work_id);
+
+    @Select("select keywords from topics where id = #{topicId}")
+    String getKeywordsById(String topicId);
 
     @Select("select publicationid from search_work where keywordText = #{keyword}")
     List<String> getWorksByKeyword(String keyword);
 
+    @Select("SELECT i.display_name " +
+            "FROM works_authorships wa " +
+            "JOIN institutions i ON wa.institution_id = i.id " +
+            "WHERE wa.work_id = #{work_id}")
+    String getInstitutionNameByWorkId(String work_id);
+
     @Select("select publicationid from search_work where type = #{type}")
     List<String> getWorksByType(String type);
 
-    @Select("select publicationid from search_work where worklanguage = #{language}")
-    List<String> getWorksByLanguage(String language);
+    @Select("select publicationid from search_work where institution = #{institution}")
+    List<String> getWorksByInstitution(String institution);
 
     @Select("select publicationid from search_work where publicationYear = #{publicationYear}")
     List<String> getWorksByPublictionYears(Integer publicationYear);

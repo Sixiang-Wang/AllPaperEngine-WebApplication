@@ -615,10 +615,9 @@ public class UserController {
     @DateTimeFormat
     public R addHistory(@RequestParam int userId,
                         @RequestParam String publicationId,
-                        @RequestParam String tString
-                        /*@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp*/) {
+                        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime timestamp) {
         try {
-            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, tString);
+            HashMap<String, Object> resultMap = userService.addHistory(userId, publicationId, timestamp);
             if ("浏览历史添加成功".equals(resultMap.get("msg"))) {
                 return R.ok("History added successfully");
             } else {
@@ -758,12 +757,14 @@ public class UserController {
 
     @GetMapping("/setNameReal")
     @ApiOperation("设置用户真名")
-    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal){
+    public R setUserNameReal(@RequestParam("userId")int userId,@RequestParam("nameReal")String nameReal,@RequestParam("authorId")String authorId){
         try {
             User user = userMapper.selectUserById(userId);
             if(user!=null){
+                user.setAuthorId(authorId);
                 user.setNameReal(nameReal);
                 userMapper.updateUserNameReal(user);
+                userMapper.updateUserAuthor(user);
                 return R.ok("success").put("user",user);
             }else {
                 return R.error("get user failed");

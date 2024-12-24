@@ -63,6 +63,10 @@ public interface UserMapper {
     @Update("UPDATE user SET name_real=#{nameReal} WHERE userid = #{userid}")
     int updateUserNameReal(User user);
 
+    @Update("UPDATE user SET author_id=#{authorId} WHERE userid = #{userid}")
+    int updateUserAuthor(User user);
+
+
     @Update("UPDATE user SET name = #{name} WHERE userid = #{userid}")
     int updateUserName(User user);
     @Update("UPDATE user SET password = #{password} WHERE userid = #{userId}")
