@@ -56,6 +56,7 @@
 import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import avatar from '@/assets/image/scholarHead.jpg';
 
 export default {
   setup() {
@@ -66,7 +67,7 @@ export default {
       id: '114514',
       name: '王思翔',
       description: 'IScholar官方认证学者',
-      avatar: '',
+      // avatar: '',
       citedByCount: 10,
       worksCount: 20,
       publications: [
@@ -121,6 +122,7 @@ export default {
     return {
       author,
       publications,
+      avatar
     };
   }
 };
