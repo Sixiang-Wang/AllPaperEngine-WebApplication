@@ -54,8 +54,7 @@ public class ElasticSearchController {
     @GetMapping(value="/works/getByTitleTest")
     public R getWorksByTtile(@RequestParam("title") String title){
         try{
-            elasticWorkService.searchByTitleTest(title);
-            return R.ok();
+            return R.ok().put("works",elasticWorkService.searchByTitleTest(title));
         }catch (Exception e){
             return R.error(e.toString());
         }
@@ -84,7 +83,15 @@ public class ElasticSearchController {
         }
     }
 
-
+    @GetMapping(value="/works/searchAssistant")
+    public R searchAssistant(@RequestParam("title") String title){
+        try{
+            elasticWorkService.searchAssistant(title);
+            return R.ok();
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
 
 
 

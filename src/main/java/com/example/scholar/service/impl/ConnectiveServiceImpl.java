@@ -71,5 +71,14 @@ public class ConnectiveServiceImpl implements ConnectiveService {
         return works;
     }
 
+    @Override
+    public List<Works> getWorksByConditions(String keyword, String type, String institution, Integer year) {
+        List<String> workIds = searchedWorkMapper.getWorksByConditions(keyword, type, institution, year);
+
+        if (workIds != null && !workIds.isEmpty()) {
+            return searchedWorkMapper.getWorksByIds(workIds);
+        }
+        return new ArrayList<>(); // 没有结果返回空列表
+    }
 
 }
