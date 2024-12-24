@@ -7,13 +7,16 @@ const route = useRoute();
 
 const isSpecificRoute = computed(() => {
   // 根据需要替换成你的特定路由
-  return route.path === '/main'||route.path === '/login'||route.path === '/register';
+  return route.path === '/main'||route.path === '/login'||route.path === '/register' || route.path === '/find/password';
 });
 const isLogin = computed(()=> {
   return route.path === '/login';
 })
 const isRegister = computed(()=> {
   return route.path === '/register';
+})
+const isForget = computed(()=> {
+  return route.path === '/find/password';
 })
 onMounted(()=>{
   // 检测浏览器路由改变页面不刷新问题,hash模式的工作原理是hashchange事件
@@ -35,6 +38,7 @@ const key = computed(() => {
   <div :class="['common-layout', { background: isSpecificRoute}]" style="margin:0;padding: 0;">
     <div v-if="isLogin" class="backgroundBlur"></div>
     <div v-if="isRegister" class="backgroundBlur"></div>
+    <div v-if="isForget" class="backgroundBlur"></div>
     <el-container style="margin:0;padding: 0;z-index: 1">
       <el-header height="80px" style="margin:0;padding: 0;">
         <Header/>

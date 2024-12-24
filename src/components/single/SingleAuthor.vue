@@ -20,9 +20,9 @@
         </div>
     </div>
 
-    <div class="article">
-        <p><strong>代表文章</strong>：{{ publications[0].title }}</p>
-    </div>
+<!--    <div class="article">-->
+<!--        <p><strong>代表文章</strong>：{{ publications[0].title }}</p>-->
+<!--    </div>-->
 
     <el-divider/>
   </div>

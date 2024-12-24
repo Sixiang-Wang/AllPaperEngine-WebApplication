@@ -121,6 +121,11 @@ const router = createRouter({
             component: ()=> import('@/views/user/AuthorInfo.vue')
         },
         {
+            path: '/find/password',
+            name: 'findPassword',
+            component: ()=> import('@/views/FindPassword.vue')
+        },
+        {
             path: '/institutionInfo',
             name: 'institutionInfo',
             component: ()=> import('@/views/user/InstitutionInfo.vue')
