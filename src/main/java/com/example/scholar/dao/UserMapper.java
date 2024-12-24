@@ -122,7 +122,7 @@ public interface UserMapper {
     void updateUserFavoriteTimestamp(int userId, String publicationId, LocalDateTime timestamp);
 
     // 查看所有历史记录
-    @Select("SELECT * FROM user_browser_history WHERE userid = #{userId}")
+    @Select("SELECT * FROM user_browser_history WHERE userid = #{userId} ORDER BY timestamp DESC")
     List<HashMap<String, Object>> selectUserBrowserHistory(int userId);
 
     // 添加一条历史记录
