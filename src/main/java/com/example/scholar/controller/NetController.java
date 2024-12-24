@@ -34,6 +34,7 @@ public class NetController {
             NetData netData = new NetData();
             netData.setName(res.getName());
             netData.setSymbolSize(NetConfig.AUTHOR_SYMBOL_SIZE);
+            netData.setType(NetDataType.SELF);
             data.add(netData);
             for (AuthorForNet authorForNet : res.getRelatedAuthors()) {
                 if(authorForNet.getType() == NetDataType.WORK_RELATED) {
@@ -41,6 +42,7 @@ public class NetController {
                         NetData tmp = new NetData();
                         tmp.setName(authorForNet.getName());
                         tmp.setSymbolSize(NetConfig.RELATE_AUTHOR_SYMBOL_SIZE);
+                        tmp.setType(NetDataType.WORK_RELATED);
                         data.add(tmp);
                     }
                     if (!res.getName().equals(authorForNet.getName())) {
@@ -54,6 +56,7 @@ public class NetController {
                         NetData tmp = new NetData();
                         tmp.setName(authorForNet.getName());
                         tmp.setSymbolSize(NetConfig.RELATE_INSTITUTION_AUTHOR_SYMBOL_SIZE);
+                        tmp.setType(NetDataType.INSTITUTION_RELATED);
                         data.add(tmp);
                     }
                     if (!res.getName().equals(authorForNet.getName())) {
@@ -110,19 +113,37 @@ public class NetController {
             NetData netData = new NetData();
             netData.setName(res.getName());
             netData.setSymbolSize(NetConfig.AUTHOR_SYMBOL_SIZE);
+            netData.setType(NetDataType.SELF);
             data.add(netData);
-            for(AuthorForNet authorForNet: res.getRelatedAuthors()){
-                if(!res.getName().equals(authorForNet.getName())) {
-                    NetData tmp = new NetData();
-                    tmp.setName(authorForNet.getName());
-                    tmp.setSymbolSize(NetConfig.RELATE_AUTHOR_SYMBOL_SIZE);
-                    data.add(tmp);
-                }
-                if(!res.getName().equals(authorForNet.getName())) {
-                    NetLink netLink = new NetLink();
-                    netLink.setSource(res.getName());
-                    netLink.setTarget(authorForNet.getName());
-                    links.add(netLink);
+            for (AuthorForNet authorForNet : res.getRelatedAuthors()) {
+                if(authorForNet.getType() == NetDataType.WORK_RELATED) {
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetData tmp = new NetData();
+                        tmp.setName(authorForNet.getName());
+                        tmp.setSymbolSize(NetConfig.RELATE_AUTHOR_SYMBOL_SIZE);
+                        tmp.setType(NetDataType.WORK_RELATED);
+                        data.add(tmp);
+                    }
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetLink netLink = new NetLink();
+                        netLink.setSource(res.getName());
+                        netLink.setTarget(authorForNet.getName());
+                        links.add(netLink);
+                    }
+                }else if (authorForNet.getType() == NetDataType.INSTITUTION_RELATED){
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetData tmp = new NetData();
+                        tmp.setName(authorForNet.getName());
+                        tmp.setSymbolSize(NetConfig.RELATE_INSTITUTION_AUTHOR_SYMBOL_SIZE);
+                        tmp.setType(NetDataType.INSTITUTION_RELATED);
+                        data.add(tmp);
+                    }
+                    if (!res.getName().equals(authorForNet.getName())) {
+                        NetLink netLink = new NetLink();
+                        netLink.setSource(res.getName());
+                        netLink.setTarget(authorForNet.getName());
+                        links.add(netLink);
+                    }
                 }
             }
             return R.ok().put("data", data).put("links", links);

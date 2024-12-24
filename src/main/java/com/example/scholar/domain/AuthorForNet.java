@@ -15,6 +15,7 @@ public class AuthorForNet {
     @Column(columnDefinition = "json")
     private String displayNameAlterNatives;
     private String name;
+    private String displayName;
     @Transient
     private NetDataType type;
     List<AuthorForNet> relatedAuthors;

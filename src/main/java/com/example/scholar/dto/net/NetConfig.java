@@ -7,6 +7,6 @@ public class NetConfig {
     public static final int RELATE_INSTITUTION_AUTHOR_SYMBOL_SIZE = 20;
 
     public static final boolean CONTAINS_RELATED_WORKS = true;
-    public static final boolean CONTAINS_RELATED_INSTITUTIONS = false;
+    public static final boolean CONTAINS_RELATED_INSTITUTIONS = true;
 
 }
