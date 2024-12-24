@@ -37,12 +37,15 @@ public interface AuthorMapper {
     @Select("select * from openalex.authors where display_name LIKE CONCAT('%', #{name}, '%')")
     List<Author> getAuthorsByName(String name);
 
-    // 在openalex.authors查找authorIdList中的作者信息
+    // 在openalex.authors查找authorIdList中的作者信息，cited_by_count > 1000，最多查20个
     @Select("<script>" +
-            "SELECT * FROM openalex.authors WHERE id IN " +
+            "SELECT * FROM openalex.authors " +
+            "WHERE id IN " +
             "<foreach item='item' index='index' collection='list' open='(' separator=',' close=')'>" +
             "#{item}" +
-            "</foreach>" +
+            "</foreach> " +
+            "AND cited_by_count > 1000 " +
+            "LIMIT 20" +
             "</script>")
     List<Author> selectAuthorByIdList(List<String> authorIdList);
 }
