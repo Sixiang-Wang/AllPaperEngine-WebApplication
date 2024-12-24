@@ -26,7 +26,7 @@
       <h3>发表文章</h3>
       <el-timeline>
         <el-timeline-item
-          v-for="(publication, index) in author.publications"
+          v-for="(publication, index) in publications"
           :key="publication.id"
           :timestamp="publication.publicationDate"
           :color="index % 2 === 0 ? 'primary' : 'warning'"
@@ -82,8 +82,12 @@ export default {
         const res = await axios.get('/author/getWorksByAuthorId', {
           params: { authorId: route.query.id }
         });
+        console.log(1);
+        console.log(res.data);
+        console.log(2);
         publications.value = res.data.getWorksByAuthorId || [];
         console.log(publications.value);
+        console.log(3);
       } catch (error) {
         console.error('Error fetching publications:', error);
       }

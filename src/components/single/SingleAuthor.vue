@@ -4,7 +4,7 @@
         <div class="author-left">
           <el-avatar :src="avatar" :size="80" />
             <div class="author-info">
-              <h2 @click="goToAuthorInfo">{{ name }}</h2>
+              <h2 class="hover-effect" @click="goToAuthorInfo">{{ name }}</h2>
               <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
               <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
               <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
@@ -202,5 +202,14 @@ margin: 0px;
 .article{
 margin-left: 20px;
 color:rgba(34, 0, 255, 0.759)
+}
+.hover-effect {
+  text-decoration: none;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.hover-effect:hover {
+  color: rgba(34, 0, 255, 0.759);
+  text-decoration: underline;
 }
 </style>
