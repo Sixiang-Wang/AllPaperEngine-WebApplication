@@ -24,4 +24,7 @@ public interface AuthenticationMapper {
     @Update("update user_authentication set author_id = #{id} where userid = #{userId}")
     void updateRelateUserAuthor(int userId, String id);
 
+    @Update("update user_authentication set author_name = #{name} where userid = #{userId}")
+    void updateRelateUserAuthorName(int userId, String name);
+
 }

@@ -35,5 +35,5 @@ public class User {
     private String nameReal;
     private String authorId;
     private String authorName;
-
+    private int ifShow;
 }

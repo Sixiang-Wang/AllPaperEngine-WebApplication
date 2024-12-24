@@ -74,13 +74,19 @@ public class ClaimWorkServiceImpl implements ClaimWorkService {
             claimResult.setNameReal(user.getNameReal());
 
             Work work = workMapper.getWorkById(userClaimedWork.getWorkId());
-            claimResult.setTitle(work.getTitle());
-            List<WorkAuthorResultDto> authorList = authorService.getAuthorsByWorkId(userClaimedWork.getWorkId());
-            List<String> authorNameList=new ArrayList<>();
-            for(WorkAuthorResultDto workAuthorResultDto:authorList){
-                authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName());
+            if(work!=null){
+                claimResult.setTitle(work.getTitle());
+                List<WorkAuthorResultDto> authorList = authorService.getAuthorsByWorkId(userClaimedWork.getWorkId());
+                List<String> authorNameList=new ArrayList<>();
+                for(WorkAuthorResultDto workAuthorResultDto:authorList){
+                    authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName());
+                }
+                claimResult.setAuthorList(authorNameList);
+            }else {
+                claimResult.setTitle("找不到这篇文章");
+                claimResult.setAuthorList(new ArrayList<>());
             }
-            claimResult.setAuthorList(authorNameList);
+
             claimResultList.add(claimResult);
         }
         return claimResultList;
@@ -117,6 +123,7 @@ public class ClaimWorkServiceImpl implements ClaimWorkService {
 
     @Override
     public int ableClaim(int id){
+
         if(claimMapper.ableClaim(id)>0) {
             return 1;
         }

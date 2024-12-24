@@ -43,7 +43,7 @@ public class FileService {
         String filePath = PathConfig.path + path;
         System.out.println(filePath);
 
-        if(path!=null&&!"/img/avatar/default.jpg".equals(path)){
+        if(path!=null&&!"/img/avatar/default.jpg".equals(path)&&!"/img/avatar/default.png".equals(path)){
 
             File userPic = new File(filePath);
             if (!userPic.exists()) {

@@ -13,5 +13,5 @@ public class Authentication {
     private String field;
     private String mail;
     private String authorId;
-
+    private String authorName;
 }
