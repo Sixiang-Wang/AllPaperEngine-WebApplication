@@ -4,9 +4,10 @@ import {ArrowRight, Delete, StarFilled} from "@element-plus/icons-vue";
 import httpUtil from "@/api/http.js";
 
 // 导入 Element UI 的图标
-import { ElButton } from 'element-plus';
+import {ElButton, ElMessage} from 'element-plus';
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
+import * as cookieUtil from "@/utils/cookie.js";
 
 // const userId = ref(localStorage.getItem("userId"));
 const userId = ref(1);
@@ -111,6 +112,13 @@ const UpdateHistory = async () => {
   CategorizeDates(tableData.value);
 };
 onMounted(async () => {
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+  }
+
   await UpdateHistory();
 })
 </script>
