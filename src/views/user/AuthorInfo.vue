@@ -10,9 +10,12 @@
       </div>
     </div>
 
-    <div class="author-right" style="flex: 1; text-align: center; padding-left: 40px;">
+    <div class="author-right" style="flex: 1; text-align: left; padding-left: 35%;">
       <p><strong>引用次数：{{ author.citedByCount }}</strong></p>
       <p><strong>成果总数：{{ author.worksCount }}</strong></p>
+      <p><strong>H指数：{{ author.hnumber }}</strong></p>
+      <p><strong>高影响力发文数：{{ author.highQualityWorkCount }}</strong></p>
+      <p><strong>第一作者发文数：{{ author.firstPublishCount }}</strong></p>
     </div>
   </div>
 
@@ -30,7 +33,7 @@
           placement="top"
           size="large">
           <el-table :data="[publication]" style="width: 100%" :show-header="false">
-            <el-table-column prop="title">
+            <el-table-column prop="title" style="min-width: 70%">
               <template #default="{ row }">
                 <a @click="viewPublication(row.id)" class="publication-link">{{ row.title }}</a>
               </template>
@@ -62,7 +65,7 @@ export default {
     const author = ref({
       id: '114514',
       name: '王思翔',
-      description: '全栈工程师',
+      description: 'IScholar官方认证学者',
       avatar: '',
       citedByCount: 10,
       worksCount: 20,
@@ -87,6 +90,9 @@ export default {
           name: data.displayName,
           citedByCount: data.citedByCount,
           worksCount: data.worksCount,
+          firstPublishCount:data.firstPublishCount,
+          highQualityWorkCount:data.highQualityWorkCount,
+          hnumber:data.hnumber,
         };
       } catch (error) {
         console.error('获取作者信息错误', error);
