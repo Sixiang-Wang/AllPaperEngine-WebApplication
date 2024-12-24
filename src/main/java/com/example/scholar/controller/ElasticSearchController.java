@@ -25,7 +25,8 @@ public class ElasticSearchController {
     @GetMapping(value="/works/getByTitleTest")
     public R getWorksByTtile(@RequestParam("title") String title){
         try{
-            return R.ok().put("works",elasticWorkService.searchByTitleTest(title));
+            elasticWorkService.searchByTitleTest(title);
+            return R.ok();
         }catch (Exception e){
             return R.error(e.toString());
         }

@@ -12,6 +12,9 @@ public interface SearchedWorkMapper {
     @Insert("INSERT INTO search_work(workid, keywordText, type, institution, publicationYear) VALUES (#{id}, #{keywordText}, #{type}, #{institution}, #{publicationYear})")
     int insertSearchWork(String id, String keywordText, String type, String institution, Integer publicationYear);
 
+    @Update("UPDATE search_work SET keywordText = #{keywordText} WHERE workid = #{id}")
+    int updateKeywordText(String id, String keywordText);
+
     @Select("select * from search_work")
     List<Map<String, Object>> getAllWorks();
 
@@ -56,7 +59,7 @@ public interface SearchedWorkMapper {
             "FROM works_authorships wa " +
             "JOIN institutions i ON wa.institution_id = i.id " +
             "WHERE wa.work_id = #{work_id}")
-    String getInstitutionNameByWorkId(String work_id);
+    List<String> getInstitutionNamesByWorkId(String work_id);
 
     @Select("select publicationid from search_work where type = #{type}")
     List<String> getWorksByType(String type);

@@ -76,8 +76,8 @@ public class ConnectiveController {
             return R.error(e.toString());
         }
     }
-    @GetMapping(value="/getWorksByLanguage")
-    public R getWorksByLanguage(@RequestParam("language") String institution){
+    @GetMapping(value="/getWorksByInstitution")
+    public R getWorksByLanguage(@RequestParam("institution") String institution){
         try {
             List<Works> works = connectiveService.getWorksByInstitution(institution);
             return R.ok().put("works",works);

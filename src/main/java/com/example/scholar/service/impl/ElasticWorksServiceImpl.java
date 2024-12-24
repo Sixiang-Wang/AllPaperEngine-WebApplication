@@ -54,12 +54,52 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Override
-    public List<SearchHit<Works>> searchByTitleTest(String title) {
-        List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
-//        List<Works> worksList = searchHits.stream()
-//                .map(SearchHit::getContent)
-//                .collect(Collectors.toList());
-        return searchHits;
+    public void searchByTitleTest(String title) {
+        // 每页显示的记录数
+        int pageSize = 100;
+        int page = 5;
+        elasticWorkMapper.clearSearchWork();
+
+//        for(int i = 1; i < page; i++) {
+//            // 使用 Elasticsearch 的分页功能
+//            Query query = new NativeSearchQueryBuilder()
+//                    .withQuery(QueryBuilders.matchQuery("title", title))
+//                    .withHighlightFields(new HighlightBuilder.Field("title")
+//                            .preTags("<span style='color:red'>")
+//                            .postTags("</span>")
+//                            .numOfFragments(0))
+//                    .withPageable(PageRequest.of(i - 1, pageSize)) // 分页设置
+//                    .build();
+//            SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
+//            // 下面是用于生成关键词表的
+//            List<Works> worksList = (searchHits.getSearchHits()).stream()
+//                    .map(SearchHit::getContent)
+//                    .collect(Collectors.toList());
+//            System.out.println(worksList.size());
+//            for(Works work: worksList)
+//            {
+//                String work_id = work.getId();
+//                String type = work.getType();
+//                Integer year = work.getPublication_year();
+//                String topic_id = elasticWorkMapper.getTopicIdByWorkId(work_id);
+//                String keyword = elasticWorkMapper.getKeywordsById(topic_id);
+//                List<String> institutions = elasticWorkMapper.getInstitutionNamesByWorkId(work_id);
+//                for(String institution: institutions)
+//                {
+//                    elasticWorkMapper.insertSearchWork(work_id, "keywordText", type, institution, year);
+//                }
+//                ObjectMapper mapper = new ObjectMapper();
+//                try {
+//                    List<String> keywords = mapper.readValue(keyword, List.class);
+//                    for (String keywordText : keywords) {
+//                        elasticWorkMapper.insertSearchWork(work_id, keywordText, type, institution, year);
+//                    }
+//                } catch (JsonProcessingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
     }
     public static long count = 0;
     @Override
@@ -104,34 +144,6 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         List<Works> worksList = searchHits.stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
-        elasticWorkMapper.clearSearchWork();
-        int cnt = 0;
-        for(Works work: worksList)
-        {
-            if(cnt <= 100000)
-            {
-                String work_id = work.getId();
-                String type = work.getType();
-                Integer year = work.getPublication_year();
-                String topic_id = elasticWorkMapper.getTopicIdByWorkId(work_id);
-                String keyword = elasticWorkMapper.getKeywordsById(topic_id);
-                String institution = elasticWorkMapper.getInstitutionNameByWorkId(work_id);
-
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    List<String> keywords = mapper.readValue(keyword, List.class);
-                    for (String keywordText : keywords) {
-                        elasticWorkMapper.insertSearchWork(work_id, keywordText, type, institution, year);
-                    }
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                cnt++;
-            }
-            else{
-                break;
-            }
-        }
         return searchHits;
     }
 
