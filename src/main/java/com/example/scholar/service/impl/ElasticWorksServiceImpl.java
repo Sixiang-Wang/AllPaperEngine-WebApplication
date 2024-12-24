@@ -536,12 +536,9 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
     @Override
     public void searchAssistant(String title) {
-        // 使用 Elasticsearch 的分页功能
         Query bmpQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.matchQuery("title", title))
                 .withHighlightFields(new HighlightBuilder.Field("title")
-                        .preTags("<span style='color:red'>")
-                        .postTags("</span>")
                         .numOfFragments(0))
                 .withPageable(PageRequest.of(0, 400)) // 分页设置
                 .build();
@@ -551,6 +548,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
         System.out.println(worksList.size());
+        elasticWorkMapper.clearSearchWork();
         for(Works work: worksList)
         {
             String work_id = work.getId();
