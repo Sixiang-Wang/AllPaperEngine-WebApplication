@@ -6,7 +6,7 @@ import {useRoute} from "vue-router";
 import httpUtil from "@/api/http.js";
 import {ElMessage} from "element-plus";
 
-defineProps({
+const props = defineProps({
   title: String,
   author: String,
   content: String,
@@ -20,9 +20,11 @@ const goToPaper = (id)=> {
   router.push({path: '/paper', query: {id: id, input: route.query.input}})
 }
 const submit = async () => {
+  console.log(userId)
+  console.log(props.id)
   const res = await httpUtil.get('/claim/add',{
-    "userId": userId.value,
-    "workId": id
+    "userId": userId,
+    "workId": props.id
   })
   console.log(res.data);
   ElMessage.success("申领成功！");

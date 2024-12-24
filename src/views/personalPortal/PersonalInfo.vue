@@ -16,6 +16,7 @@ const avatarUrl = computed(()=>{
 
 const userId = localStorage.getItem("userId");
 const userName = localStorage.getItem("userName");
+const AuthorId = ref("");
 let user = ref([]);
 console.log(userName);
 
@@ -52,7 +53,8 @@ onMounted(async () => {
     return;
   }
   try {
-    const res = await httpUtil.get('/claim/get/personal', { scholarId: userId.value });
+    const res = await httpUtil.get('/claim/get/personal', { scholarId: userId });
+    console.log(res)
     if (res.data && res.data.works) {
       myAchievement.value = res.data.works;
     }
@@ -62,8 +64,9 @@ onMounted(async () => {
     isLoading.value = false; // 请求完成后，修改加载状态
   }
 
-  firstPublishWorkCount = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: userId.value});
+  // firstPublishWorkCount = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: userId.value});
   console.log(firstPublishWorkCount);
+  
 });
 
 // 跳转到具体论文页面
@@ -142,8 +145,6 @@ const simpleSearch = async () => {
           </el-row>
           <el-row style="margin-top:3%">
             <el-col :span="7" style="font-size:small">H指数</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
-            <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
           </el-row>
         </el-col>
