@@ -15,6 +15,14 @@ public interface WorkMapper {
     int getWorksLength();
     @Select("select * from openalex.works where id = #{workId}")
     Work getWorkById(String workId);
+
+    @Select("<script>" +
+            "SELECT * FROM openalex.works WHERE id IN " +
+            "<foreach collection='workIds' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<Work> getWorksByWorkIds(List<String> workIds);
     @Select("select * from openalex.works where match(title) against(#{word}) limit #{from},#{to}")
     List<Work> selectWorksByTitleWord(String word,int from,int to);
     @Select("select * from openalex.works where publication_year between #{from} and #{to} limit #{frompage},#{topage}")
