@@ -91,7 +91,6 @@ const resetConditions = () => {
 const dataProcess = () => {
   const len = searchRows.value.length;
 
-  for(let tmp of )
 }
 
 const advancedSearch = () => {
