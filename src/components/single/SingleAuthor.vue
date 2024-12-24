@@ -5,24 +5,29 @@
           <el-avatar :src="avatar" :size="80" />
           <div class="author-info">
               <h2>{{ name }}</h2>
-              <p><span style="font-weight: bold;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
-              <p><span style="font-weight: bold;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
-              <p><span style="font-weight: bold;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
+              <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
+              <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
+              <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
           </div>
         </div>
 
+        <div class="author-middle" >
+            <!-- <p><strong>总被引量：{{ citedByCount }}</strong></p>
+            <p><strong>总发文量：{{ worksCount }}</strong></p> -->
+            <p>总被引量：{{ citedByCount }}</p>
+            <p>总发文量：{{ worksCount }}</p>
+        </div>
+
         <div class="author-right" >
-            <p><strong>总被引量：{{ citedByCount }}</strong></p>
-            <p><strong>总发文量：{{ worksCount }}</strong></p>
-            <!-- <p><strong>H指数：{{ H_index }}</strong></p>
-            <p><strong>第一作者发文量：{{ firstAuthor }}</strong></p>
-            <p><strong>高影响力论文发文量：{{ highInflu }}</strong></p> -->
+            <p>H指数：{{ H_index }}</p>
+            <p>第一作者发文量：{{ firstAuthor }}</p>
+            <p>高影响力论文发文量：{{ highInflu }}</p>
         </div>
     </div>
 
-    <div class="article">
+    <!-- <div class="article">
         <p><strong>代表文章</strong>：{{ publications[0].title }}</p>
-    </div>
+    </div> -->
 
     <el-divider/>
   </div>
@@ -44,11 +49,13 @@ import axios from 'axios';
       },
       workPlace: {
         type: String,
-        required: true
+        required: true,
+        default:'未知机构'
       },
       area: {
         type: String,
-        required: true
+        required: true,
+        default:'未知领域'
       },
       avatar: {
         type: String,
@@ -75,11 +82,11 @@ import axios from 'axios';
         type: Number,
         required: true
       },
-      publications: {
-        type: Array,
-        required: true,
-        default: () => []
-      }
+      // publications: {
+      //   type: Array,
+      //   required: true,
+      //   default: () => []
+      // }
     },
 
     // name: 'AuthorDetails',
@@ -165,14 +172,20 @@ align-items: center;
 font-size: 20px;
 margin-top: 0px;
 margin-bottom: 10px;
-margin-left:5px;
+margin-left:20px;
 }
 .author-info .description {
-  color: #888;
+color: #888;
 }
 .author-info p {
-  margin: 2px 0;
-  margin-left:10px;
+margin: 2px 0;
+margin-left:20px;
+}
+.author-middle{
+margin: 0px;
+}
+.author-middle p{
+margin: 0px;
 }
 .author-right p {
 margin: 0px;
@@ -183,6 +196,7 @@ css
 flex: 1;
 text-align: center;
 margin-bottom:0px;
+margin-left:20%;
 }
 .author-publications {
 margin-top:0px;

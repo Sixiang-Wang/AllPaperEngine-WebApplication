@@ -103,9 +103,10 @@ const preLogin = async ()=>{
     localStorage.setItem("userName", '');
     return
   }
-
+  localStorage.setItem("avatar",'');
   const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
   console.log(res);
+
   userStore.setUsername(res.data.username);
   tokenStore.setToken(res.data.token);
   userIdStore.setUserId(res.data.userId);
