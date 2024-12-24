@@ -1,24 +1,24 @@
 <template>
     <div class="institution-info">
       <el-card class="institution-card">
-        <h2>{{ institution.name }}</h2>
+        <h2>{{ institution.displayName }}</h2>
         <p>{{ institution.description }}</p>
       </el-card>
   
       <div class="scholars-list">
         <el-card
           v-for="(scholar, index) in scholars"
-          :key="scholar.name"
+          :key="scholar.author.displayName"
           :class="['scholar-item']"
           shadow="hover"
         >
           <div class="scholar-header">
-            <router-link :to="'/scholar/' + scholar.name" class="scholar-name">
-              {{ scholar.name }}
+            <router-link :to="'/scholar/' + scholar.author.displayName" class="scholar-name">
+              {{ scholar.author.displayName }}
             </router-link>
-            <el-tag :type="getTagType(index)" size="small">{{ scholar.fields }}</el-tag>
+            <el-tag :type="getTagType(index)" size="small">{{ scholar.author.fields }}</el-tag>
           </div>
-          <p><strong>引用次数：</strong>{{ scholar.citations }}</p>
+          <p><strong>引用次数：</strong>{{ scholar.author.citedByCount }}</p>
           <el-divider></el-divider>
         </el-card>
       </div>
@@ -26,7 +26,7 @@
   </template>
 
 <script>
-import axios from 'axios'; 
+import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { ElCard, ElTag, ElDivider } from 'element-plus';
@@ -40,22 +40,32 @@ components: {
 },
 
 setup() {
+    const route = useRoute();
     const institution = ref({
-        name: '北京航空航天大学',
-        description: '好'
+        displayName: '北京航空航天大学',
       });
   
     const scholars = ref([
-      { name: '张三', fields: '计算机科学', citations: 1500 },
-      { name: '李四', fields: '人工智能', citations: 2000 },
-      { name: '王五', fields: '生物医学', citations: 950 },
-      { name: '赵六', fields: '物理学', citations: 1200 },
-      { name: '钱七', fields: '数据科学', citations: 1800 },
-      { name: 'aaa', fields: '计算机科学', citations: 1500 },
-      { name: 'bbb', fields: '人工智能', citations: 2000 },
-      { name: 'ccc', fields: '生物医学', citations: 950 },
-      { name: 'ddd', fields: '物理学', citations: 1200 },
-      { name: 'eee', fields: '数据科学', citations: 1800 },
+      {
+        author: { displayName: '张三', fields: '计算机科学', citedByCount: 1500 },
+        institution: { }
+      },
+      {
+        author: { displayName: '李四', fields: '人工智能', citedByCount: 2000 },
+        institution: { }
+      },
+      {
+        author: { displayName: '王五', fields: '生物医学', citedByCount: 950 },
+        institution: { }
+      },
+      {
+        author: { displayName: '赵六', fields: '物理学', citedByCount: 1200 },
+        institution: { }
+      },
+      {
+        author: { displayName: '钱七', fields: '数据科学', citedByCount: 1800 },
+        institution: { }
+      },
     ]);
 
     const getTagType = (index) => {
@@ -71,19 +81,22 @@ setup() {
     };
 
     const fetchInstitutionData = async (id) => {
+      console.log('Fetching institution data...', id);
       try {
-        const institutionResponse = await axios.get(`/api/institution/${id}`);
-        institution.value = institutionResponse.data;
-
-        const scholarsResponse = await axios.get(`/api/institution/${id}/scholars`);
-        scholars.value = scholarsResponse.data;
+        const response = await httpUtil.get(`institution/getInstitutionById?id=${id}`);
+        institution.value = response.data.getInstitutionById;
+        console.log('Institution data:', institution.value);
+        const response2 = await httpUtil.get(`institution/getAuthorByInstitutionId?id=${id}`);
+        console.log('Response2:', response2);
+        scholars.value = response2.data.authorList;
+        console.log('Scholars:', scholars.value);
       } catch (error) {
-        console.error('获取数据失败', error);
+        console.error('Error fetching institution data:', error);
       }
     };
 
     onMounted(() => {
-      const institutionId = route.params.id;
+      const institutionId = route.query.id;
       fetchInstitutionData(institutionId);
     });
 

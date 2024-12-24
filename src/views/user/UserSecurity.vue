@@ -1,10 +1,11 @@
 <script setup>
 import {ArrowRight} from "@element-plus/icons-vue";
 import Advertise from "@/components/Advertisement.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {ElMessage} from "element-plus";
 import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
+import router from "@/router/index.js";
 
 const tableData = [
   {
@@ -20,7 +21,14 @@ const tableData2 = [
     feature: "登录时邮箱验证"
   }
 ]
-
+onMounted(async ()=>{
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+  }
+})
 const editPassword = ref(false);
 const oldPassword = ref('');
 const newPassword = ref('');
