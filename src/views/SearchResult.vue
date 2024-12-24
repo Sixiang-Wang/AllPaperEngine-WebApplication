@@ -502,6 +502,7 @@ const leaveSuggestion = (index) => {
               :highInflu="authorInfo.highQualityWorkCount || 0"
               :H_index="authorInfo.hnumber || 0"
             />
+
             <SingleResult
             style="width: 1400px;"
             v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
