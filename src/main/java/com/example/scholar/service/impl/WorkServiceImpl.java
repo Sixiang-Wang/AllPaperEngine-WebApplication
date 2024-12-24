@@ -299,8 +299,14 @@ public class WorkServiceImpl implements WorkService {
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
             workResultDto.setCited(work.getCitedByCount());
-            workResultDto.setPaperInformation(newToMainInformation(work, work.getKeywordsList()));
-            workResultDto.setKeywordsList(work.getKeywordsList());
+            if(work.getKeywordsList()!=null){
+                workResultDto.setKeywordsList(work.getKeywordsList());
+                workResultDto.setPaperInformation(newToMainInformation(work, work.getKeywordsList()));
+            }else{
+                workResultDto.setKeywordsList(new ArrayList<>());
+                workResultDto.setPaperInformation(newToMainInformation(work, new ArrayList<>()));
+            }
+
             //这里后续需要修改
 //            workResultDto.setGrants(work.getGrants());
 //            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
@@ -325,10 +331,13 @@ public class WorkServiceImpl implements WorkService {
             workResultDto.setAbstractText(AbstractRestore.restoreAbstract(work.getAbstractInvertedIndex()));
             workResultDto.setTitle(work.getTitle());
             workResultDto.setCited(work.getCitedByCount());
-            workResultDto.setPaperInformation(newToMainInformation(work, keyWordsList));
-            //这里后续需要修改
-//            workResultDto.setGrants(work.getGrants());
-            workResultDto.setKeywordsList(keyWordsList);
+            if(work.getKeywordsList()!=null){
+                workResultDto.setKeywordsList(work.getKeywordsList());
+                workResultDto.setPaperInformation(newToMainInformation(work, work.getKeywordsList()));
+            }else{
+                workResultDto.setKeywordsList(new ArrayList<>());
+                workResultDto.setPaperInformation(newToMainInformation(work, new ArrayList<>()));
+            }
 //            workResultDto.setKeywords(JsonDisposer.disposeWorkKeywords(work.getKeywords()));
             workResultDtoList.add(workResultDto);
         }

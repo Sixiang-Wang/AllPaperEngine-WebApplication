@@ -4,6 +4,7 @@ package com.example.scholar.controller;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.openalexElasticsearch.Works;
+import com.example.scholar.service.ElasticAuthorService;
 import com.example.scholar.service.ElasticWorkService;
 import com.example.scholar.service.impl.ElasticWorksServiceImpl;
 import com.example.scholar.util.AbstractRestore;
@@ -22,6 +23,8 @@ public class ElasticSearchController {
 
     @Resource
     private ElasticWorkService elasticWorkService;
+    @Resource
+    private ElasticAuthorService elasticAuthorService;
 
 
     @GetMapping(value = "/works/AdvancedSearch")
@@ -69,6 +72,25 @@ public class ElasticSearchController {
                 works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
             }
             return R.ok().put("works", list).put("page", ElasticWorksServiceImpl.count);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+
+    @GetMapping(value="/authors/getByDisplayName")
+    public R getByDisplayName(@RequestParam("displayName") String displayName){
+        try{
+            return R.ok().put("authors",elasticAuthorService.searchByDisplayNameByPage(displayName));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value="/institutions/getByDisplayName")
+    public R getInstitutionsByDisplayName(@RequestParam("displayName") String displayName){
+        try{
+            return R.ok().put("authors",elasticAuthorService.searchByDisplayName(displayName));
         }catch (Exception e){
             return R.error(e.toString());
         }

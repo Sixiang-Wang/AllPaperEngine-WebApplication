@@ -6,19 +6,16 @@ import com.example.scholar.repository.ElasticSearchRepository;
 import com.example.scholar.service.ElasticWorkService;
 import com.example.scholar.util.SQLAuthorBuilder;
 import com.example.scholar.util.SQLInstitutionBuilder;
-import com.example.scholar.util.SQLWorkBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
-import org.apache.ibatis.jdbc.SQL;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -41,8 +38,8 @@ import springfox.documentation.spring.web.json.Json;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +55,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
     @Resource
     private ElasticSearchRepository elasticSearchRepository;
+
 
 
     @Resource
@@ -290,6 +288,9 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
             }
         }
 
+        //TODO: ES做topic相关works的检索
+
+
 
 
 
@@ -437,7 +438,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         SearchResponse works;
         SearchHits searchHits;
         //TODO:再做worksindex的搜索
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if(andTitles.size()!=0 || andDOI.size()!=0 || andAbstracts.size()!=0 || orTitles.size()!=0 || orDOI.size()!=0 || orAbstracts.size()!=0){
             //先做worksindex的搜索
 
@@ -453,13 +454,14 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
             addMatchQueries(boolQuery1,andDOI,andDOIFuzzy,orDOI,orDOIFuzzy,notDOI,notDOIFuzzy,"doi");
             addMatchQueries(boolQuery1,andAbstracts,andAbstractsFuzzy,orAbstracts,orAbstractsFuzzy,notAbstracts,notAbstractsFuzzy,"abstract_inverted_index");
 
+
             // 添加时间范围过滤
             if (startDate != null && endDate != null) {
-                boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(startDate).lte(endDate));
+                boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(sdf.format(startDate)).lte(sdf.format(endDate)).format("yyyy-MM-dd"));
             } else if (startDate != null) {
-                boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(startDate));
+                boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(sdf.format(startDate)).format("yyyy-MM-dd"));
             } else if (endDate != null) {
-                boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").lte(endDate));
+                boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").lte(sdf.format(endDate)).format("yyyy-MM-dd"));
             }
             searchSourceBuilder1.query(boolQuery1);
             searchRequestWorks.source(searchSourceBuilder1);
@@ -479,11 +481,11 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                 addMatchQueries(boolQuery1,null,null,list,null,null,null,"id");
                 // 添加时间范围过滤
                 if (startDate != null && endDate != null) {
-                    boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(startDate).lte(endDate));
+                    boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(sdf.format(startDate)).lte(sdf.format(endDate)).format("yyyy-MM-dd"));
                 } else if (startDate != null) {
-                    boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(startDate));
+                    boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").gte(sdf.format(startDate)).format("yyyy-MM-dd"));
                 } else if (endDate != null) {
-                    boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").lte(endDate));
+                    boolQuery1.filter(QueryBuilders.rangeQuery("publication_date").lte(sdf.format(endDate)).format("yyyy-MM-dd"));
                 }
 
                 searchSourceBuilder1.query(boolQuery1);

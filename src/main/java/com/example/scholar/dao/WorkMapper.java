@@ -38,16 +38,30 @@ public interface WorkMapper {
     /**
      * 参考文献：引用别人的
      */
-    @Select("select * from openalex.works where id in (" +
-            "select referenced_work_id from openalex.works_referenced_works " +
-            "where work_id = #{workId})")
+    @Select("SELECT w1.* FROM openalex.works w1 " +
+            "JOIN (SELECT referenced_work_id " +
+            "      FROM openalex.works_referenced_works " +
+            "      WHERE work_id = #{workId} " +
+            "      LIMIT 100) w2 " +
+            "ON w1.id = w2.referenced_work_id " +
+            "LIMIT 10")
+//    @Select("select * from openalex.works where id in (" +
+//            "select referenced_work_id from openalex.works_referenced_works " +
+//            "where work_id = #{workId}) limit 10")
     List<Work> selectWorkByItsReference(String wordId);
     /**
      * 引用文献：别人引用它的
      */
-    @Select("select * from openalex.works where id in (" +
-            "select work_id from openalex.works_referenced_works " +
-            "where referenced_work_id = #{workId})")
+    @Select("SELECT w1.* FROM openalex.works w1 " +
+            "JOIN (SELECT work_id " +
+            "      FROM openalex.works_referenced_works " +
+            "      WHERE referenced_work_id = #{workId} " +
+            "      LIMIT 100) w2 " +
+            "ON w1.id = w2.work_id " +
+            "LIMIT 10")
+//    @Select("select * from openalex.works where id in (" +
+//            "select work_id from openalex.works_referenced_works " +
+//            "where referenced_work_id = #{workId}) limit 10")
     List<Work> selectWorkByReferenceIt(String wordId);
 
 

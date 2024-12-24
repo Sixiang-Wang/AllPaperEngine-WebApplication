@@ -1,6 +1,7 @@
 package com.example.scholar.service;
 
 
+import com.example.scholar.domain.openalexElasticsearch.Authors;
 import com.example.scholar.domain.openalexElasticsearch.Works;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Response;
@@ -18,11 +19,7 @@ import java.util.List;
 @Component
 public interface ElasticWorkService {
 
-    /**
-     * 根据标题查询并高亮显示
-     * @param title 标题
-     * @return 返回高亮显示的结果集
-     */
+
     List<SearchHit<Works>> searchByTitleTest(String title);
     List<SearchHit<Works>> searchByTitleByPage(String title, int page);
 
