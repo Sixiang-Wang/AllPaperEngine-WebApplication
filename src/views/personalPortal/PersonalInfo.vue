@@ -4,7 +4,6 @@ import { ArrowRight } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 import router from "@/router/index.js";
 import httpUtil from "@/api/http.js";
-import {useUserIdStore} from "@/store/store.js";
 import * as cookieUtil from "@/utils/cookie.js";
 import {ElMessage} from "element-plus";  // 引入 API 相关功能
 
@@ -14,9 +13,10 @@ const avatar = ref({
   url: defaultAvatar,
 });
 
-const userIdStore = useUserIdStore();
-const userId = computed(() => userIdStore.userId);
-console.log(userId)
+const userId = localStorage.getItem("userId");
+const userName = localStorage.getItem("userName");
+let user = ref([]);
+console.log(userName);
 
 // 用户角色
 const role = ref(1);
@@ -35,6 +35,11 @@ const myAchievement = ref([]);
 const searchedPapers = ref([]);
 
 const isLoading = ref(true);
+
+let firstPublishWorkCount = ref([]);
+let firstHighQualityWorksCount = ref([]);
+let HNumber = ref([]);
+let citedCount = ref([]);
 
 // 获取个人成果
 onMounted(async () => {
@@ -55,6 +60,9 @@ onMounted(async () => {
   } finally {
     isLoading.value = false; // 请求完成后，修改加载状态
   }
+
+  firstPublishWorkCount = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: userId.value});
+  console.log(firstPublishWorkCount);
 });
 
 // 跳转到具体论文页面
@@ -106,7 +114,7 @@ const simpleSearch = async () => {
                 class="user-avatar"
             />
             <div style="margin-left: 10%; margin-top: 5%">
-              <el-text style="font-size: large">姓名</el-text><br>
+              <el-text style="font-size: large">{{userName}}</el-text><br>
               <el-text style="font-size: small">学者ID：1000000</el-text>
             </div>
           </el-row>
@@ -150,7 +158,6 @@ const simpleSearch = async () => {
     <el-card style="max-width: 75%; margin-top: 1.5%">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" type="border-card">
         <el-tab-pane label="成果管理" name="first">
-          <div v-if="isLoading">加载中...</div>
             <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
               <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
               <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>

@@ -50,16 +50,16 @@ const handleOpen = (key, keyPath) => {
 const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
-const ifAuthentication = ref(true);
+const ifAuthentication = ref(false);
 onMounted(async()=>{
   try{
     const res = await httpUtil.get('/user/ifScholar',{},{
       Authorization: cookieUtil.getCookie("token")
     });
     if(res.data.judge === 1){
-      ifAuthentication.value = false;
-    }else{
       ifAuthentication.value = true;
+    }else{
+      ifAuthentication.value = false;
     }
   }catch (e){
     console.error(e);
