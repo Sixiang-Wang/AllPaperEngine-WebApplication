@@ -236,23 +236,23 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         //searchSourceBuilder1 boolQuery1 for worksindex
         SearchSourceBuilder searchSourceBuilder1 = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery1 = QueryBuilders.boolQuery();
-        searchSourceBuilder1.size(5000);
+        searchSourceBuilder1.size(20);
 
         //searchSourceBuilder2 boolQuery2 for authorsindex
         SearchSourceBuilder searchSourceBuilder2 = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery2 = QueryBuilders.boolQuery();
-        searchSourceBuilder2.size(5000);
+        searchSourceBuilder2.size(20);
 
         //searchSourceBuilder3 boolQuery2 for worksauthorshipsindex
         SearchSourceBuilder searchSourceBuilder3 = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery3 = QueryBuilders.boolQuery();
-        searchSourceBuilder2.size(5000);
+        searchSourceBuilder2.size(20);
 
 
         //searchSourceBuilder4 boolQuery4 for authorsindex for firstAuthor
         SearchSourceBuilder searchSourceBuilder4 = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery4 = QueryBuilders.boolQuery();
-        searchSourceBuilder4.size(5000);
+        searchSourceBuilder4.size(20);
 
 
 

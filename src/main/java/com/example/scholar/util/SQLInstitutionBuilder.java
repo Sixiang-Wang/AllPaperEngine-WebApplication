@@ -48,6 +48,8 @@ public class SQLInstitutionBuilder {
                     .append(")");
         }
 
+        query.append(" limit 20");
+
         return query.toString();
     }
     public static String buildSQLQuery1(List<String> institution_ids) {
@@ -65,7 +67,7 @@ public class SQLInstitutionBuilder {
         }else{
             query.append("institution_id like '123456778'");
         }
-        query.append(" limit 100");
+        query.append(" limit 20");
         return query.toString();
     }
 

@@ -22,7 +22,7 @@ public class SQLAuthorBuilder {
                 if(i!=list.size()-1){
                     query.append(" ,");
                 }else{
-                    query.append(") limit 5000");
+                    query.append(") limit 20");
                 }
             }
         }else{
@@ -45,7 +45,7 @@ public class SQLAuthorBuilder {
                 if(i!=list.size()-1){
                     query.append(" ,");
                 }else{
-                    query.append(") and author_position like 'first' limit 5000");
+                    query.append(") and author_position like 'first' limit 20");
                 }
             }
         }else{

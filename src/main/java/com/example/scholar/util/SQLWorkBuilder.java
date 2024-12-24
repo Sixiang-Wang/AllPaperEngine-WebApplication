@@ -53,7 +53,7 @@ public class SQLWorkBuilder {
         }
 
 
-        query.append(" limit 5000");
+        query.append(" limit 20");
 
         return query.toString();
     }
