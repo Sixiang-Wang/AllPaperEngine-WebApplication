@@ -4,15 +4,15 @@
     <div class="author-left" style="display: flex; align-items: center;">
       <el-avatar :src="avatar" :size="120" />
       <div class="author-info" style="margin-left: 20px;">
-        <h2>{{ name }}</h2>
-        <p class="description">{{ description }}</p>
+        <h2>{{ author.name }}</h2>
+        <p class="description">{{ author.description }}</p>
         <el-button type="primary" @click="followAuthor" class="follow-button">关注</el-button>
       </div>
     </div>
 
     <div class="author-right" style="flex: 1; text-align: center; padding-left: 40px;">
-      <p><strong>引用次数：{{ citedByCount }}</strong></p>
-      <p><strong>成果总数：{{ worksCount }}</strong></p>
+      <p><strong>引用次数：{{ author.citedByCount }}</strong></p>
+      <p><strong>成果总数：{{ author.worksCount }}</strong></p>
     </div>
   </div>
 
@@ -22,9 +22,10 @@
       <h3>发表文章</h3>
       <el-timeline>
         <el-timeline-item
-          v-for="(publication, index) in publications"
+          v-for="(publication, index) in author.publications"
           :key="publication.id"
-          :timestamp="publication.date"
+          :citedByCount="publication.citedByCount"
+          :timestamp="publication.publicationDate"
           :color="index % 2 === 0 ? 'primary' : 'warning'"
           placement="top"
           size="large">
@@ -37,7 +38,7 @@
             <el-table-column prop="description" />
             <el-table-column>
               <template v-slot="scope">
-                <span>引用次数: {{ scope.row.cited }}</span>
+                <span>引用次数: {{ scope.row.citedByCount }}</span>
               </template>
             </el-table-column>
             
@@ -49,12 +50,29 @@
 </template>
 
 <script>
-import axios from 'axios';
+import httpUtil from "@/api/http.js";
+import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 export default {
   name: 'AuthorDetails',
+
+
   data() {
-    return {
+    return 
+  },
+  /*
+  created() {
+    this.fetchAuthorDetails();
+    this.fetchAuthorPublications();
+  },
+  */
+
+  setup() {
+    const route = useRoute();
+    const publications = ref([]);
+
+    const author = ref({
       id: '114514',
       name: '王思翔',
       description: '全栈工程师',
@@ -70,45 +88,49 @@ export default {
         { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
         { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
       ],
+  });
+
+    const fetchAuthorDetails = async (id) => {
+      try {
+        const response = await httpUtil.get(`/author/getById?id=${id}`);
+        const data = response.data.authors;
+        console.log('data: ', data);
+        author.value = {
+          ...author.value,
+          name: data.displayName,
+          citedByCount: data.citedByCount,
+          worksCount: data.worksCount,
+        };
+      } catch (error) {
+        console.error('获取作者信息错误', error);
+      }
     };
-  },
-  /*
-  created() {
-    this.fetchAuthorDetails();
-    this.fetchAuthorPublications();
-  },
-  */
-  methods: {
-    followAuthor() {
-      console.log(`Following author: ${this.name}`);
-    },
-    viewPublication(id) {
-      console.log(`Viewing publication with ID: ${id}`);
-    },
-    fetchAuthorDetails() {
-      axios.get(`/api/author/${this.id}`) // 改后端接口
-        .then(response => {
-          const data = response.data;
-          this.name = data.name;
-          this.description = data.description;
-          this.avatar = data.avatar;
-          this.citedByCount = data.citedByCount;
-          this.worksCount = data.worksCount;
-        })
-        .catch(error => {
-          console.error('获取作者信息错误', error);
-        });
-    },
-    fetchAuthorPublications() {
-      axios.get(`/api/author/${this.id}/publications`) // 改后端接口
-        .then(response => {
-          this.publications = response.data;
-        })
-        .catch(error => {
-          console.error('获取作者作品信息错误', error);
-        });
-    },
-  },
+
+    const fetchAuthorPublications = async (id) => {
+      try {
+        const response = await httpUtil.get(`/author/getWorksByAuthorId?authorId=${id}`);
+        author.value = {
+          ...author.value,
+          publications : response.data.getWorksByAuthorId,
+        };
+  
+        console.log('response.data' ,response.data.getWorksByAuthorId);
+      } catch (error) {
+        console.error('获取作者作品信息错误', error);
+      }
+    };
+
+    onMounted(() => {
+      const authorId = route.query.id;
+      fetchAuthorDetails(authorId);
+      fetchAuthorPublications(authorId);
+    });
+
+    return {
+      author,
+      publications,
+    };
+  }
 };
 </script>
 
