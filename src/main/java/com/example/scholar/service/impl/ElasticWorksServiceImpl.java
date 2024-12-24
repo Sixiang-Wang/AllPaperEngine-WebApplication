@@ -600,12 +600,12 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                             .postTags("</span>")
                             .numOfFragments(0))
                     .build();
-            SearchHits<Works> tmp = elasticsearchRestTemplate.search(query, Works.class);
+            org.springframework.data.elasticsearch.core.SearchHits<Works> tmp = elasticsearchRestTemplate.search(query, Works.class);
             count = tmp.getTotalHits();
         }catch (Exception e){
             count = 10000;
         }
-        SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
+        org.springframework.data.elasticsearch.core.SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
 
         // 返回当前页的搜索结果
         return searchHits.getSearchHits();
