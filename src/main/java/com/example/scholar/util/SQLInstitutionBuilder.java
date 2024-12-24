@@ -3,6 +3,8 @@ package com.example.scholar.util;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SQLInstitutionBuilder {
 
@@ -52,7 +54,8 @@ public class SQLInstitutionBuilder {
 
         return query.toString();
     }
-    public static String buildSQLQuery1(List<String> institution_ids) {
+    public static String buildSQLQuery1(Set<String> institution_id) {
+        List<String> institution_ids = institution_id.stream().collect(Collectors.toList());
         StringBuilder query = new StringBuilder("SELECT work_id FROM works_authorships WHERE ");
 
         // 全部or在一起
@@ -72,20 +75,6 @@ public class SQLInstitutionBuilder {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * 将列表中的每个元素加上单引号，用于 SQL 查询
      *
@@ -98,55 +87,4 @@ public class SQLInstitutionBuilder {
                 .toList();
     }
 
-    public static void main(String[] args) {
-        // 示例数据
-
-        List<String> andInstitutions = List.of();
-        List<String> orInstitutions = List.of();
-        List<String> notInstitutions = List.of();
-
-        // 生成 SQL 查询
-        String sqlQuery = buildSQLQuery(andInstitutions, orInstitutions, notInstitutions);
-        System.out.println(sqlQuery);
-
-        String url = "jdbc:mysql://116.204.112.5:3306/openalex";
-        String username = "root";
-        String password = "BjMfWi6CFkrW3556";
-        List<String> institution_ids = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url, username, password);
-             PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-             ResultSet rs = pstmt.executeQuery()) {
-            System.out.print(rs);
-            // 处理查询结果
-            while (rs.next()) {
-                // 读取每一行数据
-                institution_ids.add(rs.getString("id"));
-            }
-
-
-            System.out.print(institution_ids);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-
-        String sqlQuery1 = buildSQLQuery1(institution_ids);
-        System.out.print(sqlQuery1);
-        List<String> work_ids = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url, username, password);
-             PreparedStatement pstmt = conn.prepareStatement(sqlQuery1);
-             ResultSet rs = pstmt.executeQuery()) {
-            System.out.print(rs);
-            // 处理查询结果
-            while (rs.next()) {
-                // 读取每一行数据
-                work_ids.add(rs.getString("work_id"));
-            }
-            System.out.print(work_ids);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
 }
