@@ -6,9 +6,13 @@ import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
 import http from "@/api/http.js";
 import {ElMessage} from "element-plus";
+import router from "@/router/index.js";
+import header from "@/components/Header.vue"
 
 const avatarUrl = computed(()=>{
+
   const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
+
   return http.getUrlWithoutSlash() + avatar;
 });
 
@@ -67,13 +71,30 @@ const tableData3 = ref([
 ]);
 onMounted(async()=>{
   try{
-    await getUserData()
+    if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+      ElMessage.error("请先登录！");
+      setTimeout(()=>{
+        router.push('/login');
+      },500);
+      return;
+    }
+    if(localStorage.getItem("avatarReload")==="yes"){
+      ElMessage.success("头像更新中...")
+      setTimeout(() => {
+        window.location.reload();
+        localStorage.setItem("avatarReload", "no");
+      }, 1000); // 延迟 1 秒
+    }
+    document.addEventListener("click", handleClickOutside);
 
+    await getUserData()
 
   }catch (e){
     console.error(e);
   }
 })
+
+
 const activeRow = ref(null); // 用于跟踪当前活动行
 const allTables = [tableData, tableData2, tableData3]; // 方便遍历所有表格数据
 const saveConfirmVisible = ref(false);
@@ -222,16 +243,7 @@ const updateDate = async () => {
 
 
 
-onMounted(() => {
-  if(localStorage.getItem("avatarReload")==="yes"){
-    ElMessage.success("头像更新中...")
-    setTimeout(() => {
-      window.location.reload();
-      localStorage.setItem("avatarReload", "no");
-    }, 1000); // 延迟 1 秒
-  }
-  document.addEventListener("click", handleClickOutside);
-});
+
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
@@ -243,7 +255,7 @@ const updateAvatar = () => {
 }
 
 const afterUpdateAvatar = () => {
-  avatarUrl.value="/hahashenmedoumeiyou"
+  localStorage.setItem("avatar","/hahashenmedoumeiyou")
   localStorage.setItem("avatarReload","yes")
   window.location.reload()
 }

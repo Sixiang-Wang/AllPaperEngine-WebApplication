@@ -8,17 +8,17 @@
       <div class="scholars-list">
         <el-card
           v-for="(scholar, index) in scholars"
-          :key="scholar.name"
+          :key="scholar.author.displayName"
           :class="['scholar-item']"
           shadow="hover"
         >
           <div class="scholar-header">
-            <router-link :to="'/scholar/' + scholar.name" class="scholar-name">
-              {{ scholar.name }}
+            <router-link :to="'/scholar/' + scholar.author.displayName" class="scholar-name">
+              {{ scholar.author.displayName }}
             </router-link>
-            <el-tag :type="getTagType(index)" size="small">{{ scholar.fields }}</el-tag>
+            <el-tag :type="getTagType(index)" size="small">{{ scholar.author.fields }}</el-tag>
           </div>
-          <p><strong>引用次数：</strong>{{ scholar.citations }}</p>
+          <p><strong>引用次数：</strong>{{ scholar.author.citedByCount }}</p>
           <el-divider></el-divider>
         </el-card>
       </div>
@@ -46,16 +46,26 @@ setup() {
       });
   
     const scholars = ref([
-      { name: '张三', fields: '计算机科学', citations: 1500 },
-      { name: '李四', fields: '人工智能', citations: 2000 },
-      { name: '王五', fields: '生物医学', citations: 950 },
-      { name: '赵六', fields: '物理学', citations: 1200 },
-      { name: '钱七', fields: '数据科学', citations: 1800 },
-      { name: 'aaa', fields: '计算机科学', citations: 1500 },
-      { name: 'bbb', fields: '人工智能', citations: 2000 },
-      { name: 'ccc', fields: '生物医学', citations: 950 },
-      { name: 'ddd', fields: '物理学', citations: 1200 },
-      { name: 'eee', fields: '数据科学', citations: 1800 },
+      {
+        author: { displayName: '张三', fields: '计算机科学', citedByCount: 1500 },
+        institution: { }
+      },
+      {
+        author: { displayName: '李四', fields: '人工智能', citedByCount: 2000 },
+        institution: { }
+      },
+      {
+        author: { displayName: '王五', fields: '生物医学', citedByCount: 950 },
+        institution: { }
+      },
+      {
+        author: { displayName: '赵六', fields: '物理学', citedByCount: 1200 },
+        institution: { }
+      },
+      {
+        author: { displayName: '钱七', fields: '数据科学', citedByCount: 1800 },
+        institution: { }
+      },
     ]);
 
     const getTagType = (index) => {
@@ -76,8 +86,10 @@ setup() {
         const response = await httpUtil.get(`institution/getInstitutionById?id=${id}`);
         institution.value = response.data.getInstitutionById;
         console.log('Institution data:', institution.value);
-        const response2 = await httpUtil.get(`institution/getInstitutionScholars?id=${id}`);
-        scholars.value = response2.data.getInstitutionScholars;
+        const response2 = await httpUtil.get(`institution/getAuthorByInstitutionId?id=${id}`);
+        console.log('Response2:', response2);
+        scholars.value = response2.data.authorList;
+        console.log('Scholars:', scholars.value);
       } catch (error) {
         console.error('Error fetching institution data:', error);
       }
