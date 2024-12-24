@@ -8,8 +8,8 @@ import { ElButton } from 'element-plus';
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 
-// const userId = ref(localStorage.getItem("userId"));
-const userId = ref(1);
+const userId = ref(localStorage.getItem("userId"));
+// const userId = ref(1);
 const activeName = ref('1')
 const route = useRoute();
 const padZero = (num) => {
@@ -45,7 +45,8 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`; // 拼接成YYYY-MM-DD格式
 }
 const OnDeleteButtonClicked = async (id) => {
-  await httpUtil.get('user/deleteHistory/{id}', {
+  console.log(id)
+  await httpUtil.get('user/deleteHistory', {
     userId: userId.value,
     publicationId: id
   });
@@ -54,9 +55,9 @@ const OnDeleteButtonClicked = async (id) => {
 const goToPaper = async (id)=> {
   console.log(id)
   console.log(userId.value)
-  await httpUtil.post('user/addHistory', {
+  await httpUtil.post2('user/addHistory', {
     publicationId: id,
-    timestamp: getCurrentDateTime(),
+    tstring : getCurrentDateTime(),
     userId: userId.value
   });
   await router.push({path: '/paper', query: {id: id, input: route.query.input}})
@@ -69,6 +70,11 @@ const tableDataYear = ref([])
 const tableDataEarlier = ref([])
 
 const CategorizeDates = (dates) => {
+  tableDataToday.value = [];
+  tableDataWeek.value = [];
+  tableDataMonth.value = [];
+  tableDataYear.value = [];
+  tableDataEarlier.value = [];
   const now = new Date();
   const today = formatDate(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
   const startOfWeek = formatDate(new Date(now.setDate(now.getDate() - now.getDay())));
@@ -139,7 +145,7 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column label="操作" #default="scope">
-              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.publicationid)"/>
             </el-table-column>
 
           </el-table>

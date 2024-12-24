@@ -228,6 +228,27 @@ import {ElMessage} from "element-plus";
       }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
       break;
+      case '6'://查找科研人员
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        console.log("search in openalex/get/page");
+        searchResults.value = res.data.works;
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+      }else {
+        const res = await httpUtil.get('/author/getReseacherIdByReseacherName', {
+          authorName: searchInput.value,
+          timeout: 20000
+        })
+        searchResults.value = res.data.getReseacherIdByReseacherName || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+      }
+      router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+      break;
+
   }
   router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
 }
@@ -380,6 +401,7 @@ const leaveSuggestion = (index) => {
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="主题" value="1"/>
         <el-option label="学者" value="5"/>
+        <el-option label="科研人员" value="6"/>
       </el-select>
 
 
