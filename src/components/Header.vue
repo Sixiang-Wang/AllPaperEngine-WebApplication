@@ -10,6 +10,7 @@ import * as httpUtil from "@/api/http.js";
 import http from "@/api/http.js";
 import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
 
+
 const haveAvatar = ref(false)
 
 const avatarUrl = computed(()=>{
@@ -107,7 +108,7 @@ const preLogin = async ()=>{
     localStorage.setItem("userName", '');
     return
   }
-  localStorage.setItem("avatar",'');
+
   const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
   console.log(res);
 
@@ -117,9 +118,11 @@ const preLogin = async ()=>{
   localStorage.setItem("userName", res.data.username);
   localStorage.setItem("token", res.data.token);
   localStorage.setItem("userId", res.data.userId);
-  localStorage.setItem("avatar",'');
+
   localStorage.setItem("avatar",res.data.avatar);
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
+  cookieUtil.setCookie("avatar", res.data.avatar);
+
   haveAvatar.value = true
 
   const res2 = await http.get('/user/ifScholar',{userId: res.data.userId});

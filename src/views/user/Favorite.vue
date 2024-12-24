@@ -8,6 +8,7 @@ import {ElButton, ElMessageBox, ElMessage} from 'element-plus';
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 import testhttp from "@/api/http.js";
+import * as cookieUtil from "@/utils/cookie.js";
 
 const activeName = ref('1')
 
@@ -94,6 +95,13 @@ const UpdateFavorite = async () => {
   }
 };
 onMounted(async () => {
+  if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
+    ElMessage.error("请先登录！");
+    setTimeout(()=>{
+      router.push('/login');
+    },500);
+  }
+
   userId.value = localStorage.getItem("userId");
   await UpdateFavorite();
 })
