@@ -104,14 +104,20 @@ public class ComplaintServiceImpl implements ComplaintService {
             allComplaint.setUsername(user.getName());
 
             Work work = workMapper.getWorkById(complaint.getWorkId());
-            allComplaint.setTitle(work.getTitle());
-            List<WorkAuthorResultDto> authorList = authorService.getAuthorsByWorkId(complaint.getWorkId());
-            List<String> authorNameList=new ArrayList<>();
-            for(WorkAuthorResultDto workAuthorResultDto:authorList){
-                authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName());
+            if(work!=null){
+                allComplaint.setTitle(work.getTitle());
+                List<WorkAuthorResultDto> authorList = authorService.getAuthorsByWorkId(complaint.getWorkId());
+                List<String> authorNameList=new ArrayList<>();
+                for(WorkAuthorResultDto workAuthorResultDto:authorList){
+                    authorNameList.add(workAuthorResultDto.getAuthorResultDto().getAuthorName());
+                }
+
+                allComplaint.setAuthList(authorNameList);
+            }else {
+                allComplaint.setTitle("找不到这篇文章");
+                allComplaint.setAuthList(new ArrayList<>());
             }
 
-            allComplaint.setAuthList(authorNameList);
             allComplaintList.add(allComplaint);
         }
         return allComplaintList;

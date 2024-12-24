@@ -34,4 +34,6 @@ public class User {
     private int role; //用户角色
     private String nameReal;
     private String authorId;
+    private String authorName;
+    private int ifShow;
 }

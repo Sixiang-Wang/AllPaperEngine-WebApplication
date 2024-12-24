@@ -47,6 +47,10 @@ public interface ElasticWorkService {
     Json AutoFixKeywordsSuggester(String searchContent) throws IOException;
 
 
+
+
+    Json AutoCompleteAuthorWithCompletionSuggester(String searchContent) throws IOException;
+
     /**
      * AdvancedSearch param:字符串 分别是 
      */

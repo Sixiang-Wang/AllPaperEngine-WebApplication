@@ -72,9 +72,10 @@ public class AuthenticationController {
                                @RequestParam("workplace")String workplace,
                                @RequestParam("field")String field,
                                @RequestParam("mail")String mail,
-                               @RequestParam("authorId")String authorId){
+                               @RequestParam("authorId")String authorId,
+                               @RequestParam("authorName")String authorName){
         try {
-            int result = authenticationService.putAuthentication(userId,nameReal,workplace,field,mail,authorId);
+            int result = authenticationService.putAuthentication(userId,nameReal,workplace,field,mail,authorId,authorName);
             if(result == -1){
                 return R.error("something went wrong");
             }else{
@@ -95,9 +96,11 @@ public class AuthenticationController {
                                @RequestParam("workplace")String workplace,
                                @RequestParam("field")String field,
                                @RequestParam("mail")String mail,
-                               @RequestParam("authorId")String authorId){
+                               @RequestParam("authorId")String authorId,
+                               @RequestParam("authorId")String authorName
+    ){
         try {
-            int result = authenticationService.putAuthentication(user.getUserid(),nameReal,workplace,field,mail,authorId);
+            int result = authenticationService.putAuthentication(user.getUserid(),nameReal,workplace,field,mail,authorId,authorName);
             if(result == -1){
                 return R.error("something went wrong");
             }else{

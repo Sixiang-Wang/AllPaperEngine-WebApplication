@@ -56,24 +56,10 @@ public class ElasticSearchController {
     }
 
 
-    @GetMapping(value="/works/getByTitleOrAbstractOrKeywords")
-    public R getByTitleOrAbstractOrKeywords(@RequestParam("word") String searchterm,@RequestParam("page") int pageIndex){
-        try{
-            return R.ok().put("works",elasticWorkService.findByTitleOrKeywordsTextOrAbstract(searchterm,pageIndex));
-        }catch (Exception e){
-            return R.error(e.toString());
-        }
-    }
 
 
-    @GetMapping(value="/works/getLenthByFindTitleOrAbstractOrKeywords")
-    public R getByTitleOrAbstractOrKeywords(@RequestParam("word") String searchterm){
-        try{
-            return R.ok().put("totallenth",elasticWorkService.getLenthOfFindTitleOrKeywordsTextOrAbstract(searchterm));
-        }catch (Exception e){
-            return R.error(e.toString());
-        }
-    }
+
+
 
 
 //    @GetMapping(value="/works/searchAutocomplete")
@@ -142,4 +128,12 @@ public class ElasticSearchController {
         }
     }
 
+    @GetMapping(value = "/authors/autoCompleteWithCompletionSuggester")
+    public R autoCompleteAuthorWithCompletionSuggester(@RequestParam("searchContent") String searchContent) {
+        try {
+            return R.ok().put("suggestions", elasticWorkService.AutoCompleteAuthorWithCompletionSuggester(searchContent));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
 }
