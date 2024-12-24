@@ -29,9 +29,9 @@ public class ConnectiveServiceImpl implements ConnectiveService {
     }
 
     @Override
-    public List<String> sortLanguages()
+    public List<String> sortInstitutions()
     {
-        List<String> results = searchedWorkMapper.getLanguageNum();
+        List<String> results = searchedWorkMapper.getInstitutionNum();
         return results;
     }
 
@@ -58,8 +58,8 @@ public class ConnectiveServiceImpl implements ConnectiveService {
     }
 
     @Override
-    public List<Works> getWorksByLanguage(String language){
-        List<String> workIds = searchedWorkMapper.getWorksByLanguage(language);
+    public List<Works> getWorksByInstitution(String institution){
+        List<String> workIds = searchedWorkMapper.getWorksByInstitution(institution);
         List<Works> works = searchedWorkMapper.getWorksByIds(workIds);
         return works;
     }
