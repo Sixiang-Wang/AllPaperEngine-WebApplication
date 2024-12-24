@@ -9,7 +9,7 @@ const httpService = axios.create({
   // baseURL: process.env.BASE_API, // 需自定义
   baseURL:baseUrl,
   // 请求超时时间
-  timeout: 3000 // 需自定义
+  timeout: 9000 // 需自定义
 });
 
 //添加请求和响应拦截器
@@ -115,6 +115,38 @@ export function post(url, params = {}) {
   });
 }
 
+export function postWithHeader(url, params = {}, headers = {}) {
+  return new Promise((resolve, reject) => {
+    httpService({
+      url: url,
+      method: 'post',
+      data: params,
+      headers: headers
+
+    }).then(response => {
+      resolve(response);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
+
+export function post2WithHeader(url, params = {}, headers = {}) {
+  return new Promise((resolve, reject) => {
+    httpService({
+      url: url,
+      method: 'post',
+      params: params,
+      headers: headers
+
+    }).then(response => {
+      resolve(response);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
+
 /*
  *  文件上传
  *  url:请求地址
@@ -139,11 +171,18 @@ export function getServerUrl(){
   return baseUrl;
 }
 
+export function getUrlWithoutSlash() {
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+}
+
+
 export default {
   get,
   put,
   post2,
   post,
+  baseUrl,
   fileUpload,
   getServerUrl,
+  getUrlWithoutSlash
 }

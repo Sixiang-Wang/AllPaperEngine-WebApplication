@@ -18,9 +18,9 @@ import {ElMessage} from "element-plus";
   let hoveredIndex = ref(null);
   const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取 
 
- const userStore = useUserStore();
- const tokenStore = useTokenStore()
-const userIdStore = useUserIdStore()
+  const userStore = useUserStore();
+  const tokenStore = useTokenStore()
+  const userIdStore = useUserIdStore()
   const searchType = ref('1');
   const searchInput = ref("");
   const fullText = "llPaper Engine";
@@ -197,8 +197,26 @@ const userIdStore = useUserIdStore()
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
       break;
 
-    
-      
+      case '5'://查找学者
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        console.log("search in openalex/get/page");
+        searchResults.value = res.data.works;
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+      }else {
+        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', { 
+          authorName: searchInput.value,
+          timeout: 20000
+        })
+        searchResults.value = res.data.getAuthorIdByAuthorName || [];
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+      }
+      router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+      break;
   }
   router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
 }
@@ -304,9 +322,21 @@ const handleInputChange = async () => {
         }else{
           showAutoComplete = false;
         }
-
-
         break;
+      case '5':
+        //学者 
+        // res = await httpUtil.get('/elasticSearch/works/autoCompleteScholarWithCompletionSuggester', {
+        //   searchContent: searchInput.value 
+        // });
+        // const scholarSuggest = res.data.suggestions.suggest.scholarSuggest;
+        // if(scholarSuggest && scholarSuggest.length>0){
+        //   console.log(scholarSuggest);
+        //   suggestions  = scholarSuggest[0].options.map(option => option.text);
+        //   showAutoComplete = true;
+        // }else{
+        //   showAutoComplete = false;
+        // }
+        // break;
     }
     
   } else {
@@ -348,6 +378,7 @@ const leaveSuggestion = (index) => {
         <el-option label="篇名" value="2"/>
         <el-option label="关键词" value="3"/>
         <el-option label="摘要" value="4"/>
+        <el-option label="学者" value="5"/>
       </el-select>
 
 

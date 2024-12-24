@@ -1,6 +1,6 @@
 <script setup>
 
-import {Download, Paperclip, Search, Share, Star, StarFilled} from "@element-plus/icons-vue";
+import {Document, Paperclip, Search, Link, Share, Star, StarFilled} from "@element-plus/icons-vue";
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useTransition} from '@vueuse/core'
 import {ElMessage, ElNotification} from 'element-plus'
@@ -13,9 +13,10 @@ import SingleComment from "@/components/single/SingleComment.vue";
 import * as cookieUtil from "@/utils/cookie.js";
 import SingleRecommend from "@/components/single/SingleRecommend.vue";
 import {useUserIdStore} from "@/store/store.js";
+import router from "@/router/index.js";
 
 const userIdStore = useUserIdStore()
-const userId = computed(()=>userIdStore.userId)
+const userId = computed(() => userIdStore.userId)
 
 const title = ref("");
 const auth = ref([]);
@@ -44,6 +45,7 @@ const citeTotalLength = ref(0);
 const citeCurrentPage = ref(1);
 let workId = ref(0);
 
+const ifGujia = ref(true);
 
 watch(activeName, (newVal) => {
   localStorage.setItem("activeTab", newVal);
@@ -83,22 +85,28 @@ const getWork = async (workId) => {
      * title
      */
     title.value = data.title;
+
     /**
      * Author
      */
+    console.log("不嘻嘻")
+
+    console.log(data.workAuthorResultDtos)
     data.workAuthorResultDtos.forEach((authorDto) => {
-      const authorName = authorDto.authorResultDto.authorName[0];
-      const authorId = authorDto.authorResultDto.authorId;
+      if(authorDto.authorResultDto !== null) {
+        const authorName = authorDto.authorResultDto.authorName[0];
+        const authorId = authorDto.authorResultDto.authorId;
 
-      const citedByCount = authorDto.authorResultDto.citedByCount;
-      const worksCount = authorDto.authorResultDto.worksCount;
+        const citedByCount = authorDto.authorResultDto.citedByCount;
+        const worksCount = authorDto.authorResultDto.worksCount;
 
-      auth.value.push({
-        name: authorName,
-        id: authorId,
-        citedByCount: citedByCount,
-        worksCount: worksCount
-      });
+        auth.value.push({
+          name: authorName,
+          id: authorId,
+          citedByCount: citedByCount,
+          worksCount: worksCount
+        });
+      }
     });
     /**
      * Doi
@@ -121,14 +129,17 @@ const getWork = async (workId) => {
     if (data.publicationDate) {
       publicationDate.value = data.publicationDate;
     }
+    ifGujia.value = false;
   } catch (error) {
     console.error("Failed to fetch data:", error);
-    title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
+    // title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
 
   }
 };
 
 onMounted(async () => {
+      ifGujia.value = false;
+
       const route = useRoute();
       const savedTab = localStorage.getItem("activeTab");
       if (savedTab) {
@@ -147,14 +158,13 @@ onMounted(async () => {
       updateCitePageResults();
       await getWork(workId);
 
-
       haveFavorite();
 
       //获取评论
       console.log(workId);
       await httpUtil.get('/user/workFavoriteNum', {
         publicationId: workId
-      }).then(res=>{
+      }).then(res => {
             collectNum.value = res.data.favoriteNum
           }
       )
@@ -166,13 +176,30 @@ onMounted(async () => {
       commentNum.value = comments.value.length;
 
       //获取推荐
-      const resCommends = await httpUtil.get('/test/recommend');
-      console.log('获取'+resCommends.data)
-      recommends.value = resCommends.data.recommends;
+      const resCommends = await httpUtil.get('/suggest/works', {
+        id: workId
+      });
+      console.log('获取' + resCommends.data)
+      recommends.value = resCommends.data.suggests;
       console.log(recommends.value);
     }
 )
 
+const getReference = async () => {
+  try {
+    const res = await httpUtil.get('/openalex/work/getWorkItsReference', {
+      workId: workId,
+    });
+    console.log("参考文献");
+    console.log(res.data);
+    referenceResults.value = res.data.work;
+    referenceTotalLength.value = referenceResults.value.length;
+    referenceNum.value = referenceTotalLength.value;
+  } catch (error) {
+    console.error("获取参考文献失败:", error);
+    ElMessage.error("获取参考文献失败");
+  }
+}
 
 
 let citeNumChange = useTransition(citeNum, {
@@ -194,28 +221,15 @@ isCollected.value = false
 //
 
 
-const getCite = async ()=>{
+const getCite = async () => {
   try {
     const res = await httpUtil.get('/openalex/work/getWorkReferenceIt', {
       workId: workId,
     });
+    console.log(res.data);
     citeResults.value = res.data.work;
     citeTotalLength.value = citeResults.value.length;
     citeNum.value = citeTotalLength.value;
-  } catch (error) {
-    console.error("获取引用失败:", error);
-    ElMessage.error("获取引用失败");
-  }
-}
-
-const getReference = async ()=>{
-  try {
-    const res = await httpUtil.get('/openalex/work/getWorkItsReference', {
-      workId: workId,
-    });
-    referenceResults.value = res.data.work;
-    referenceTotalLength.value = referenceResults.value.length;
-    referenceNum.value = referenceTotalLength.value;
   } catch (error) {
     console.error("获取引用失败:", error);
     ElMessage.error("获取引用失败");
@@ -227,15 +241,28 @@ const collectContent = computed(() =>
     isCollected.value ? '取消收藏' : '添加到收藏'
 );
 
-const toggleDownload = () => {
-  if(doi.value==='Loading...'){
+const toggleSite = () => {
+  if (doi.value === 'Loading...') {
     ElMessage.error("抱歉，我们无法访问这篇文章的原文")
     return;
   }
 
   const urlTmp = ref(`https://www.${doi.value}`)
-  window.open(urlTmp.value,"_blank");
+  window.open(urlTmp.value, "_blank");
 }
+
+const togglePdf = async () => {
+  if (doi.value === 'Loading...') {
+    ElMessage.error("抱歉，我们无法访问这篇文章的原文")
+    return;
+  }
+  let tmp1;
+  tmp1 = doi.value.split('doi.org/')[1];
+
+  const urlTmp = ref(`https://www.wellesu.com/${tmp1}`)
+  window.open(urlTmp.value, "_blank");
+}
+
 const toggleShare = () => {
   const currentUrl = window.location.href;  // 获取当前网址
   navigator.clipboard.writeText(currentUrl)  // 将网址复制到剪切板
@@ -268,8 +295,8 @@ const toggleCite = () => {
   const volume = getRandom(35); // 假设卷号
   const issue = getRandom(12); // 假设期号
   const pageFrom = getRandom(50);
-  const pageBetween = getRandom(8)+2;
-  const pages = `${pageFrom}-${pageFrom+pageBetween}`; // 假设页码
+  const pageBetween = getRandom(8) + 2;
+  const pages = `${pageFrom}-${pageFrom + pageBetween}`; // 假设页码
 
   // GB/T 7714 格式
   gb7714.value = `${authors}. ${title2}[J]. ${journalName}, ${publicationYear2}, ${volume}(${issue}): ${pages}. DOI:${doi2}`;
@@ -317,8 +344,6 @@ const copyAPA = () => {
 };
 
 
-
-
 //collect
 const collectVisible = ref(false);
 const collectTag = ref([])
@@ -327,8 +352,8 @@ const tagInputVisible = ref(false)
 
 const toggleCollect = async () => {
   tagInputVisible.value = false;
-  if(!isCollected.value){
-    if (userId.value==null||!userId.value) {
+  if (!isCollected.value) {
+    if (userId.value == null || !userId.value) {
       ElMessage.warning("请登录后再操作");
       return;
     }
@@ -351,7 +376,7 @@ const toggleCollect = async () => {
   }
 }
 
-const addTag = ()=>{
+const addTag = () => {
   try {
     httpUtil.post2('/user/createNewTag', {
       tag: tagInputValue.value,
@@ -379,7 +404,7 @@ const handleCollectSubmit = async () => {
       tags: [...selectedTags.value],
       userId: userId.value
     });
-    if (res.data.code===200) {
+    if (res.data.code === 200) {
       ElMessage.success("收藏成功！");
       isCollected.value = true;
       collectNum.value++;
@@ -408,27 +433,35 @@ const handleInputConfirm = () => {
   tagInputValue.value = ''
 }
 
-const haveFavorite = async ()=>{
+const haveFavorite = async () => {
   try {
+    if(userId.value == null || !userId.value) {
+      console.log("获取收藏失败,请先登录");
+      ElMessage.error("请先登录！");
+      setTimeout(()=>{
+        router.push('/login');
+      },500);
+      return;
+    }
+
     const res = await httpUtil.get('/user/haveFavorite', {
       publicationId: workId,
       userId: userId.value
     })
-    isCollected.value = res.data.haveFavorite
+    isCollected.value = res.data.haveFavorite;
   } catch (e) {
     console.error(e);
-    console.log("获取收藏失败,请先登录");
   }
 }
-const deleteFavorite = async ()=>{
+const deleteFavorite = async () => {
   try {
     const res = await httpUtil.get('/user/deleteUserFavorite', {
       publicationId: workId,
       userId: userId.value
     })
-    if(res.data.code===200){
+    if (res.data.code === 200) {
       ElMessage.success("取消收藏成功")
-    }else {
+    } else {
       ElMessage.error("取消收藏失败")
     }
 
@@ -439,7 +472,7 @@ const deleteFavorite = async ()=>{
 }
 const submitComment = async () => {
   try {
-    if(localStorage.getItem("userId")===null||!localStorage.getItem("userId")){
+    if (localStorage.getItem("userId") === null || !localStorage.getItem("userId")) {
       ElMessage.error('请先登录!')
       return;
     }
@@ -463,7 +496,6 @@ const submitComment = async () => {
 }
 
 
-
 const comments = ref([]);
 
 /**
@@ -479,7 +511,10 @@ const recommends = ref([]);
       <div class="left-part">
         <!-- Header Section -->
         <div class="header">
-          <h1>{{ title }}</h1>
+          <div v-if="ifGujia">
+            <el-skeleton :rows="2" animated/>
+          </div>
+          <h1 v-else v-html="title"></h1>
 
           <p>
             <span v-for="(author, index) in auth" :key="index">
@@ -512,18 +547,21 @@ const recommends = ref([]);
         <div class="abstract">
           <strong>Abstract:</strong>
           <br>
-          {{ abstract }}
+          <div v-if="ifGujia">
+            <el-skeleton :rows="4" animated/>
+          </div>
+          <div v-else v-html="abstract"></div>
         </div>
         <div class="option-part">
 
 
           <el-button
-              class="download-button"
-              :icon="Download"
+              class="pdf-button"
+              :icon="Document"
               type="danger"
-              @click="toggleDownload"
+              @click="togglePdf"
           >
-            跳转到原文链接
+            查看PDF
           </el-button>
 
 
@@ -563,6 +601,16 @@ const recommends = ref([]);
             >
             </el-button>
           </el-tooltip>
+
+          <el-button
+              class="site-button"
+              :icon="Link"
+
+              @click="toggleSite"
+          >
+            原文网址
+          </el-button>
+
         </div>
 
         <el-tabs v-model="activeName" class="down-tabs" type="card">
@@ -579,7 +627,7 @@ const recommends = ref([]);
             </div>
             <div v-else>
               <el-empty :image=robotImage
-                        description="这篇论文没有参考文献" />
+                        description="这篇论文没有参考文献"/>
             </div>
             <el-pagination
                 v-if="referenceTotalLength > 0"
@@ -603,7 +651,7 @@ const recommends = ref([]);
             </div>
             <div v-else>
               <el-empty :image=robotImage
-                        description="这篇论文没有被引用过" />
+                        description="这篇论文没有被引用过"/>
             </div>
             <el-pagination
                 v-if="citeTotalLength > 0"
@@ -623,18 +671,18 @@ const recommends = ref([]);
 
             </div>
             <div v-if="comments.length > 0">
-            <SingleComment v-for="comment in comments" :key="comment.id"
-                           :comment-index="comment.commentIndex"
-                           :user-name="comment.userName"
-                           :comment-id="comment.id"
-                           :work-id="workId"
-                           :likes="comment.likes"
-                           :date="comment.date"
-                           :user-id="comment.userId"/>
+              <SingleComment v-for="comment in comments" :key="comment.id"
+                             :comment-index="comment.commentIndex"
+                             :user-name="comment.userName"
+                             :comment-id="comment.id"
+                             :work-id="workId"
+                             :likes="comment.likes"
+                             :date="comment.date"
+                             :user-id="comment.userId"/>
             </div>
             <div v-else>
               <el-empty :image=robotImage
-                        description="哈哈,这篇论文没有评论" />
+                        description="哈哈,这篇论文没有评论"/>
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -680,7 +728,8 @@ const recommends = ref([]);
 
     <!-- 标签选择 -->
     <div style="margin-left: 10px;">
-      <el-checkbox-group v-model="selectedTags" style="font-size: 16px;  display: flex; flex-direction: column;" class="custom-checkbox-group">
+      <el-checkbox-group v-model="selectedTags" style="font-size: 16px;  display: flex; flex-direction: column;"
+                         class="custom-checkbox-group">
         <el-checkbox
             v-for="tag in collectTag"
             :label="tag"
@@ -690,7 +739,6 @@ const recommends = ref([]);
           {{ tag }}
         </el-checkbox>
       </el-checkbox-group>
-
 
 
       <!-- 新增标签按钮 -->
@@ -719,7 +767,8 @@ const recommends = ref([]);
         class="dialog-footer"
         style="display: flex; justify-content: center;margin-top: 35px"
     >
-    <el-button style="padding-left: 30px;padding-right: 30px" type="primary" @click="handleCollectSubmit">提交  </el-button>
+    <el-button style="padding-left: 30px;padding-right: 30px" type="primary"
+               @click="handleCollectSubmit">提交  </el-button>
   </span>
   </el-dialog>
 
@@ -738,25 +787,26 @@ const recommends = ref([]);
     <div class="citation-container">
       <h4>GB/T 7714</h4>
       <div class="citation-content">
-        {{gb7714}}
+        {{ gb7714 }}
       </div>
     </div>
     <div class="citation-container">
       <h4>MLA</h4>
       <div class="citation-content">
-        {{mla}}
+        {{ mla }}
       </div>
     </div>
     <div class="citation-container">
       <h4>APA</h4>
       <div class="citation-content">
-        {{apa}}
+        {{ apa }}
       </div>
     </div>
     <!-- 复制按钮居中 -->
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="copyGBT" style="background-color: transparent;color: #0003c5;margin-right: -7px;margin-left: -7px">
+        <el-button @click="copyGBT"
+                   style="background-color: transparent;color: #0003c5;margin-right: -7px;margin-left: -7px">
           复制GB/T 7714
         </el-button>
         <el-button @click="copyMLA" style="background-color: transparent;color: #0003c5;margin-right: -7px">
@@ -785,10 +835,9 @@ const recommends = ref([]);
 }
 
 h4 {
-  color:#7a7a7a;
+  color: #7a7a7a;
   margin-right: 20px; /* 给标题和内容之间加个间隔 */
 }
-
 
 
 .citation-content {
@@ -798,7 +847,6 @@ h4 {
 .custom-checkbox-group :deep(.el-checkbox__label) {
   font-size: 15px !important;
 }
-
 
 
 .el-popper.is-customized {
@@ -840,13 +888,29 @@ h4 {
   align-items: center;
 }
 
-.download-button {
+.pdf-button {
   background: #e10000;
 }
 
-.download-button:hover {
+.pdf-button:hover {
   background: #ec5454;
 }
+
+.site-button {
+  background: rgba(0, 0, 0, 0);
+  color: #3200af;
+
+  text-decoration: underline;
+  font-size: 16px;
+  margin-left: -1px;
+  margin-bottom: -3px;
+}
+
+.site-button:hover {
+  background: rgba(112, 112, 112, 0);
+  color: #008be3;
+}
+
 
 .collect-button {
   color: #7a7a7a;

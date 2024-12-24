@@ -26,6 +26,8 @@
   </template>
 
 <script>
+import axios from 'axios'; 
+import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { ElCard, ElTag, ElDivider } from 'element-plus';
 
@@ -43,18 +45,18 @@ setup() {
         description: '好'
       });
   
-      const scholars = ref([
-        { name: '张三', fields: '计算机科学', citations: 1500 },
-        { name: '李四', fields: '人工智能', citations: 2000 },
-        { name: '王五', fields: '生物医学', citations: 950 },
-        { name: '赵六', fields: '物理学', citations: 1200 },
-        { name: '钱七', fields: '数据科学', citations: 1800 },
-        { name: 'aaa', fields: '计算机科学', citations: 1500 },
-        { name: 'bbb', fields: '人工智能', citations: 2000 },
-        { name: 'ccc', fields: '生物医学', citations: 950 },
-        { name: 'ddd', fields: '物理学', citations: 1200 },
-        { name: 'eee', fields: '数据科学', citations: 1800 },
-      ]);
+    const scholars = ref([
+      { name: '张三', fields: '计算机科学', citations: 1500 },
+      { name: '李四', fields: '人工智能', citations: 2000 },
+      { name: '王五', fields: '生物医学', citations: 950 },
+      { name: '赵六', fields: '物理学', citations: 1200 },
+      { name: '钱七', fields: '数据科学', citations: 1800 },
+      { name: 'aaa', fields: '计算机科学', citations: 1500 },
+      { name: 'bbb', fields: '人工智能', citations: 2000 },
+      { name: 'ccc', fields: '生物医学', citations: 950 },
+      { name: 'ddd', fields: '物理学', citations: 1200 },
+      { name: 'eee', fields: '数据科学', citations: 1800 },
+    ]);
 
     const getTagType = (index) => {
       const fieldColors = [
@@ -68,17 +70,22 @@ setup() {
       return fieldColors[index % 5];
     };
 
-    const fetchInstitutionData = async () => {
+    const fetchInstitutionData = async (id) => {
       try {
-        // const res = await axios.get('/api/institution');
-        // institution.value = res.data.institution;
-        // scholars.value = res.data.scholars;
+        const institutionResponse = await axios.get(`/api/institution/${id}`);
+        institution.value = institutionResponse.data;
+
+        const scholarsResponse = await axios.get(`/api/institution/${id}/scholars`);
+        scholars.value = scholarsResponse.data;
       } catch (error) {
         console.error('获取数据失败', error);
       }
     };
 
-    // onMounted(fetchInstitutionData);
+    onMounted(() => {
+      const institutionId = route.params.id;
+      fetchInstitutionData(institutionId);
+    });
 
     return {
       institution,

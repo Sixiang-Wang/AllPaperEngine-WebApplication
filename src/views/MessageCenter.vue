@@ -6,12 +6,7 @@ import * as cookieUtil from "@/utils/cookie.js";
 import {ElMessage} from "element-plus";
 import CertainMessage from "@/components/CertainMessage.vue";
 
-const messages = ref([{
-  id: 1,
-  userName: "古丈机器人",
-  date: "2024-12-02",
-  messageIndex: "天胡开局没打过大红地精"
-}])
+const messages = ref([])
 const page = ref(1);
 onMounted(async()=>{
   try{

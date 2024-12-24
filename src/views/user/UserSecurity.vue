@@ -1,23 +1,15 @@
 <script setup>
 import {ArrowRight} from "@element-plus/icons-vue";
 import Advertise from "@/components/Advertisement.vue";
+import {ref} from "vue";
+import {ElMessage} from "element-plus";
+import * as httpUtil from "@/api/http.js";
+import * as cookieUtil from "@/utils/cookie.js";
 
 const tableData = [
   {
-    feature: "账号名",
-    value: "1145141919810"
-  },
-  {
     feature: "密码",
     value: "**********"
-  },
-  {
-    feature: "密保问题",
-    value: ""
-  },
-  {
-    feature: "电子邮箱",
-    value: "912948333@qq.com"
   }
 ]
 const tableData2 = [
@@ -28,6 +20,39 @@ const tableData2 = [
     feature: "登录时邮箱验证"
   }
 ]
+
+const editPassword = ref(false);
+const oldPassword = ref('');
+const newPassword = ref('');
+const newPassword2 = ref('');
+const clickPassword = async () => {
+  editPassword.value=true
+};
+const quitPassword = async () => {
+  editPassword.value=false
+};
+const updatePassword = async () => {
+  if(newPassword.value!==newPassword2.value){
+    ElMessage.error("两次密码输入不一致")
+    return
+  }
+
+  const res = await httpUtil.post2WithHeader('/user/changePassword',
+      { oldPassword: oldPassword.value,newPassword: newPassword.value},
+       {
+    Authorization: cookieUtil.getCookie("token")
+  });
+
+  if(res.data.code===414){
+    ElMessage.error('旧密码不正确!')
+    return
+  }
+
+  ElMessage.success('密码修改完成!')
+  editPassword.value=false
+};
+
+
 </script>
 
 <template>
@@ -42,7 +67,7 @@ const tableData2 = [
           <el-table-column prop="value" width="600px"></el-table-column>
           <el-table-column width="50px">
             <template #default="scope">
-              <arrow-right style="width: 25px; height: 25px;"/>
+              <arrow-right @click="clickPassword" style="width: 25px; height: 25px;"/>
             </template>
           </el-table-column>
         </el-table>
@@ -69,6 +94,49 @@ const tableData2 = [
 <!--      <Advertise/>-->
     </div>
   </div>
+
+  <el-dialog
+      title="更改密码"
+      v-model="editPassword"
+      width="400px"
+  >
+    <div style="display: flex;margin-top:15px;flex-direction: column;align-items: center;margin-bottom: 30px;">
+      <el-form-item label="输入原密码">
+        <el-input
+            v-model="oldPassword"
+            style="width: 240px"
+            placeholder="输入原密码"
+            clearable
+            show-password
+        />
+      </el-form-item>
+
+      <el-form-item label="输入新密码">
+        <el-input
+            v-model="newPassword"
+            style="width: 240px"
+            placeholder="输入新密码"
+            clearable
+            show-password
+        />
+      </el-form-item>
+
+      <el-form-item label="确认新密码">
+        <el-input
+            v-model="newPassword2"
+            style="width: 240px"
+            placeholder="确认新密码"
+            clearable
+            show-password
+        />
+      </el-form-item>
+    </div>
+
+    <span slot="footer" style="display: flex;justify-content: center;gap: 20px;margin-top: 20px;">
+      <el-button @click="quitPassword">取消</el-button>
+      <el-button type="primary" @click="updatePassword">确定</el-button>
+    </span>
+  </el-dialog>
 </template>
 
 <style scoped>

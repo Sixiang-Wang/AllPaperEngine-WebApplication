@@ -9,6 +9,12 @@ import MessageCenter from "@/views/MessageCenter.vue";
 import * as httpUtil from "@/api/http.js";
 import http from "@/api/http.js";
 import {useTokenStore, useUserStore, useUserIdStore} from "@/store/store.js";
+
+const avatarUrl = computed(()=>{
+  const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
+  return http.getUrlWithoutSlash() + avatar;
+});
+
 const button_index = ref("登录");
 const userStore = useUserStore();
 const tokenStore = useTokenStore()
@@ -28,20 +34,23 @@ const goToUserInfo = () => {
   }
   router.push('/user/info');
 }
-const avatar = ref({
-  defaultAvatar: defaultAvatar,
-  url : defaultAvatar
-})
 const route = useRoute();
 const textColor = computed(() => {
   return route.path === '/main' ? '#000000' : '#000000'; // 选择颜色
 });
+
+
+
 const goToLogin = () => {
   if(cookieUtil.getCookie("token")===null||cookieUtil.getCookie("token")===''){
     router.push('/login');
   }else{
     cookieUtil.deleteCookie("token");
     cookieUtil.deleteCookie("username");
+    localStorage.removeItem('avatar');
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
     ElMessage.success("已退出登录！");
     router.push('/main');
     location.reload();
@@ -71,39 +80,47 @@ onMounted(async() =>{
     button_index.value = "退出";
   }
   try{
+    if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token")===''){
+      return;
+    }
     const res = await httpUtil.get('/message/isRedPoint',{},{Authorization: cookieUtil.getCookie("token")});
     isRedPoint.value = res.data.isRed;
   }catch (e){
     console.error(e);
   }
-  try{
-    const res = await httpUtil.get('/user/ifScholar',{},{
-      Authorization: cookieUtil.getCookie("token")
-    });
-    if (res.data.judge === 0){
-      ifAuthentication.value = false;
-    }else{
-      ifAuthentication.value = true;
-    }
-  }catch (e){
-    console.error(e);
-  }
+
 })
 
 const preLogin = async ()=>{
+  if(cookieUtil.getCookie("token")===null||cookieUtil.getCookie("token")===''){
+    if(localStorage.getItem("avatar")!==null&&localStorage.getItem("avatar")!==''){
+      localStorage.setItem("avatar",'')
+      window.location.reload();
+    }
+    localStorage.setItem("avatar",'')
+    localStorage.setItem("token", '');
+    localStorage.setItem("userId", '');
+    localStorage.setItem("userName", '');
+    return
+  }
+  localStorage.setItem("avatar",'');
   const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
   console.log(res);
+
   userStore.setUsername(res.data.username);
   tokenStore.setToken(res.data.token);
   userIdStore.setUserId(res.data.userId);
   localStorage.setItem("userName", res.data.username);
   localStorage.setItem("token", res.data.token);
   localStorage.setItem("userId", res.data.userId);
-
+  localStorage.setItem("avatar",'');
+  localStorage.setItem("avatar",res.data.avatar);
   cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
 }
 
-const ifAuthentication = ref(true);
+
+
+const ifAuthentication = ref(localStorage.getItem("ifAuthentication"));
 watch(cookieUtil.getCookie("username"),(oldValue,newValue)=> {
   user_name.value = newValue;
   console.log(newValue);
@@ -116,6 +133,8 @@ const handleDrawer = ()=>{
   }
   drawer.value = !drawer.value;
 }
+
+
 </script>
 
 <template>
@@ -148,6 +167,7 @@ const handleDrawer = ()=>{
       <el-menu-item index="/scholarAppeal">学术申诉</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/hotpoint">热点分析</el-menu-item>
+    <el-menu-item index="/user/info">用户主页</el-menu-item>
     <el-menu-item index="5">联系我吗</el-menu-item>
     <div class="header-menu-right" >
       <div class="message-icon-container">
@@ -159,7 +179,7 @@ const handleDrawer = ()=>{
         <!-- 红色原点 -->
         <div class="sss" v-if="isRedPoint"></div>
       </div>
-      <el-avatar :src="avatar.url" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
+      <el-avatar :src="avatarUrl" shape="circle" class="user-avatar" @click="goToUserInfo"></el-avatar>
       <span :style="{ color: textColor }">
         {{ user_name ? `欢迎, ${user_name}` : "点此登录" }}
       </span>
