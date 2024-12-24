@@ -6,6 +6,7 @@ import com.example.scholar.dao.UserTokenMapper;
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.ConstDef;
 import com.example.scholar.domain.myenum.AcademicFieldType;
+import com.example.scholar.dto.ScholarDto;
 import com.example.scholar.service.UserService;
 import com.example.scholar.util.JwtUtils;
 import com.example.scholar.util.Md5Utils;
@@ -36,6 +37,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public int getCount() {
         return userMapper.getCount();
+    }
+
+    @Override
+    public List<ScholarDto> getScholarsByName(String name) {
+        List<User> list = userMapper.selectScholarsByAuthorName(name);
+        List<ScholarDto> res = new ArrayList<>();
+        for(User user: list){
+
+            ScholarDto scholarDto = new ScholarDto();
+            scholarDto.setUserName(user.getName());
+            scholarDto.setMail(user.getMail());
+            scholarDto.setAuthorName(user.getAuthorName());
+            scholarDto.setAuthorId(user.getAuthorId());
+            scholarDto.setAvatar(user.getAvatar());
+            String instId = userMapper.getInstitutionIdByAuthorId(user.getAuthorId());
+            String institution = userMapper.getNameByInstitutionId(instId);
+            scholarDto.setInstitution(institution);
+            res.add(scholarDto);
+
+        }
+        return res;
     }
 
     @Override

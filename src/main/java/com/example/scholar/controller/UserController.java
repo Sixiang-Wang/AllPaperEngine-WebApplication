@@ -643,6 +643,14 @@ public class UserController {
             return R.error(e.toString());
         }
     }
+    @GetMapping(value="/getScholars")
+    public R getScholars(@RequestParam("name")String name){
+            try{
+                return R.ok().put("scholars",userService.getScholarsByName(name));
+            }catch (Exception e){
+                return R.error(e.toString());
+            }
+    }
 
     // 删除某条浏览历史
     @GetMapping("/deleteHistory/{id}")

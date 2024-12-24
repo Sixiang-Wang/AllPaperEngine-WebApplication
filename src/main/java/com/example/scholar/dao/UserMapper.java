@@ -186,4 +186,12 @@ public interface UserMapper {
     @Delete("DELETE FROM user WHERE userid = #{userId}")
     int deleteUser(int userId);
 
+    @Select("select * from user where author_name like CONCAT('%', #{name}, '%') and if_show = true")
+    List<User> selectScholarsByAuthorName(String name);
+
+    @Select("select display_name from institutions where id = #{id} limit 1")
+    String getNameByInstitutionId(String id);
+    @Select("select distinct institution_id from works_authorships where author_id = #{id} limit 1")
+    String getInstitutionIdByAuthorId(String id);
+
 }

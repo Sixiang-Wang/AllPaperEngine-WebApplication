@@ -2,6 +2,7 @@ package com.example.scholar.service;
 
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.myenum.AcademicFieldType;
+import com.example.scholar.dto.ScholarDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.List;
 public interface UserService {
     List<User> getAll();
     int getCount();
+    List<ScholarDto> getScholarsByName(String name);
     String getAuthorIdByUser(int userId);
     HashMap<String, Object> login(String mail, String password);
     HashMap<String, Object> register(String name, String password, String mail);
