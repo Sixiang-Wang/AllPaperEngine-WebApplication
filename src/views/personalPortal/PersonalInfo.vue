@@ -4,20 +4,21 @@ import { ArrowRight } from "@element-plus/icons-vue";
 import defaultAvatar from "@/assets/image/user.gif";
 import router from "@/router/index.js";
 import httpUtil from "@/api/http.js";
-import {useUserIdStore} from "@/store/store.js";
 import * as cookieUtil from "@/utils/cookie.js";
 import {ElMessage} from "element-plus";
-import Graph from "@/components/Graph.vue";  // 引入 API 相关功能
+import http from "@/api/http.js";  // 引入 API 相关功能
 
 // avatar 头像
-const avatar = ref({
-  defaultAvatar: defaultAvatar,
-  url: defaultAvatar,
+const avatarUrl = computed(()=>{
+  const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
+  return http.getUrlWithoutSlash() + avatar;
 });
 
-const userIdStore = useUserIdStore();
-const userId = computed(() => userIdStore.userId);
-console.log(userId)
+const userId = localStorage.getItem("userId");
+const userName = localStorage.getItem("userName");
+const AuthorId = ref("");
+let user = ref([]);
+console.log(userName);
 
 // 用户角色
 const role = ref(1);
@@ -37,6 +38,11 @@ const searchedPapers = ref([]);
 
 const isLoading = ref(true);
 
+let firstPublishWorkCount = ref([]);
+let firstHighQualityWorksCount = ref([]);
+let HNumber = ref([]);
+let citedCount = ref([]);
+
 // 获取个人成果
 onMounted(async () => {
   if(cookieUtil.getCookie("token") === null || cookieUtil.getCookie("token") === ''){
@@ -47,7 +53,8 @@ onMounted(async () => {
     return;
   }
   try {
-    const res = await httpUtil.get('/claim/get/personal', { scholarId: userId.value });
+    const res = await httpUtil.get('/claim/get/personal', { scholarId: userId });
+    console.log(res)
     if (res.data && res.data.works) {
       myAchievement.value = res.data.works;
     }
@@ -56,6 +63,10 @@ onMounted(async () => {
   } finally {
     isLoading.value = false; // 请求完成后，修改加载状态
   }
+
+  // firstPublishWorkCount = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: userId.value});
+  console.log(firstPublishWorkCount);
+  
 });
 
 // 跳转到具体论文页面
@@ -100,14 +111,14 @@ const simpleSearch = async () => {
         <el-col :span="12">
           <el-row>
             <el-avatar
-                :src="avatar.url"
+                :src="avatarUrl"
                 :size="70"
                 shape="square"
                 fit="cover"
                 class="user-avatar"
             />
             <div style="margin-left: 10%; margin-top: 5%">
-              <el-text style="font-size: large">姓名</el-text><br>
+              <el-text style="font-size: large">{{userName}}</el-text><br>
               <el-text style="font-size: small">学者ID：1000000</el-text>
             </div>
           </el-row>
@@ -127,21 +138,13 @@ const simpleSearch = async () => {
             <el-col :span="5" style="font-size:small">0</el-col>
           </el-row>
           <el-row style="margin-top:3%">
-            <el-col :span="7" style="font-size:small">总发文量</el-col>
+            <el-col :span="7" style="font-size:small">高影响力论文数</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
-            <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
-          </el-row>
-          <el-row style="margin-top:3%">
-            <el-col :span="7" style="font-size:small">总发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
-            <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
+            <el-col :span="7" style="font-size:small">总被引用数</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
           </el-row>
           <el-row style="margin-top:3%">
-            <el-col :span="7" style="font-size:small">总发文量</el-col>
-            <el-col :span="5" style="font-size:small">0</el-col>
-            <el-col :span="7" style="font-size:small">第一作者发文量</el-col>
+            <el-col :span="7" style="font-size:small">H指数</el-col>
             <el-col :span="5" style="font-size:small">0</el-col>
           </el-row>
         </el-col>
@@ -150,29 +153,26 @@ const simpleSearch = async () => {
 
     <el-card style="max-width: 75%; margin-top: 1.5%">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" type="border-card">
+        <el-tab-pane label="成果管理" name="first">
+            <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
+              <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
+              <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
+              <el-table-column prop="cited" label="引用次数" width="90"></el-table-column>
+              <el-table-column>
+                <template #default="scope">
+                  <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column>
+                <template #default="scope">
+                  <el-button @click="deleteClaimed(scope.row.id)" color="#C00000">点击删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+        </el-tab-pane>
 
-        <el-tab-pane label="学术关系网" name="first">
-          <Graph/>
-        </el-tab-pane>
         <el-tab-pane label="学术统计" name="second">Config</el-tab-pane>
-        <el-tab-pane label="成果管理" name="third">
-          <div v-if="isLoading">加载中...</div>
-          <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
-            <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
-            <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
-            <el-table-column prop="cited" label="引用次数" width="90"></el-table-column>
-            <el-table-column>
-              <template #default="scope">
-                <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
-              </template>
-            </el-table-column>
-            <el-table-column>
-              <template #default="scope">
-                <el-button @click="deleteClaimed(scope.row.id)" color="#C00000">点击删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
+        <el-tab-pane label="学术关系网" name="third">Role</el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -213,18 +213,4 @@ const simpleSearch = async () => {
   background-color: #66b1ff;
   border-color: #66b1ff;
 }
-.el-tabs {
-  width: 100%;
-  height: 100%;
-}
-
-.el-tab-pane {
-  height: 100%; /* 确保子组件占满Tab */
-  display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  padding: 10px;
-  overflow: hidden; /* 避免溢出 */
-}
-
 </style>
