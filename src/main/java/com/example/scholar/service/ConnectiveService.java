@@ -11,11 +11,11 @@ public interface ConnectiveService {
     List<String> sortKeywords();
     List<Integer> sortPublictionYears();
     List<String> sortTypes();
-    List<String> sortLanguages();
+    List<String> sortInstitutions();
 
     List<Works> getWorksByKeyword(String keyword);
     List<Works> getWorksByPublicationYear(int publicationYear);
     List<Works> getWorksByType(String type);
-    List<Works> getWorksByLanguage(String language);
+    List<Works> getWorksByInstitution(String language);
 
 }

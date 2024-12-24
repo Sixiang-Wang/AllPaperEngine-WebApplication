@@ -1,8 +1,10 @@
 package com.example.scholar.service;
 
 
+import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalex.Institutions;
 import com.example.scholar.domain.openalex.Work;
+import com.example.scholar.dto.AuthorSpecificResultDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,4 +21,9 @@ public interface InstitutionService {
     List<Work> getWorksByInstitutions(String id);
 
 
+    List<Author> getAuthorByInstitutionId(String institutionId);
+
+    List<String> getAuthorIdByInstitutionId(String institutionId);
+
+    List<AuthorSpecificResultDto> getdtoList(String institutionId, List<String> authorIdList);
 }

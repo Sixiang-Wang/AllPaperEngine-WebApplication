@@ -20,7 +20,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public List<Authentication> allAuthentication() {
-        return authenticationMapper.allAuthenticationById();
+
+        return authenticationMapper.allAuthentication();
     }
 
     @Override

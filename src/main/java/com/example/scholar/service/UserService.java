@@ -42,6 +42,7 @@ public interface UserService {
 
     // 添加浏览历史
     HashMap<String, Object> addHistory(int userId, String publicationId, LocalDateTime timestamp);
+//    HashMap<String, Object> addHistory(int userId, String publicationId, String tString);
 
     // 退出登录
     HashMap<String, Object> logout(int userId);

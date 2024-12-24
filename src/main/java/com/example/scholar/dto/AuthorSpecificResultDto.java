@@ -9,9 +9,17 @@ import lombok.Data;
 
 @Data
 public class AuthorSpecificResultDto {
-
     private Author author;
     private Institutions institutions;
-//    private TopicAnalyzer.Topic TopicDisplayName;
+
+    public AuthorSpecificResultDto(Author author, Institutions institutionById) {
+        this.author = author;
+        this.institutions = institutionById;
+    }
+
+    public AuthorSpecificResultDto() {
+    }
+
+    //    private TopicAnalyzer.Topic TopicDisplayName;
 
 }

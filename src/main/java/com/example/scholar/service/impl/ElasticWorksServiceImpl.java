@@ -10,7 +10,6 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -26,7 +25,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -35,7 +33,6 @@ import springfox.documentation.spring.web.json.Json;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,18 +107,18 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         {
             if(cnt <= 100000)
             {
-                String publicationid = work.getId();
+                String work_id = work.getId();
                 String type = work.getType();
-                String language = work.getLanguage();
                 Integer year = work.getPublication_year();
-                List<String> keywordsText = new ArrayList<>();
-                String keyword = work.getKeywords();
+                String topic_id = elasticWorkMapper.getTopicIdByWorkId(work_id);
+                String keyword = elasticWorkMapper.getKeywordsById(topic_id);
+                String institution = elasticWorkMapper.getInstitutionNameByWorkId(work_id);
+
                 ObjectMapper mapper = new ObjectMapper();
                 try {
-                    List<Map<String, Object>> keywordMaps = mapper.readValue(keyword, List.class);
-                    System.out.println(keywordMaps);
-                    for (Map<String, Object> keywordMap : keywordMaps) {
-                        elasticWorkMapper.insertSearchWork(publicationid, (String) keywordMap.get("display_name"), type, language, year);
+                    List<String> keywords = mapper.readValue(keyword, List.class);
+                    for (String keywordText : keywords) {
+                        elasticWorkMapper.insertSearchWork(work_id, keywordText, type, institution, year);
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -191,39 +188,39 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
 
 
         RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(new HttpHost("localhost", 9200, "http")));
+                RestClient.builder(new HttpHost("116.204.112.5", 9200, "http")));
 
         try {
             // 创建SearchRequest
-            SearchRequest searchRequest = new SearchRequest("openalex_works_index_addingcompletion1");
+            SearchRequest searchRequest = new SearchRequest("works_index");
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
             // 创建SuggestBuilder
             SuggestBuilder suggestBuilder = new SuggestBuilder();
 
             // 添加title_suggest
-            CompletionSuggestionBuilder titleSuggestion = SuggestBuilders.completionSuggestion("title.suggest_field")
+            CompletionSuggestionBuilder titleSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
                     .prefix(searchContent)
                     .size(10);
             suggestBuilder.addSuggestion("title_suggest", titleSuggestion);
 
             // 添加abstractSuggest
-            CompletionSuggestionBuilder abstractSuggestion = SuggestBuilders.completionSuggestion("abstract.suggest_field")
-                    .prefix(searchContent)
-                    .size(10);
-            suggestBuilder.addSuggestion("abstractSuggest", abstractSuggestion);
+//            CompletionSuggestionBuilder abstractSuggestion = SuggestBuilders.completionSuggestion("abstract.suggest_field")
+//                    .prefix(searchContent)
+//                    .size(10);
+//            suggestBuilder.addSuggestion("abstractSuggest", abstractSuggestion);
 
-            // 添加display_name_suggest
-            CompletionSuggestionBuilder displayNameSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
-                    .prefix(searchContent)
-                    .size(10);
-            suggestBuilder.addSuggestion("display_name_suggest", displayNameSuggestion);
+//            // 添加display_name_suggest
+//            CompletionSuggestionBuilder displayNameSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
+//                    .prefix(searchContent)
+//                    .size(10);
+//            suggestBuilder.addSuggestion("display_name_suggest", displayNameSuggestion);
 
-            // 添加keywordstextSuggest
-            CompletionSuggestionBuilder keywordsTextSuggestion = SuggestBuilders.completionSuggestion("keywordstext.suggest_field")
-                    .prefix(searchContent)
-                    .size(10);
-            suggestBuilder.addSuggestion("keywordstextSuggest", keywordsTextSuggestion);
+//            // 添加keywordstextSuggest
+//            CompletionSuggestionBuilder keywordsTextSuggestion = SuggestBuilders.completionSuggestion("keywordstext.suggest_field")
+//                    .prefix(searchContent)
+//                    .size(10);
+//            suggestBuilder.addSuggestion("keywordstextSuggest", keywordsTextSuggestion);
 
             // 设置SuggestBuilder到SearchSourceBuilder
             sourceBuilder.suggest(suggestBuilder);
@@ -524,5 +521,54 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         return null;
     }
 
+    @Override
+    public Json AutoCompleteAuthorWithCompletionSuggester(String searchContent) throws IOException {
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(new HttpHost("116.204.112.5", 9200, "http")));
+
+        try {
+            // Create SearchRequest
+            SearchRequest searchRequest = new SearchRequest("authors_index");
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+            // Create SuggestBuilder
+            SuggestBuilder suggestBuilder = new SuggestBuilder();
+
+            // Add author_suggest
+            CompletionSuggestionBuilder authorSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
+                    .prefix(searchContent)
+                    .size(10)
+                    .skipDuplicates(true)
+                    .analyzer("ik_smart");
+
+            suggestBuilder.addSuggestion("author_suggest", authorSuggestion);
+
+            // Set SuggestBuilder to SearchSourceBuilder
+            sourceBuilder.suggest(suggestBuilder);
+
+            // Set SearchSourceBuilder to SearchRequest
+            searchRequest.source(sourceBuilder);
+
+            // Execute search request
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            // Process search results
+            Suggest suggest = searchResponse.getSuggest();
+
+            return new Json(suggest.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Close client
+            try {
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
 
 }
