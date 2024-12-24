@@ -36,6 +36,7 @@
 <script>
 import axios from 'axios';
 import router from "@/router/index.js";
+import defaultAvatar from '@/assets/image/scholarHead.jpg';
   export default {
     name: 'SingleAuthor',
     props: {
@@ -61,7 +62,7 @@ import router from "@/router/index.js";
       avatar: {
         type: String,
         required: false,
-        default: ''
+        default: defaultAvatar
       },
       citedByCount: {
         type: Number,
