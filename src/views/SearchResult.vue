@@ -92,7 +92,7 @@ const authorInfos = ref([
 
 
 const handlePageChange = (page) => {
-  router.push({path: "/search", query: {input: route.query.input, page: page}}).then(() => {
+  router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
     currentPage.value = page;
     updateSearchResults();
     window.scrollTo({top: 0});
@@ -112,7 +112,7 @@ const updateSearchResults = async () => {
 
 const search = async () => {
   isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
-  console.log(isSearchingForAuthors);
+  console.log(searchType.value);
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
@@ -126,14 +126,18 @@ const search = async () => {
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
 
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
+        totalLength.value = res.data.page;
 
         for(let result of searchResults.value){
           if(result.highlightFields.hasOwnProperty('title')){
@@ -167,11 +171,14 @@ const search = async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -206,11 +213,14 @@ const search = async () => {
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -283,7 +293,7 @@ const search = async () => {
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       } else {
-        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', { 
+        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
           authorName: searchInput.value
         });
         authorIds.value = res.data.getAuthorIdByAuthorName || [];
@@ -417,6 +427,9 @@ const handleInputChange = async () => {
   }
 };
 
+
+
+
 const selectSuggestion = (suggestion) => {
   searchInput.value = suggestion;
   showAutoComplete = false;
@@ -491,7 +504,7 @@ const leaveSuggestion = (index) => {
               :highInflu="authorInfo.highQualityWorkCount || 0"
               :H_index="authorInfo.hnumber || 0"
             />
-            <SingleResult 
+            <SingleResult
             style="width: 1400px;"
             v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                           :content="result.content.abstractText"

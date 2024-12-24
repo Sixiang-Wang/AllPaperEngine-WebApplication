@@ -47,11 +47,14 @@ import {ElMessage} from "element-plus";
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -88,11 +91,14 @@ import {ElMessage} from "element-plus";
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -127,11 +133,14 @@ import {ElMessage} from "element-plus";
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
+        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+          title: searchInput.value,
           page: currentPage.value
         })
-
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -167,10 +176,10 @@ import {ElMessage} from "element-plus";
         totalLength.value = res2.data.leng;
         // console.log(totalLength.value);
       }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
-          page: currentPage.value
-        })
+        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+        //   word: searchInput.value,
+        //   page: currentPage.value
+        // })
 
         searchResults.value = res.data.works || [];
         console.log(searchResults.value);
@@ -225,14 +234,7 @@ import {ElMessage} from "element-plus";
   const advancedSearch = () => {
     router.push({ path: "/advancedSearch" });
   }
-const preLogin = async ()=>{
-  const res = await http.get('/user/preLogin',{},{Authorization:cookieUtil.getCookie("token")});
-  console.log(res);
-  userStore.setUsername(res.data.username);
-  tokenStore.setToken(res.data.token);
-  userIdStore.setUserId(res.data.userId);
-  cookieUtil.setCookie("username", res.data.username); // 存储用户名在 Cookie 中
-  }
+
   onMounted(() => {
     let index = 0;
     let index2 = 0;

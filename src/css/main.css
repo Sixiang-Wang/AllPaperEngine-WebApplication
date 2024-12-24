@@ -24,7 +24,7 @@
 
 .search-button {
     border-radius: 0 4px 4px 0; /* 使按钮圆角与输入框拼接 */
-    height: 40px;
+    height: 45px;
     color: rgba(255, 255, 255, 0.8);
     background-color: transparent;
     border-left-width: 0;
