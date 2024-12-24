@@ -90,7 +90,8 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         SearchRequest searchRequestAuthors = new SearchRequest("authors_index");
         SearchRequest searchRequestFirstAuthors = new SearchRequest("authors_index");
         SearchRequest searchRequestWorksAuthorShips = new SearchRequest("works_authorships_index");
-
+        SearchRequest searchRequestTopics = new SearchRequest("topics_index");
+        SearchRequest searchRequestInstitutions = new SearchRequest("institutions_index");
 
         if(andTitles == null){
             andTitles = new ArrayList<String>();
@@ -250,32 +251,80 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         searchSourceBuilder2.size(20);
 
 
-        //searchSourceBuilder4 boolQuery4 for authorsindex for firstAuthor
+        //searchSourceBuilder4 boolQuery4 for authors_index for firstAuthor
         SearchSourceBuilder searchSourceBuilder4 = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery4 = QueryBuilders.boolQuery();
         searchSourceBuilder4.size(20);
 
 
+        //searchSourceBuilder5 boolQuery5 for topics_index for topics
+        SearchSourceBuilder searchSourceBuilder5 = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery5 = QueryBuilders.boolQuery();
+        searchSourceBuilder5.size(20);
 
-        //先做institutions Mysql
-        //TODO: institutions Mysql
-        String sql = SQLInstitutionBuilder.buildSQLQuery(andInstitutions,orInstitutions,notInstitutions);
+
+        //searchSourceBuilder6 boolQuery6 for institutions_index for institution
+        SearchSourceBuilder searchSourceBuilder6 = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery6 = QueryBuilders.boolQuery();
+        searchSourceBuilder6.size(20);
+
+
         String url = "jdbc:mysql://116.204.112.5:3306/openalex";
         String username = "root";
         String password = "BjMfWi6CFkrW3556";
-        List<String> institutionids = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url, username, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            // 处理查询结果
-            while (rs.next()) {
-                // 读取每一行数据
-                institutionids.add(rs.getString("id"));
+
+        //TODO: ES做topic 搜索
+        Set<String> topicIds = new HashSet<>();
+        if((andTopics!= null && !andTopics.isEmpty()) ||(orTopics!=null&&!orTopics.isEmpty())){
+            addMatchQueries(boolQuery5,andTopics,andTopicsFuzzy,orTopics,orTopicsFuzzy,notTopics,notTopicsFuzzy,"display_name");
+            searchSourceBuilder5.query(boolQuery5);
+            searchRequestTopics.source(searchSourceBuilder5);
+            SearchResponse topics =  client.search(searchRequestTopics, RequestOptions.DEFAULT);
+            SearchHits searchHits = topics.getHits();
+            //获得了所有匹配的相关普通作者 下一步 取出所有topicid 拿到worksauthorships里面搜索出workid
+            // 提取所有匹配的 topicid
+
+            for (org.elasticsearch.search.SearchHit hit : searchHits.getHits()) {
+                String topicId = (String) hit.getSourceAsMap().get("id");
+                topicIds.add(topicId);
             }
-            System.out.print(institutionids);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+
+
+
+
+        //做institutions Mysql =====> 改成es搜索
+        //TODO: institution ES
+        Set<String> institutionids = new HashSet<>();
+        if((andInstitutions!= null && !andInstitutions.isEmpty()) ||(orInstitutions!=null&&!orInstitutions.isEmpty())){
+            addMatchQueries(boolQuery6,andInstitutions,andInstitutionsFuzzy,orInstitutions,orInstitutionsFuzzy,notInstitutions,notInstitutionsFuzzy,"display_name");
+            searchSourceBuilder6.query(boolQuery6);
+            searchRequestInstitutions.source(searchSourceBuilder6);
+            SearchResponse institutions =  client.search(searchRequestInstitutions, RequestOptions.DEFAULT);
+            SearchHits searchHits = institutions.getHits();
+            for (org.elasticsearch.search.SearchHit hit : searchHits.getHits()) {
+                String institutionId = (String) hit.getSourceAsMap().get("id");
+                institutionids.add(institutionId);
+            }
+        }
+
+
+
+        //TODO: institutions Mysql
+//        String sql = SQLInstitutionBuilder.buildSQLQuery(andInstitutions,orInstitutions,notInstitutions);
+//        List<String> institutionids = new ArrayList<>();
+//        try (Connection conn = DriverManager.getConnection(url, username, password);
+//             PreparedStatement pstmt = conn.prepareStatement(sql);
+//             ResultSet rs = pstmt.executeQuery()) {
+//            // 处理查询结果
+//            while (rs.next()) {
+//                // 读取每一行数据
+//                institutionids.add(rs.getString("id"));
+//            }
+//            System.out.print(institutionids);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
 
         //TODO:  find workids by institutionids
