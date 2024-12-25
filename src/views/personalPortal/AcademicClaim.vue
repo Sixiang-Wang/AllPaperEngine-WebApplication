@@ -401,7 +401,7 @@ onMounted(()=>{
           </template>
         </el-input>
         <el-button :icon="Search" @click="simpleSearch" class="claim-button"/>
-        <div v-if="isSearched" style="margin-top: 3%; max-height: 100%; overflow-y: hidden;">
+        <div v-if="isSearched" style="margin-top: 3%; max-height: 100%; margin-left:5%; overflow-y: hidden;">
           <SingleResultInAcademicClaim v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                         :content="result.content.abstractText"
                         :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
@@ -415,13 +415,13 @@ onMounted(()=>{
               </template>
             </el-table-column>
           </el-table> -->
+          <el-pagination background layout="prev, pager, next"
+                         :total="totalLength"
+                         :page-size="20"
+                         :current-page="currentPage"
+                         @current-change="handlePageChange"
+          />
         </div>
-        <el-pagination background layout="prev, pager, next"
-                       :total="totalLength"
-                       :page-size="20"
-                       :current-page="currentPage"
-                       @current-change="handlePageChange"
-        />
       </el-tab-pane>
     </el-tabs>
   </el-card>

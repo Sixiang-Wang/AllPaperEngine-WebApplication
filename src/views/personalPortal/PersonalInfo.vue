@@ -112,6 +112,10 @@ const simpleSearch = async () => {
     paper.isSelected = false;
   });
 };
+
+const deleteClaimed = (id) => {
+
+}
 </script>
 
 <template>
@@ -186,11 +190,13 @@ const simpleSearch = async () => {
                   <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
                 </template>
               </el-table-column>
+              <!--
               <el-table-column>
                 <template #default="scope">
                   <el-button @click="deleteClaimed(scope.row.id)" color="#C00000">点击删除</el-button>
                 </template>
               </el-table-column>
+              -->
             </el-table>
         </el-tab-pane>
 
