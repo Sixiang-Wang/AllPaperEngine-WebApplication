@@ -7,6 +7,8 @@ import SingleAuthor from "@/components/single/SingleAuthor.vue";
 import router from "@/router/index.js";
 import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
+import SingleResearcher from "@/components/single/SingleResearcher.vue";
+import baseUrl from "@/api/http.js";
 
 let resStore = ref([])
 let searchInput = ref("");
@@ -124,7 +126,7 @@ const search = async () => {
         console.log(authorInfos);
       }
       break;
-      
+
       break;
     //
     // case '3'://查找关键词
@@ -170,33 +172,25 @@ const search = async () => {
     //   }
     //   break;
 
-    case '3'://查找学者
+    case '3'://查找科研人员
       if(searchInput.value===null||searchInput.value === '') {
         const res = await httpUtil.get('/openalex/get/page', {
-        page: currentPage.value
-      });
+          page: currentPage.value
+        });
         console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       } else {
-        const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
-          authorName: searchInput.value
+        const res = await httpUtil.get('/user/getScholars', {
+          name: searchInput.value
         });
-        authorIds.value = res.data.getAuthorIdByAuthorName || [];
-        console.log(authorIds.value);
-        totalLength.value = authorIds.value.length;
-        authorInfos.value = [];
-        for (let authorId of authorIds.value) {
-          const authorRes = await httpUtil.get('/author/getById', {
-            id: authorId
-          });
-          console.log(1);
-          console.log(authorRes.data.authors);
-          authorInfos.value.push(authorRes.data.authors);
-        }
-        searchResults.value = authorInfos.value;
-        console.log(authorInfos);
+        const authorRes = ref([]);
+        researcherInfos.value = res.data.scholars || [];
+        console.log(researcherInfos.value);
+        totalLength.value = researcherInfos.value.length;
+        searchResults.value = researcherInfos.value;
+
       }
       break;
     case '4'://查找摘要
@@ -281,10 +275,11 @@ const leaveSuggestion = (index) => {
       <el-main style="margin-left: 2%;width: 100%;">
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="isSearchingForAuthors" style="height: 20px;"></div>
+        <div v-if="isSearchingForResearchers" style="height: 20px;"></div>
         <div v-if="searchResults.length !== 0" style="display: flex;">
-          <div>
+          <div >
             <SingleAuthor
-            style="width: 800px;"
+              style="width: 800px;"
               v-if="isSearchingForAuthors"
               v-for="authorInfo in authorInfos"
               :key="authorInfo.id"
@@ -296,7 +291,18 @@ const leaveSuggestion = (index) => {
               :firstAuthor="authorInfo.firstPublishCount || 0"
               :highInflu="authorInfo.highQualityWorkCount || 0"
               :H_index="authorInfo.hnumber || 0"
-            />
+          />
+          <SingleResearcher
+              style="width: 800px;"
+              v-if="isSearchingForResearchers"
+              v-for="researcherInfo in researcherInfos"
+              :key="researcherInfo.authorId"
+              :authorId="researcherInfo.authorId"
+              :authorName="researcherInfo.authorName || '未知学者'"
+              :institution="researcherInfo.institution || '暂无'"
+              :mail="researcherInfo.mail || ''"
+              :avatar="'http://116.204.112.5:1145' + researcherInfo.avatar || ''"
+          />
 
             <SingleResult
             style="width: 1400px;"

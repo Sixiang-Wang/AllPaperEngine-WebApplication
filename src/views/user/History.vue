@@ -176,7 +176,7 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column label="操作" #default="scope">
-              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+              <el-button circle class="collect-button" :icon="Delete" @click="OnDeleteButtonClicked(scope.row.id)"/>
             </el-table-column>
 
           </el-table>
