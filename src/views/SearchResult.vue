@@ -26,6 +26,7 @@ const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage �
 let isSearchingForAuthors = ref(false);
 let isSearchingForResearchers = ref(false);
 let isSearchingForResults = ref(false);
+let isSearchingForInstitutions = ref(false);
 const pageSize = computed(() => Math.ceil(totalLength.value / 20));
 const researcherInfos = ref([]);
 const authorInfos = ref([]);
