@@ -78,137 +78,137 @@ import {ElMessage} from "element-plus";
       }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
       break;
-    case '2'://查找篇名
-      console.log(2)
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-        //   word: searchInput.value,
-        //   page: currentPage.value
-        // })
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
-          title: searchInput.value,
-          page: currentPage.value
-        })
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
+    // case '2'://查找篇名
+    //   console.log(2)
+    //   if(searchInput.value===null||searchInput.value === ''){
+    //     const res = await httpUtil.get('/openalex/get/page',{
+    //       page: currentPage.value
+    //     })
+    //     // console.log(res);
+    //     searchResults.value = res.data.works;
+    //     // console.log(searchResults.value);
+    //     const res2 = await httpUtil.get('/openalex/get/length');
+    //     totalLength.value = res2.data.leng;
+    //     // console.log(totalLength.value);
+    //   }else {
+    //     // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+    //     //   word: searchInput.value,
+    //     //   page: currentPage.value
+    //     // })
+    //     const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+    //       title: searchInput.value,
+    //       page: currentPage.value
+    //     })
+    //     searchResults.value = res.data.works || [];
+    //     console.log(searchResults.value);
+    //     totalLength.value = searchResults.value.length;
+    //
+    //     for(let result of searchResults.value){
+    //       if(result.highlightFields.hasOwnProperty('title')){
+    //         result.content.title = result.highlightFields.title[0];
+    //       }
+    //       if(result.highlightFields.hasOwnProperty('abstract')){
+    //         const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+    //           result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+    //         }else{
+    //           result.content.abstractText = result.highlightFields.abstract[0];
+    //         }
+    //       }
+    //       // if(result.highlightFields.hasOwnProperty('keywordsText')){
+    //       //   result.content.abstractText = result.highlightFields.abstract[0];
+    //       // }
+    //   }
+    //   router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+    //   break;
+    //
+    // case '3'://查找关键词
+    //   if(searchInput.value===null||searchInput.value === ''){
+    //     const res = await httpUtil.get('/openalex/get/page',{
+    //       page: currentPage.value
+    //     })
+    //     // console.log(res);
+    //     searchResults.value = res.data.works;
+    //     // console.log(searchResults.value);
+    //     const res2 = await httpUtil.get('/openalex/get/length');
+    //     totalLength.value = res2.data.leng;
+    //     // console.log(totalLength.value);
+    //   }else {
+    //     // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+    //     //   word: searchInput.value,
+    //     //   page: currentPage.value
+    //     // })
+    //     const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+    //       title: searchInput.value,
+    //       page: currentPage.value
+    //     })
+    //     searchResults.value = res.data.works || [];
+    //     console.log(searchResults.value);
+    //     totalLength.value = searchResults.value.length;
+    //
+    //     for(let result of searchResults.value){
+    //       if(result.highlightFields.hasOwnProperty('title')){
+    //         result.content.title = result.highlightFields.title[0];
+    //       }
+    //       if(result.highlightFields.hasOwnProperty('abstract')){
+    //         const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+    //         if(startIndex!=-1){
+    //           result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+    //         }else{
+    //           result.content.abstractText = result.highlightFields.abstract[0];
+    //         }
+    //       }
+    //       // if(result.highlightFields.hasOwnProperty('keywordsText')){
+    //       //   result.content.abstractText = result.highlightFields.abstract[0];
+    //       // }
+    //     }
+    //     router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+    //   }
+    //   break;
+    // case '4'://查找摘要
+    //   if(searchInput.value===null||searchInput.value === ''){
+    //     const res = await httpUtil.get('/openalex/get/page',{
+    //       page: currentPage.value
+    //     })
+    //     // console.log(res);
+    //     searchResults.value = res.data.works;
+    //     // console.log(searchResults.value);
+    //     const res2 = await httpUtil.get('/openalex/get/length');
+    //     totalLength.value = res2.data.leng;
+    //     // console.log(totalLength.value);
+    //   }else {
+    //     // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+    //     //   word: searchInput.value,
+    //     //   page: currentPage.value
+    //     // })
+    //
+    //     searchResults.value = res.data.works || [];
+    //     console.log(searchResults.value);
+    //     totalLength.value = searchResults.value.length;
+    //
+    //     for(let result of searchResults.value){
+    //       if(result.highlightFields.hasOwnProperty('title')){
+    //         result.content.title = result.highlightFields.title[0];
+    //       }
+    //       if(result.highlightFields.hasOwnProperty('abstract')){
+    //         const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+    //         if(startIndex!=-1){
+    //           result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+    //         }else{
+    //           result.content.abstractText = result.highlightFields.abstract[0];
+    //         }
+    //       }
+    //       // if(result.highlightFields.hasOwnProperty('keywordsText')){
+    //       //   result.content.abstractText = result.highlightFields.abstract[0];
+    //       // }
+    //     }
+    //   }
+    //   //searchResults = res;
+    //
+    //
+    //   router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+    //   break;
 
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-      }
-      router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
-      break;
-
-    case '3'://查找关键词
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-        //   word: searchInput.value,
-        //   page: currentPage.value
-        // })
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
-          title: searchInput.value,
-          page: currentPage.value
-        })
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
-
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-            if(startIndex!=-1){
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-        }
-        router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
-      }
-      break;
-    case '4'://查找摘要
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-        //   word: searchInput.value,
-        //   page: currentPage.value
-        // })
-
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
-
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-            if(startIndex!=-1){
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-        }
-      }
-      //searchResults = res;
-
-
-      router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
-      break;
-
-      case '5'://查找学者
+      case '2'://查找学者
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
@@ -228,7 +228,7 @@ import {ElMessage} from "element-plus";
       }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
       break;
-      case '6'://查找科研人员
+      case '3'://查找科研人员
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
@@ -304,64 +304,90 @@ const handleInputChange = async () => {
           showAutoComplete = false;
         }
         break;
-      case '2':
-        //篇名
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const titleSuggest = res.data.suggestions.suggest.title_suggest;
-        if(titleSuggest && titleSuggest.length>0){
-          console.log(titleSuggest);
-          suggestions  = titleSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
+      // case '2':
+      //   //篇名
+      //   res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
+      //     searchContent: searchInput.value
+      //   });
+      //   const titleSuggest = res.data.suggestions.suggest.title_suggest;
+      //   if(titleSuggest && titleSuggest.length>0){
+      //     console.log(titleSuggest);
+      //     suggestions  = titleSuggest[0].options.map(option => option.text);
+      //     showAutoComplete = true;
+      //   }else{
+      //     showAutoComplete = false;
+      //   }
+      //
+      //
+      //   break;
+      // case '3':
+      //   //关键词
+      //   res = await httpUtil.get('/elasticSearch/works/autoCompleteKeywordsWithCompletionSuggester', {
+      //     searchContent: searchInput.value
+      //   });
+      //   const keywordstextSuggest = res.data.suggestions.suggest.keywordstextSuggest;
+      //   if(keywordstextSuggest && keywordstextSuggest.length>0){
+      //     console.log(keywordstextSuggest);
+      //     suggestions  = keywordstextSuggest[0].options.map(option => option.text);
+      //     showAutoComplete = true;
+      //   }else{
+      //     showAutoComplete = false;
+      //   }
+      //   break;
+      // case '4':
+      //   //摘要
+      //   res = await httpUtil.get('/elasticSearch/works/autoCompleteAbstractWithCompletionSuggester', {
+      //     searchContent: searchInput.value
+      //   });
+      //   const abstractSuggest = res.data.suggestions.suggest.abstractSuggest;
+      //   if(abstractSuggest && abstractSuggest.length>0){
+      //     console.log(abstractSuggest);
+      //     suggestions  = abstractSuggest[0].options.map(option => option.text);
+      //     showAutoComplete = true;
+      //   }else{
+      //     showAutoComplete = false;
+      //   }
+      //   break;
+      case '2'://查找学者
+        if(searchInput.value===null||searchInput.value === ''){
+          const res = await httpUtil.get('/openalex/get/page',{
+            page: currentPage.value
+          })
+          console.log("search in openalex/get/page");
+          searchResults.value = res.data.works;
+          const res2 = await httpUtil.get('/openalex/get/length');
+          totalLength.value = res2.data.leng;
+        }else {
+          const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
+            authorName: searchInput.value,
+            timeout: 20000
+          })
+          searchResults.value = res.data.getAuthorIdByAuthorName || [];
+          console.log(searchResults.value);
+          totalLength.value = searchResults.value.length;
         }
-
-
+        router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
         break;
-      case '3':
-        //关键词
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteKeywordsWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const keywordstextSuggest = res.data.suggestions.suggest.keywordstextSuggest;
-        if(keywordstextSuggest && keywordstextSuggest.length>0){
-          console.log(keywordstextSuggest);
-          suggestions  = keywordstextSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
+      case '3'://查找科研人员
+        if(searchInput.value===null||searchInput.value === ''){
+          const res = await httpUtil.get('/openalex/get/page',{
+            page: currentPage.value
+          })
+          console.log("search in openalex/get/page");
+          searchResults.value = res.data.works;
+          const res2 = await httpUtil.get('/openalex/get/length');
+          totalLength.value = res2.data.leng;
+        }else {
+          const res = await httpUtil.get('/author/getReseacherIdByReseacherName', {
+            authorName: searchInput.value,
+            timeout: 20000
+          })
+          searchResults.value = res.data.getReseacherIdByReseacherName || [];
+          console.log(searchResults.value);
+          totalLength.value = searchResults.value.length;
         }
+        router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
         break;
-      case '4':
-        //摘要
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteAbstractWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const abstractSuggest = res.data.suggestions.suggest.abstractSuggest;
-        if(abstractSuggest && abstractSuggest.length>0){
-          console.log(abstractSuggest);
-          suggestions  = abstractSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
-        }
-        break;
-      case '5':
-        //学者 
-        // res = await httpUtil.get('/elasticSearch/works/autoCompleteScholarWithCompletionSuggester', {
-        //   searchContent: searchInput.value 
-        // });
-        // const scholarSuggest = res.data.suggestions.suggest.scholarSuggest;
-        // if(scholarSuggest && scholarSuggest.length>0){
-        //   console.log(scholarSuggest);
-        //   suggestions  = scholarSuggest[0].options.map(option => option.text);
-        //   showAutoComplete = true;
-        // }else{
-        //   showAutoComplete = false;
-        // }
-        // break;
     }
   } else {
     showAutoComplete = false;
@@ -398,8 +424,8 @@ const leaveSuggestion = (index) => {
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="主题" value="1"/>
-        <el-option label="学者" value="5"/>
-        <el-option label="科研人员" value="6"/>
+        <el-option label="学者" value="2"/>
+        <el-option label="科研人员" value="3"/>
       </el-select>
 
 
