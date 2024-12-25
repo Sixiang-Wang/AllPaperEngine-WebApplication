@@ -2,7 +2,10 @@
     <div class="institution-details">
         <div class="institution-header">
         <div class="institution-left">
-        <el-avatar :src="avatar" :size="80" />
+        <!-- <el-avatar :src="avatar" :size="80" style="min-width: 17%;" /> -->
+        <el-avatar :size="80" class="custom-avatar">
+          <el-icon><HomeFilled /></el-icon>
+        </el-avatar>
             <div class="institution-info">
                 <h2 class="hover-effect" @click="goToInstitutionInfo">{{ name }}</h2>
                 <p><span style="font-weight: lighter;">机构id</span>: <span style="color: grey;">{{ id }}</span></p>
@@ -19,9 +22,9 @@
         </div>
 
         <div class="institution-right" >
-            <p>国家{{ country }}</p>
-            <p>上次更新时间{{ updateDate }}</p>
-            <p>类型{{ type }}</p>
+            <p>国家：{{ country }}</p>
+            <p>上次更新时间：{{ updateDate }}</p>
+            <p>类型：{{ type }}</p>
         </div>
     </div>
     <el-divider/>
@@ -31,13 +34,14 @@
 <script>
 import axios from 'axios';
 import router from "@/router/index.js";
+import { HomeFilled } from '@element-plus/icons-vue';
   export default {
     name: 'SingleInstitution',
     props: {
       id: {
         type: String,
         required: true,
-        default:'胡春明'
+        default:'xxxxxx'
       },
       name: {
         type: String,
@@ -46,37 +50,37 @@ import router from "@/router/index.js";
         score: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         homepageUrl: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         citedByCount: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         worksCount: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         country: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         updateDate: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         type: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
     },
     methods: {
@@ -103,51 +107,54 @@ import router from "@/router/index.js";
 </script>
   
 <style scoped>
-.institutionInfo-details {
+.institution-details {
 margin-bottom: 0px;
 }
-.institutionInfo-header {
+.institution-header {
 display: flex;
 justify-content: space-between;
 align-items: center;
 margin:0px;
 }
-.institutionInfo-left {
+.institution-left {
 margin: 0px;
 display: flex;
+width:50%;
 align-items: center;
 }
-.institutionInfo-info h2 {
+.institution-info h2 {
 font-size: 20px;
 margin-top: 0px;
 margin-bottom: 10px;
 margin-left:20px;
 }
-.institutionInfo-info .description {
+.institution-info .description {
 color: #888;
 }
-.institutionInfo-info p {
+.institution-info p {
 margin: 2px 0;
 margin-left:20px;
 }
-.institutionInfo-middle{
+.institution-middle{
+margin: 0px;
+width:20%;
+}
+.institution-middle p{
 margin: 0px;
 }
-.institutionInfo-middle p{
-margin: 0px;
-}
-.institutionInfo-right p {
+.institution-right p {
 margin: 0px;
 color: #333;
 }
 css
-.institutionInfo-right {
+.institution-right {
 flex: 1;
 text-align: center;
 margin-bottom:0px;
 margin-left:20%;
+width:30%;
 }
-.institutionInfo-publications {
+.institution-publications {
 margin-top:0px;
 }
 .publication-link {
@@ -170,5 +177,11 @@ color:rgba(34, 0, 255, 0.759)
 .hover-effect:hover {
   color: rgba(34, 0, 255, 0.759);
   text-decoration: underline;
+}
+.custom-avatar {
+  size:80px;
+}
+.custom-avatar .el-icon {
+  font-size: 40px; 
 }
 </style>

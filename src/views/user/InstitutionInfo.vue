@@ -29,7 +29,7 @@
 import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import { ElCard, ElTag, ElDivider } from 'element-plus';
+import {ElCard, ElTag, ElDivider, ElMessage} from 'element-plus';
 
 export default {
 name: 'InstitutionInfo',
@@ -46,26 +46,6 @@ setup() {
       });
   
     const scholars = ref([
-      {
-        author: { displayName: '张三', fields: '计算机科学', citedByCount: 1500 },
-        institution: { }
-      },
-      {
-        author: { displayName: '李四', fields: '人工智能', citedByCount: 2000 },
-        institution: { }
-      },
-      {
-        author: { displayName: '王五', fields: '生物医学', citedByCount: 950 },
-        institution: { }
-      },
-      {
-        author: { displayName: '赵六', fields: '物理学', citedByCount: 1200 },
-        institution: { }
-      },
-      {
-        author: { displayName: '钱七', fields: '数据科学', citedByCount: 1800 },
-        institution: { }
-      },
     ]);
 
     const getTagType = (index) => {
@@ -83,6 +63,7 @@ setup() {
     const fetchInstitutionData = async (id) => {
       console.log('Fetching institution data...', id);
       try {
+
         const response = await httpUtil.get(`institution/getInstitutionById?id=${id}`);
         institution.value = response.data.getInstitutionById;
         console.log('Institution data:', institution.value);
@@ -90,13 +71,15 @@ setup() {
         console.log('Response2:', response2);
         scholars.value = response2.data.authorList;
         console.log('Scholars:', scholars.value);
+        loading.value = false
       } catch (error) {
         console.error('Error fetching institution data:', error);
       }
     };
-
+    const loading = ref(true)
     onMounted(() => {
       const institutionId = route.query.id;
+
       fetchInstitutionData(institutionId);
     });
 

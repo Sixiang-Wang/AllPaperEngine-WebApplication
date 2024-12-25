@@ -10,6 +10,7 @@ import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
 import SingleResearcher from "@/components/single/SingleResearcher.vue";
 import baseUrl from "@/api/http.js";
+import {ElMessage} from "element-plus";
 
 let resStore = ref([])
 let searchInput = ref("");
@@ -82,8 +83,10 @@ const search = async () => {
           page: currentPage.value
         })
 
+
         searchResults.value = res.data.works || [];
         totalLength.value = res.data.page;
+
 
         for(let result of searchResults.value){
           if(result.highlightFields.hasOwnProperty('title')){
@@ -211,6 +214,13 @@ const search = async () => {
         console.log(totalLength.value);
       }
       break;
+
+    case '4':
+      //高级检索
+      ElMessage.success('111')
+      const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+      console.log(res.data);
+      break;
   }
 }
 onMounted(async ()=>{
@@ -292,7 +302,8 @@ const handleInputChange = async () => {
 
       case '4':
         //高级检索
-        res = await httpUtil.get('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+          ElMessage.success('111')
+        res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
         console.log(res.data);
         break;
 
@@ -355,6 +366,7 @@ const leaveSuggestion = (index) => {
                 <el-option label="主题" value="1"/>
                 <el-option label="学者" value="2"/>
                 <el-option label="科研人员" value="3"/>
+                <el-option label="高级检索" value="4"/>
                 <el-option label="机构" value="7"/>
               </el-select>
             </template>
@@ -415,7 +427,7 @@ const leaveSuggestion = (index) => {
               :avatar="'http://116.204.112.5:1145' + researcherInfo.avatar || ''"
           />
           <SingleInstitution
-              style="width: 800px;"
+              style="width: 1000px;"
               v-if="isSearchingForInstitutions"
               v-for="result in searchResults"
               :key="result.id"
