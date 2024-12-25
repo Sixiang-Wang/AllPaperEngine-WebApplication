@@ -13,7 +13,7 @@ import baseUrl from "@/api/http.js";
 let resStore = ref([])
 let searchInput = ref("");
 const totalLength = ref(0);
-let searchResults = ref([]);
+const searchResults = ref([]);
 let authorIds = ref([]);
 let suggestions = ref([]);
 let showAutoComplete = ref(false);
@@ -54,7 +54,7 @@ const changeInput = ()=> {
 const search = async () => {
   isSearchingForAuthors = (searchType.value === '2'); // 设置查询类型
   isSearchingForResearchers = (searchType.value === '3');
-  isSearchingForResults= (searchType.value === '4');
+  isSearchingForResults= (searchType.value === '1');
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
@@ -95,6 +95,9 @@ const search = async () => {
           // }
         }
       }
+      console.log(isSearchingForResearchers);
+      console.log(isSearchingForResults);
+      console.log(isSearchingForAuthors);
 
       break;
     case '2'://查找学者
@@ -267,7 +270,7 @@ const leaveSuggestion = (index) => {
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="isSearchingForAuthors" style="height: 20px;"></div>
         <div v-if="isSearchingForResearchers" style="height: 20px;"></div>
-        <div v-if="searchResults.length !== 0" style="display: flex;">
+        <div v-if="searchResults.length !==0" style="display: flex;">
           <div >
             <SingleAuthor
               style="width: 800px;"
@@ -296,7 +299,6 @@ const leaveSuggestion = (index) => {
           />
 
             <SingleResult
-            style="width: 1400px;"
                           v-if="isSearchingForResults"
                            v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                           :content="result.content.abstractText"
