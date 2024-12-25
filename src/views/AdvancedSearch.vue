@@ -91,30 +91,56 @@ const resetConditions = () => {
  */
 const dataProcess = () => {
   const len = searchRows.value.length;
-  let andTitles = [];
-  let andTopics = [];
-  let andAuthors = [];
-  let andFirstAuthors = [];
-  let andInstitutions = [];
   let andAbstracts = [];
+  let andAbstractsFuzzy = [];
+  let andAuthors = [];
+  let andAuthorsFuzzy = [];
   let andDOI = [];
-  let orTitles = [];
-  let orTopics = [];
-  let orAuthors = [];
-  let orFirstAuthors = [];
-  let orInstitutions = [];
+  let andDOIFuzzy = [];
+  let andFirstAuthors = [];
+  let andFirstAuthorsFuzzy = [];
+  let andInstitutions = [];
+  let andInstitutionsFuzzy = [];
+  let andTitles = [];
+  let andTitlesFuzzy = [];
+  let andTopics = [];
+  let andTopicsFuzzy = [];
+  
   let orAbstracts = [];
+  let orAbstractsFuzzy = [];
+  let orAuthors = [];
+  let orAuthorsFuzzy = [];
   let orDOI = [];
-  let notTitles = [];
-  let notTopics = [];
-  let notAuthors = [];
-  let notFirstAuthors = [];
-  let notInstitutions = [];
+  let orDOIFuzzy = [];
+  let orFirstAuthors = [];
+  let orFirstAuthorsFuzzy = [];
+  let orInstitutions = [];
+  let orInstitutionsFuzzy = [];
+  let orTitles = [];
+  let orTitlesFuzzy = [];
+  let orTopics = [];
+  let orTopicsFuzzy = [];
+
   let notAbstracts = [];
+  let notAbstractsFuzzy = [];
+  let notAuthors = [];
+  let notAuthorsFuzzy = [];
   let notDOI = [];
+  let notDOIFuzzy = [];
+  let notFirstAuthors = [];
+  let notFirstAuthorsFuzzy = [];
+  let notInstitutions = [];
+  let notInstitutionsFuzzy = [];
+  let notTitles = [];
+  let notTitlesFuzzy = [];
+  let notTopics = [];
+  let notTopicsFuzzy = [];
+
   let andFuzzy = [];
   let orFuzzy = [];
   let notFuzzy = [];
+
+  let isFuzzy = true;
   console.log(searchRows.value);
   for(let tmp of searchRows.value){
     if(tmp.searchInput!==null && tmp.searchInput !== ''){
@@ -125,123 +151,165 @@ const dataProcess = () => {
       case 'AND':
         andFuzzy.push(tmp.ifFuzzy === '1');
         switch (type) {
-          case '1':
-            andTitles.push(tmp.searchInput);
-            break;
-          case '2':
-            andTopics.push(tmp.searchInput);
-            break;
-          case '4':
-            andAuthors.push(tmp.searchInput);
-            break;
-          case '5':
-            andFirstAuthors.push(tmp.searchInput);
-            break;
-          case '6':
-            andInstitutions.push(tmp.searchInput);
-            break;
-          case '7':
-            andAbstracts.push(tmp.searchInput);
-            break;
-          case '8':
-            andDOI.push(tmp.searchInput);
-            break;
-          default:
-            console.log('wtf');
-            break;
+            case '1':
+              andTitles.push(tmp.searchInput);
+              andTitlesFuzzy.push(isFuzzy);
+              break;
+            case '2':
+              andTopics.push(tmp.searchInput);
+              andTopicsFuzzy.push(isFuzzy);
+              break;
+            case '4':
+              andAuthors.push(tmp.searchInput);
+              andAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '5':
+              andFirstAuthors.push(tmp.searchInput);
+              andFirstAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '6':
+              andInstitutions.push(tmp.searchInput);
+              andInstitutionsFuzzy.push(isFuzzy);
+              break;
+            case '7':
+              andAbstracts.push(tmp.searchInput);
+              andAbstractsFuzzy.push(isFuzzy);
+              break;
+            case '8':
+              andDOI.push(tmp.searchInput);
+              andDOIFuzzy.push(isFuzzy);
+              break;
+            default:
+              console.log('wtf');
+              break;
+          }
+          break;
 
-        }
-        break;
-      case 'OR':
-        orFuzzy.push(tmp.ifFuzzy === '1')
-        switch (type) {
-          case '1':
-            orTitles.push(tmp.searchInput);
-            break;
-          case '2':
-            orTopics.push(tmp.searchInput);
-            break;
-          case '4':
-            orAuthors.push(tmp.searchInput);
-            break;
-          case '5':
-            orFirstAuthors.push(tmp.searchInput);
-            break;
-          case '6':
-            orInstitutions.push(tmp.searchInput);
-            break;
-          case '7':
-            orAbstracts.push(tmp.searchInput);
-            break;
-          case '8':
-            orDOI.push(tmp.searchInput);
-            break;
-          default:
-            console.log('wtf');
-            break;
-        }
-        break;
-      case 'NOT':
-        notFuzzy.push(tmp.ifFuzzy === '1');
-        switch (type) {
-          case '1':
-            notTitles.push(tmp.searchInput);
-            break;
-          case '2':
-            notTopics.push(tmp.searchInput);
-            break;
-          case '4':
-            notAuthors.push(tmp.searchInput);
-            break;
-          case '5':
-            notFirstAuthors.push(tmp.searchInput);
-            break;
-          case '6':
-            notInstitutions.push(tmp.searchInput);
-            break;
-          case '7':
-            notAbstracts.push(tmp.searchInput);
-            break;
-          case '8':
-            notDOI.push(tmp.searchInput);
-            break;
-          default:
-            console.log('wtf');
-            break;
+        case 'OR':
+          orFuzzy.push(isFuzzy);
+          switch (type) {
+            case '1':
+              orTitles.push(tmp.searchInput);
+              orTitlesFuzzy.push(isFuzzy);
+              break;
+            case '2':
+              orTopics.push(tmp.searchInput);
+              orTopicsFuzzy.push(isFuzzy);
+              break;
+            case '4':
+              orAuthors.push(tmp.searchInput);
+              orAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '5':
+              orFirstAuthors.push(tmp.searchInput);
+              orFirstAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '6':
+              orInstitutions.push(tmp.searchInput);
+              orInstitutionsFuzzy.push(isFuzzy);
+              break;
+            case '7':
+              orAbstracts.push(tmp.searchInput);
+              orAbstractsFuzzy.push(isFuzzy);
+              break;
+            case '8':
+              orDOI.push(tmp.searchInput);
+              orDOIFuzzy.push(isFuzzy);
+              break;
+            default:
+              console.log('wtf');
+              break;
+          }
+          break;
 
+        case 'NOT':
+          notFuzzy.push(isFuzzy);
+          switch (type) {
+            case '1':
+              notTitles.push(tmp.searchInput);
+              notTitlesFuzzy.push(isFuzzy);
+              break;
+            case '2':
+              notTopics.push(tmp.searchInput);
+              notTopicsFuzzy.push(isFuzzy);
+              break;
+            case '4':
+              notAuthors.push(tmp.searchInput);
+              notAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '5':
+              notFirstAuthors.push(tmp.searchInput);
+              notFirstAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '6':
+              notInstitutions.push(tmp.searchInput);
+              notInstitutionsFuzzy.push(isFuzzy);
+              break;
+            case '7':
+              notAbstracts.push(tmp.searchInput);
+              notAbstractsFuzzy.push(isFuzzy);
+              break;
+            case '8':
+              notDOI.push(tmp.searchInput);
+              notDOIFuzzy.push(isFuzzy);
+              break;
+            default:
+              console.log('wtf');
+              break;
+          }
+          break;
         }
+      }
     }
-    }
-
-  }
   console.log(timeRange);
   return {
-    andTitles: andTitles,
-    andTopics: andTopics,
-    andAuthors: andAuthors,
-    andFirstAuthors: andFirstAuthors,
-    andInstitutions: andInstitutions,
     andAbstracts: andAbstracts,
+    andAbstractsFuzzy: andAbstractsFuzzy,
+    andAuthors: andAuthors,
+    andAuthorsFuzzy: andAuthorsFuzzy,
     andDOI: andDOI,
-    orTitles: orTitles,
-    orTopics: orTopics,
-    orAuthors: orAuthors,
-    orFirstAuthors: orFirstAuthors,
-    orInstitutions: orInstitutions,
-    orAbstracts: orAbstracts,
-    orDOI: orDOI,
-    notTitles: notTitles,
-    notTopics: notTopics,
-    notAuthors: notAuthors,
-    notFirstAuthors: notFirstAuthors,
-    notInstitutions: notInstitutions,
+    andDOIFuzzy: andDOIFuzzy,
+    andFirstAuthors: andFirstAuthors,
+    andFirstAuthorsFuzzy: andFirstAuthorsFuzzy,
+    andInstitutions: andInstitutions,
+    andInstitutionsFuzzy: andInstitutionsFuzzy,
+    andTitles: andTitles,
+    andTitlesFuzzy: andTitlesFuzzy,
+    andTopics: andTopics,
+    andTopicsFuzzy: andTopicsFuzzy,
+    endDate: timeRange.value=== null || timeRange.value[1] === undefined ? null:TimeUtil.formatJavaDate(timeRange.value[1]),
     notAbstracts: notAbstracts,
+    notAbstractsFuzzy: notAbstractsFuzzy,
+    notAuthors: notAuthors,
+    notAuthorsFuzzy: notAuthorsFuzzy,
     notDOI: notDOI,
+    notDOIFuzzy: notDOIFuzzy,
+    notFirstAuthors: notFirstAuthors,
+    notFirstAuthorsFuzzy: notFirstAuthorsFuzzy,
+    notInstitutions: notInstitutions,
+    notInstitutionsFuzzy: notInstitutionsFuzzy,
+    notTitles: notTitles,
+    notTitlesFuzzy: notTitlesFuzzy,
+    notTopics: notTopics,
+    notTopicsFuzzy: notTopicsFuzzy,
+    orAbstracts: orAbstracts,
+    orAbstractsFuzzy: orAbstractsFuzzy,
+    orAuthors: orAuthors,
+    orAuthorsFuzzy: orAuthorsFuzzy,
+    orDOI: orDOI,
+    orDOIFuzzy: orDOIFuzzy,
+    orFirstAuthors: orFirstAuthors,
+    orFirstAuthorsFuzzy: orFirstAuthorsFuzzy,
+    orInstitutions: orInstitutions,
+    orInstitutionsFuzzy: orInstitutionsFuzzy,
+    orTitles: orTitles,
+    orTitlesFuzzy: orTitlesFuzzy,
+    orTopics: orTopics,
+    orTopicsFuzzy: orTopicsFuzzy,
     andFuzzy: andFuzzy,
     orFuzzy: orFuzzy,
     notFuzzy: notFuzzy,
     startDate: timeRange.value === null || timeRange.value[0] === undefined? null:TimeUtil.formatJavaDate(timeRange.value[0]),
-    endDate: timeRange.value=== null || timeRange.value[1] === undefined ? null:TimeUtil.formatJavaDate(timeRange.value[1])
   }
 }
 
@@ -250,7 +318,6 @@ const advancedSearch = () => {
   console.log(para);
   sessionStorage.setItem('searchParams', JSON.stringify(para));
   router.push({path: "/search", query: {input: searchRows.value[0].searchInput, page: 1, type: 4}});
-
 }
 </script>
 
