@@ -7,6 +7,8 @@ import SingleAuthor from "@/components/single/SingleAuthor.vue";
 import router from "@/router/index.js";
 import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
+import SingleResearcher from "@/components/single/SingleResearcher.vue";
+import baseUrl from "@/api/http.js";
 
 let resStore = ref([])
 let searchInput = ref("");
@@ -90,7 +92,40 @@ const authorInfos = ref([
     ],
   },
 ]);
-
+const researcherInfos = ref([
+  {
+    authorId: '114514',
+    authorName: '胡春明',
+    institution: '北京航空航天大学',
+    area: '计算机软件及计算机应用;电信技术;计算机硬件技术;',
+    mail: 'hucm@buaa.edu.cn',
+    avatar: ''
+  },
+  {
+    authorId: '151256',
+    authorName: '胡春明',
+    institution: '天津大学',
+    area: '动力工程;航空航天科学与工程;汽车工业;',
+    mail: '',
+    avatar: ''
+  },
+  {
+    authorId: '478126',
+    authorName: '胡春明',
+    institution: '中国科学院生态环境研究中心',
+    area: '环境科学与资源利用;建筑科学与工程;水利水电工程;',
+    mail: '',
+    avatar: ''
+  },
+  {
+    authorId: '145165',
+    authorName: '胡春明',
+    institution: '吉林大学第一临床医学院',
+    area: '外科学;肿瘤学;内分泌腺及全身性疾病;',
+    mail: '',
+    avatar: ''
+  },
+]);
 
 const handlePageChange = (page) => {
   router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
@@ -280,6 +315,27 @@ const search = async () => {
         console.log(authorInfos);
       }
       break;
+    case '6'://查找科研人员
+      if(searchInput.value===null||searchInput.value === '') {
+        const res = await httpUtil.get('/openalex/get/page', {
+          page: currentPage.value
+        });
+        console.log("search in openalex/get/page");
+        searchResults.value = res.data.works;
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+      } else {
+        const res = await httpUtil.get('/user/getScholars', {
+          name: searchInput.value
+        });
+        const authorRes = ref([]);
+        researcherInfos.value = res.data.scholars || [];
+        console.log(researcherInfos.value);
+        totalLength.value = researcherInfos.value.length;
+        searchResults.value = researcherInfos.value;
+
+      }
+      break;
   }
 }
 onMounted(async ()=>{
@@ -418,6 +474,7 @@ const leaveSuggestion = (index) => {
               <el-select v-model="searchType" style="width: 115px; background-color:#FFFFFF;">
                 <el-option label="主题" value="1"/>
                 <el-option label="学者" value="5"/>
+                <el-option label="科研人员" value="6"/>
               </el-select>
             </template>
           </el-input>
@@ -446,10 +503,11 @@ const leaveSuggestion = (index) => {
       <el-main style="margin-left: 2%;width: 100%;">
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="isSearchingForAuthors" style="height: 20px;"></div>
+        <div v-if="isSearchingForResearchers" style="height: 20px;"></div>
         <div v-if="searchResults.length !== 0" style="display: flex;">
-          <div>
+          <div >
             <SingleAuthor
-            style="width: 800px;"
+              style="width: 800px;"
               v-if="isSearchingForAuthors"
               v-for="authorInfo in authorInfos"
               :key="authorInfo.id"
@@ -461,7 +519,18 @@ const leaveSuggestion = (index) => {
               :firstAuthor="authorInfo.firstPublishCount || 0"
               :highInflu="authorInfo.highQualityWorkCount || 0"
               :H_index="authorInfo.hnumber || 0"
-            />
+          />
+          <SingleResearcher
+              style="width: 800px;"
+              v-if="isSearchingForResearchers"
+              v-for="researcherInfo in researcherInfos"
+              :key="researcherInfo.authorId"
+              :authorId="researcherInfo.authorId"
+              :authorName="researcherInfo.authorName || '未知学者'"
+              :institution="researcherInfo.institution || '暂无'"
+              :mail="researcherInfo.mail || ''"
+              :avatar="'http://116.204.112.5:1145' + researcherInfo.avatar || ''"
+          />
 
             <SingleResult
             style="width: 1400px;"

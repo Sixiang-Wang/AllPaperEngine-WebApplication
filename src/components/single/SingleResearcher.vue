@@ -3,26 +3,26 @@
     <div class="researcher-header">
       <div class="researcher-left">
         <el-avatar :src="avatar" :size="80" />
-        <div class="researcher-info" @click="GoToPersonalPortal" >
-          <h2 @mouseover="toggleUnderline" @mouseleave="toggleUnderline">{{ name }}</h2>
-          <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
-          <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
-          <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
+        <div class="researcher-info" @click="GoToPersonalPortal(authorId)" >
+          <h2 ref="abc" @mouseover="toggleUnderline" @mouseleave="toggleUnderline">{{ authorName }}</h2>
+          <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ authorId }}</span></p>
+          <p><span style="font-weight: lighter;">所属机构</span>: <span style="color: grey;">{{ institution }}</span></p>
+          <p><span style="font-weight: lighter;">认证邮箱</span>: <span style="color: grey;">{{ mail }}</span></p>
         </div>
       </div>
 
-      <div class="researcher-middle" >
-        <!-- <p><strong>总被引量：{{ citedByCount }}</strong></p>
-        <p><strong>总发文量：{{ worksCount }}</strong></p> -->
-        <p>总被引量：{{ citedByCount }}</p>
-        <p>总发文量：{{ worksCount }}</p>
-      </div>
+<!--      <div class="researcher-middle" >-->
+<!--        &lt;!&ndash; <p><strong>总被引量：{{ citedByCount }}</strong></p>-->
+<!--        <p><strong>总发文量：{{ worksCount }}</strong></p> &ndash;&gt;-->
+<!--        <p>总被引量：{{ citedByCount }}</p>-->
+<!--        <p>总发文量：{{ worksCount }}</p>-->
+<!--      </div>-->
 
-      <div class="researcher-right" >
-        <p>H指数：{{ H_index }}</p>
-        <p>第一作者发文量：{{ firstresearcher }}</p>
-        <p>高影响力论文发文量：{{ highInflu }}</p>
-      </div>
+<!--      <div class="researcher-right" >-->
+<!--        <p>H指数：{{ H_index }}</p>-->
+<!--        <p>第一作者发文量：{{ firstresearcher }}</p>-->
+<!--        <p>高影响力论文发文量：{{ highInflu }}</p>-->
+<!--      </div>-->
     </div>
 
     <!-- <div class="article">
@@ -35,19 +35,20 @@
 
 <script>
 import axios from 'axios';
+import * as heading from "@fortawesome/vue-fontawesome/src/utils.js";
 export default {
-  name: 'Singleresearcher',
+  name: 'SingleResearcher',
   props: {
-    id: {
+    authorId: {
       type: String,
       required: true,
       default:'胡春明'
     },
-    name: {
+    authorName: {
       type: String,
       required: true
     },
-    workPlace: {
+    institution: {
       type: String,
       required: true,
       default:'未知机构'
@@ -56,6 +57,11 @@ export default {
       type: String,
       required: true,
       default:'未知领域'
+    },
+    mail: {
+      type: String,
+      required: true,
+      default:''
     },
     avatar: {
       type: String,
@@ -82,43 +88,9 @@ export default {
       type: Number,
       required: true
     },
-    // publications: {
-    //   type: Array,
-    //   required: true,
-    //   default: () => []
-    // }
+
   },
 
-  // name: 'researcherDetails',
-  // data() {
-  //   return {
-  //     id: '114514',
-  //     name: '王思翔',
-  //     workPlace: '北京航空航天大学',
-  //     area: '软件工程，计算机科学与技术',
-  //     avatar: '',
-  //     citedByCount: 10,
-  //     worksCount: 20,
-  //     H_index:99,
-  //     firstresearcher:5,
-  //     highInflu:15,
-  //     publications: [
-  //         { id: 1, title: 'REVISEVAL IMPROVING LLM-AS-A-JUDGE VIA  RESPONSE-ADAPTED REFERENCES.', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-  //         { id: 2, title: 'Ciallo～(∠・ω< )⌒☆', description: '柚子厨蒸鹅心', date: '2024-03-22', cited: 20 },
-  //         { id: 3, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-  //         { id: 4, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-  //         { id: 5, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-  //         { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-  //         { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
-  //     ],
-  //   };
-  // },
-  /*
-  created() {
-    this.fetchresearcherDetails();
-    this.fetchresearcherPublications();
-  },
-  */
   methods: {
     followresearcher() {
       console.log(`Following researcher: ${this.name}`);
@@ -149,17 +121,17 @@ export default {
             console.error('获取作者作品信息错误', error);
           });
     },
-    GoToPersonalPortal() {
-      // this.$router.push({ path: '/researcher', query: { id: this.id } });
+    GoToPersonalPortal(authorId) {
+      this.$router.push({ path: '/user/personalInfo', query: { id: authorId } });
     },
     toggleUnderline() {
       // 检查是否已经添加了underline类
-      if (heading.classList.contains('underline')) {
+      if (this.$refs.abc.style.textDecoration === 'underline') {
         // 如果有underline类，则移除它
-        heading.classList.remove('underline');
+        this.$refs.abc.style.textDecoration = 'none'
       } else {
         // 如果没有underline类，则添加它
-        heading.classList.add('underline');
+        this.$refs.abc.style.textDecoration = 'underline'
       }
     }
   },

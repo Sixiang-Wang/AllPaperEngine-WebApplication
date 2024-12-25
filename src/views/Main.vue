@@ -238,11 +238,11 @@ import {ElMessage} from "element-plus";
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
-        const res = await httpUtil.get('/author/getReseacherIdByReseacherName', {
-          authorName: searchInput.value,
+        const res = await httpUtil.get('/user/getScholars', {
+          name: searchInput.value,
           timeout: 20000
         })
-        searchResults.value = res.data.getReseacherIdByReseacherName || [];
+        searchResults.value = res.data.scholars || [];
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
       }
