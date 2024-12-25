@@ -37,7 +37,7 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        searchSourceBuilder.size(20);
+//        searchSourceBuilder.size(20);
         boolQuery.must(QueryBuilders.matchQuery("display_name", displayName));
         searchSourceBuilder.query(boolQuery);
 

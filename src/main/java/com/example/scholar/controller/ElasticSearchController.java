@@ -87,7 +87,8 @@ public class ElasticSearchController {
     @Cacheable(value = "getAuthorsByDisplayNameCache", key = "#displayName + '_' + #page")
     public R getByDisplayName(@RequestParam("displayName") String displayName,@RequestParam("page") int page){
         try{
-            return R.ok().put("authors",elasticAuthorService.searchByDisplayNameByPage(displayName,page));
+            List<org.elasticsearch.search.SearchHit> res = elasticAuthorService.searchByDisplayNameByPage(displayName,page);
+            return R.ok().put("authors",res).put("sum",res.size());
         }catch (Exception e){
             return R.error(e.toString());
         }
