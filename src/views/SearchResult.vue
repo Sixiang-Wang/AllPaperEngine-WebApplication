@@ -28,6 +28,7 @@ let isSearchingForAuthors = ref(false);
 let isSearchingForResearchers = ref(false);
 let isSearchingForResults = ref(false);
 let isSearchingForInstitutions = ref(false);
+let isSearchingForAdvancedResults = ref(false);
 const pageSize = computed(() => Math.ceil(totalLength.value / 20));
 const researcherInfos = ref([]);
 const authorInfos = ref([]);
@@ -58,6 +59,7 @@ const search = async () => {
   isSearchingForAuthors = (searchType.value === '2'); // 设置查询类型
   isSearchingForResearchers = (searchType.value === '3');
   isSearchingForResults= (searchType.value === '1');
+  isSearchingForAdvancedResults = (searchType.value === '4');
   isSearchingForInstitutions = (searchType.value === '7');
 
   switch (searchType.value) {
@@ -218,8 +220,12 @@ const search = async () => {
     case '4':
       //高级检索
       ElMessage.success('111')
+      console.log("111111111111111111111");
       const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
       console.log(res.data);
+
+      searchResults.value = res.data.works;
+      totalLength.value = res.data.works.length;
       break;
   }
 }
@@ -302,7 +308,7 @@ const handleInputChange = async () => {
 
       case '4':
         //高级检索
-          ElMessage.success('111')
+        ElMessage.success('111')
         res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
         console.log(res.data);
         break;
@@ -442,10 +448,16 @@ const leaveSuggestion = (index) => {
               :type="result.sourceAsMap.type || ''"
             />
             <SingleResult
-                          v-if="isSearchingForResults"
-                           v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
-                          :content="result.content.abstractText"
-                          :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
+              v-if="isSearchingForResults"
+                v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
+              :content="result.content.abstractText"
+              :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
+            <SingleResult
+              v-if="isSearchingForAdvancedResults"
+                v-for="result in searchResults" :key="result.id" :author="result.workAuthorResultDtos.length==0?'未知作者':result.workAuthorResultDtos[0].authorResultDto.authorName
+ || '未知学者'"
+              :content="result.abstractText"
+              :title="result.title" :cited="result.citedByCount" :id="result.id"/>
           </div>
         </div>
         <div v-else style="margin-top: 4%; max-width: 70%">
