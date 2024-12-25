@@ -8,6 +8,7 @@ import * as cookieUtil from "@/utils/cookie.js";
 import {ElMessage} from "element-plus";
 import http from "@/api/http.js";  // 引入 API 相关功能
 import { useRoute } from 'vue-router';
+import Graph from "@/components/Graph.vue";
 
 // avatar 头像
 const avatarUrl = computed(()=>{
@@ -109,18 +110,7 @@ const simpleSearch = async () => {
 </script>
 
 <template>
-  <el-card v-if="role !== 1" class="box-card" style="max-width: 75%">
-    <div slot="header" class="clearfix">
-      <span>学者认证</span>
-    </div>
-    <div class="content">
-      <p>请先认证成为学者</p>
-      <el-button type="primary" @click="goToCertification" class="auth-btn">去认证</el-button>
-    </div>
-  </el-card>
-
-  <div v-if="role === 1">
-    <el-card style="max-width: 75%">
+    <el-card style="max-width: 65%; margin-left: 15%; margin-top: 2%">
       <el-row>
         <el-col :span="12">
           <el-row>
@@ -165,7 +155,7 @@ const simpleSearch = async () => {
       </el-row>
     </el-card>
 
-    <el-card style="max-width: 75%; margin-top: 1.5%">
+    <el-card style="max-width: 65%; margin-left: 15%; margin-top: 1.5%">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" type="border-card">
         <el-tab-pane label="成果管理" name="first">
           <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
@@ -180,10 +170,11 @@ const simpleSearch = async () => {
           </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="学术关系网" name="third">Role</el-tab-pane>
+        <el-tab-pane label="学术关系网" name="second">
+          <Graph/>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
-  </div>
 </template>
 
 <style scoped>
