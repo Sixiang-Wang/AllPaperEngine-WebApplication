@@ -12,6 +12,7 @@
           :themes="themeGroup.themes"
           :activeTheme="activeThemes[index]"
           @change="updateActiveThemes(index, $event)"
+          :search-input="searchInput"
       />
     </el-collapse>
   </div>
@@ -24,7 +25,9 @@ import {ElMessage} from "element-plus";
 
 const activeName = ref(["1"]);
 const activeThemes = ref([[], []]); // 每个折叠项的选中项，长度与 themeGroups 保持一致
-
+defineProps({
+  searchInput: String
+})
 const yearTag = ref([
   {value: "2024" },
   {value: "2023" },
