@@ -244,7 +244,7 @@ const submitAndJump = async()=>{
           </el-form>
           <div style="display: flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="oneToTwo">点击提交</el-button>
-            <el-button type="danger" style="width: 125px; height: 36px" @click="adminOneToTwo">开发专用！</el-button>
+<!--            <el-button type="danger" style="width: 125px; height: 36px" @click="adminOneToTwo">开发专用！</el-button>-->
           </div>
         </div>
         <div v-if="currentStep === '2'" class="scholar-identify-input">
@@ -290,7 +290,7 @@ const submitAndJump = async()=>{
           <h1 style="color:#7a7a7a">恭喜。您已提交成功！请耐心等待审核</h1>
           <div style="display:flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="backToMain">返回主页</el-button>
-            <el-button style="width: 125px; height: 36px" @click="currentStep = '3'">开发专用！</el-button>
+<!--            <el-button style="width: 125px; height: 36px" @click="currentStep = '3'">开发专用！</el-button>-->
           </div>
         </div>
       </div>

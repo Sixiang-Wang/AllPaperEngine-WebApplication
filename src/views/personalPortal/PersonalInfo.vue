@@ -116,6 +116,8 @@ const simpleSearch = async () => {
 const deleteClaimed = (id) => {
 
 }
+
+
 </script>
 
 <template>
@@ -187,6 +189,7 @@ const deleteClaimed = (id) => {
               <el-table-column prop="cited" label="引用次数" width="90"></el-table-column>
               <el-table-column>
                 <template #default="scope">
+                  <el-button style="margin-left: 70px" @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
                   <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
                 </template>
               </el-table-column>
@@ -197,6 +200,7 @@ const deleteClaimed = (id) => {
                 </template>
               </el-table-column>
               -->
+
             </el-table>
         </el-tab-pane>
 

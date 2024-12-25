@@ -1,7 +1,7 @@
 // 引入axios
 import axios from 'axios';
 import store from '@/api/index.js'
-// let baseUrl = "http://localhost:1145/"
+//let baseUrl = "http://localhost:1145/"
 let baseUrl="http://116.204.112.5:1145/";
 // 创建axios实例
 const httpService = axios.create({

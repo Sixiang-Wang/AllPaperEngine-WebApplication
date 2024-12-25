@@ -40,6 +40,10 @@
             <el-table-column label="论文数量" prop="size"></el-table-column>
           </el-table>
         </div>
+        <div v-else>
+          <el-empty :image=robotImage
+                    description="请先选择对应领域"/>
+        </div>
         <div class="charts-container">
           <div v-if="showChart.bar" class="chart-item" style="margin-bottom: 60px">
             <canvas id="barChartCanvas"></canvas>
@@ -66,6 +70,7 @@ import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import httpUtil from "@/api/http.js";
+import robotImage from "@/assets/image/robot.png";
 
 Chart.register(...registerables);
 

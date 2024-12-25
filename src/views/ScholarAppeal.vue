@@ -31,63 +31,39 @@ const countdown = ref(60);
 const isCounting = ref(false);
 let verificationCodeisValid = ref(false);
 
-const startCountdown = async () => {
-  if (isCounting.value) return;
 
-  try {
-    await sendVerificationCode();
-    isCounting.value = true;
-    countdown.value = 60;
-    verificationCodeisValid.value = true;
-
-    const interval = setInterval(() => {
-      countdown.value--;
-      if (countdown.value <= 0) {
-        clearInterval(interval);
-        isCounting.value = false;
-        verificationCodeisValid = false;
-      }
-    }, 1000);
-  } catch (error) {
-    ElMessage.error("发送验证码失败");
-  }
-}
-
-const sendVerificationCode = async () => {
-  const res = await httpUtil.get('/sendMail', {
-    to: form.value.email,
-  });
-  if (!res.data.verifyCode) {
-    throw new Error("发送验证码失败");
-  }
-  form.value.sentCode = res.data.verifyCode;
-}
 const simpleSearch = async() => {
   if(simpleSearchInput.value.length===0){
     ElMessage.warning("请输入搜索内容！")
     return;
   }
-  const res = await httpUtil.get('/search/getWorkByTitleWord',{
-    page: currentPage.value,
-    word: simpleSearchInput.value
-  })
-  console.log(res.data);
-  searchedPapers.value = res.data.works;
-  console.log(searchedPapers.value);
-  isSearched.value = true;
-  // 给每一行初始化 isSelected 属性
-  searchedPapers.value.forEach(paper => {
-    paper.isSelected = false;
-  });
-  isSearched.value = true;
+  try {
+    const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage',{
+      title: simpleSearchInput.value,
+      page: currentPage.value
+
+    })
+
+    searchedPapers.value = res.data.works || [];
+
+
+    isSearched.value = true;
+    // 给每一行初始化 isSelected 属性
+    searchedPapers.value.forEach(paper => {
+      paper.isSelected = false;
+    });
+    isSearched.value = true;
+    //console.log(searchedPapers.value);
+  }catch (error) {
+    console.error("Error occurred during search:", error);
+    ElMessage.error("搜索失败，请稍后重试！");
+  }
+
 }
 const oneToTwo = () => {
-  if (form.value.verificationCode !== form.value.sentCode || !verificationCodeisValid.value) {
-    ElMessage.error("验证码不正确或已过期");
-    return;
-  } else {
-    currentStep.value = '2';
-  }
+
+  currentStep.value = '2';
+
 }
 const id = ref();
 const goToPaper = (id)=>{
@@ -108,16 +84,15 @@ const handleRowDbClick = (row)=>{
 }
 const searchedPapers = ref([]);
 
-const adminOneToTwo = () => {
-  console.log(currentStep.value);
-  currentStep.value = '2';
-}
+
 const adminTwoToOne = () => {
+  console.log(searchedPapers.value);
   currentStep.value = '1';
 }
 const isSearched = ref(false);
 
 const twoToThree = () => {
+  console.log(searchedPapers.value);
   currentStep.value = '3';
 }
 const threeToTwo = () => {
@@ -146,6 +121,19 @@ const otherReason = ref("");
 const additionReason = ref("");
 const submitForm = ()=>{
   currentStep.value = '4';
+  ElMessage.success('11111')
+  const res = httpUtil.post('/complaint/add',
+      {
+        nameReal:form.value.name,
+        mail:form.value.email,
+        userId: localStorage.getItem("userId"),
+        workId: id.value,
+        reason:reasonForm.value.appealReason,
+        addition: reasonForm.value.addtionReason,
+        workplace:  form.value.organization
+      })
+  console.log(res)
+
 }
 const reasonRules = ref({
   appealReason: [
@@ -183,7 +171,7 @@ onMounted(()=>{
               <el-input v-model="form.organization" placeholder="请输入工作单位"></el-input>
             </el-form-item>
             <el-form-item label="工作邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入研究领域"></el-input>
+              <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
             </el-form-item>
 <!--            <el-form-item label="邮箱验证" prop="verificationCode">-->
 <!--              <el-input v-model="form.verificationCode" placeholder="请输入邮箱">-->
@@ -197,7 +185,7 @@ onMounted(()=>{
           </el-form>
           <div style="display: flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="oneToTwo">点击提交</el-button>
-            <el-button type="danger" style="width: 125px; height: 36px" @click="adminOneToTwo">开发专用！</el-button>
+<!--            <el-button type="danger" style="width: 125px; height: 36px" @click="adminOneToTwo">开发专用！</el-button>-->
           </div>
         </div>
         <div v-else-if="currentStep === '2'" class="scholar-identify-input">
@@ -228,10 +216,9 @@ onMounted(()=>{
             <div v-if="isSearched" style="margin-top: 3%; max-height: 200px; overflow-y: auto;">
               <div style="max-height: 150px; overflow-y: auto;">
                 <el-table :data="searchedPapers" @row-click="handleRowDbClick" show-overflow-tooltip :row-style="rowStyle"  style="width: 620px">
-                  <el-table-column prop="title" label="论文名称" width="250"></el-table-column>
-                  <el-table-column prop="publicationDate" label="发表时间" width="150"></el-table-column>
-                  <el-table-column prop="publication" label="发表期刊" width="100"></el-table-column>
-                  <el-table-column prop="search">
+                  <el-table-column prop="content.title" label="论文名称" width="350"></el-table-column>
+                  <el-table-column prop="content.publication_date" label="发表时间" width="150"></el-table-column>
+                 <el-table-column prop="search">
                     <template #default="scope">
                       <el-button @click="goToPaper(scope.row.id)" color="#1F578F">查看论文</el-button>
                     </template>
@@ -279,7 +266,7 @@ onMounted(()=>{
           <h1 style="color:#7a7a7a">恭喜。您已提交成功！请耐心等待审核</h1>
           <div style="display:flex;">
             <el-button color="#1F578F" style="width: 125px; height: 36px" @click="backToMain">返回主页</el-button>
-            <el-button style="width: 125px; height: 36px" @click="currentStep = '1'">开发专用！</el-button>
+<!--            <el-button style="width: 125px; height: 36px" @click="currentStep = '1'">开发专用！</el-button>-->
           </div>
         </div>
       </div>
