@@ -28,11 +28,9 @@ let searchResults = ref([]);
 const route = useRoute();
 
 const handlePageChange = (page) => {
-  router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
-    currentPage.value = page;
-    updateSearchResults();
-    window.scrollTo({top: 0});
-  });
+  currentPage.value = page;
+  simpleSearch();
+  window.scrollTo({top: 0});
 };
 
 const simpleSearch = async () => {
