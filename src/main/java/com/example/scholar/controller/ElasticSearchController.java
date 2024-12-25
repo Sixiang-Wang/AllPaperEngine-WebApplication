@@ -9,12 +9,14 @@ import com.example.scholar.service.ElasticAuthorService;
 import com.example.scholar.service.ElasticWorkService;
 import com.example.scholar.service.impl.ElasticWorksServiceImpl;
 import com.example.scholar.util.AbstractRestore;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +75,7 @@ public class ElasticSearchController {
             return R.error(e.toString());
         }
     }
+
 
 
     @GetMapping(value="/authors/getByDisplayName")
@@ -200,6 +203,97 @@ public class ElasticSearchController {
     public R autoCompleteInstitutionsWithCompletionSuggester(@RequestParam("searchContent") String searchContent) {
         try {
             return R.ok().put("suggestions", elasticAuthorService.AutoCompleteInstitutionsWithCompletionSuggester(searchContent));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+
+    private CacheManager cacheManager;
+
+    @GetMapping(value="/works/getByTitleAll")
+    public R getWorksByTitleAll(@RequestParam("title")String title){
+        try{
+            List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
+            for(SearchHit<Works> tmp: list){
+                Works works = tmp.getContent();
+                works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+            }
+            return R.ok().put("works", list);
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/getTheme")
+    public R getTheme(@RequestParam("title")String title) {
+        try {
+            List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
+            List<SearchHit<Works>> retList = new ArrayList<>();
+            for(SearchHit<Works> tmp: list){
+                Works works = tmp.getContent();
+
+                works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                retList.add(tmp);
+            }
+
+
+            return R.ok().put("works", retList);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/getWorksByYear")
+    public R getWorksByYear(@RequestParam("title")String title,@RequestParam("year") int year) {
+        try {
+            List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
+            List<SearchHit<Works>> retList = new ArrayList<>();
+            if(year==2015){
+                for(SearchHit<Works> tmp: list){
+                    Works works = tmp.getContent();
+                    if(works.getPublication_year()>year){
+                        continue;
+                    }
+                    works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                    retList.add(tmp);
+                }
+            }else {
+                for(SearchHit<Works> tmp: list){
+                    Works works = tmp.getContent();
+                    if(works.getPublication_year()!=year){
+                        continue;
+                    }
+                    works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                    retList.add(tmp);
+                }
+            }
+
+
+            return R.ok().put("works", retList);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
+    @GetMapping(value = "/works/getWorksByType")
+    public R getWorksByType(@RequestParam("title")String title,@RequestParam("type") String type) {
+        try {
+            List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
+            List<SearchHit<Works>> retList = new ArrayList<>();
+
+            for(SearchHit<Works> tmp: list){
+                Works works = tmp.getContent();
+                if(works.getType().equals(type)){
+                    continue;
+                }
+
+                works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                retList.add(tmp);
+            }
+
+
+            return R.ok().put("works", retList);
         } catch (Exception e) {
             return R.error(e.toString());
         }
