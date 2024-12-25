@@ -6,7 +6,8 @@ import router from "@/router/index.js";
 import httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
 import {ElMessage} from "element-plus";
-import http from "@/api/http.js";  // 引入 API 相关功能
+import http from "@/api/http.js";
+import Graph from "@/components/Graph.vue";  // 引入 API 相关功能
 
 // avatar 头像
 const avatarUrl = computed(()=>{
@@ -55,6 +56,7 @@ onMounted(async () => {
   }
   try {
     const res = await httpUtil.get('/claim/get/personal', { scholarId: userId });
+    console.log(res)
     if (res.data && res.data.works) {
       myAchievement.value = res.data.works;
     }
@@ -137,7 +139,7 @@ const simpleSearch = async () => {
             />
             <div style="margin-left: 10%; margin-top: 5%">
               <el-text style="font-size: large">{{userName}}</el-text><br>
-              <el-text style="font-size: small">学者ID：{{ authorId }}</el-text>
+              <el-text style="font-size: small">学者ID：1000000</el-text>
             </div>
           </el-row>
           <el-row style="margin-top: 15%">
@@ -171,7 +173,11 @@ const simpleSearch = async () => {
 
     <el-card style="max-width: 75%; margin-top: 1.5%">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" type="border-card">
-        <el-tab-pane label="成果管理" name="first">
+        <el-tab-pane label="学术关系网" name="first">
+          <Graph/>
+        </el-tab-pane>
+
+        <el-tab-pane label="成果管理" name="second">
             <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
               <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
               <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
@@ -189,7 +195,7 @@ const simpleSearch = async () => {
             </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="学术关系网" name="third">Role</el-tab-pane>
+        <el-tab-pane label="学术统计" name="third">Config</el-tab-pane>
       </el-tabs>
     </el-card>
   </div>

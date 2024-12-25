@@ -10,7 +10,6 @@ import httpUtil from "@/api/http.js";
 
 let resStore = ref([])
 let searchInput = ref("");
-let searchType = ref('1');
 const totalLength = ref(0);
 let searchResults = ref([]);
 let authorIds = ref([]);
@@ -18,6 +17,8 @@ let suggestions = ref([]);
 let showAutoComplete = ref(false);
 const route = useRoute();
 let hoveredIndex = ref(null);
+let searchType = ref(route.query.type);
+
 const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取
 let isSearchingForAuthors = ref(false);
 let isSearchingForResearchers = ref(false);
@@ -245,44 +246,10 @@ const search = async () => {
       }
       break;
     case '4'://查找摘要
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
-          page: currentPage.value
-        })
-
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
-
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-            if(startIndex!=-1){
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-        }
-      }
-      //searchResults = res;
+      //高级检索
+        console.log(JSON.parse(sessionStorage.getItem('searchParams')));
+      const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+      console.log(res.data);
       break;
     case '5'://查找学者
       if(searchInput.value===null||searchInput.value === '') {
@@ -392,18 +359,9 @@ const handleInputChange = async () => {
         break;
 
       case '4':
-        //摘要
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteAbstractWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const abstractSuggest = res.data.suggestions.suggest.abstractSuggest;
-        if(abstractSuggest && abstractSuggest.length>0){
-          console.log(abstractSuggest);
-          suggestions  = abstractSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
-        }
+        //高级检索
+        res = await httpUtil.get('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+        console.log(res.data);
         break;
 
       case '5':

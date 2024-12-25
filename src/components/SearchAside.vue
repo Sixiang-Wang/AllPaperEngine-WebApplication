@@ -60,15 +60,15 @@ const themeGroups = ref([
       // { label: "物联网", value: "12" },
     ],
   },
-  {
-    title: "主题 5",
-    name: "5",
-    themes: [
-      { label: "区块链", value: "13" },
-      { label: "量子计算", value: "14" },
-      { label: "边缘计算", value: "15" },
-    ],
-  },
+  // {
+  //   title: "主题 5",
+  //   name: "5",
+  //   themes: [
+  //     { label: "区块链", value: "13" },
+  //     { label: "量子计算", value: "14" },
+  //     { label: "边缘计算", value: "15" },
+  //   ],
+  // },
 ]);
 
 
@@ -126,23 +126,23 @@ const fetchTypes = async () => {
 
 onMounted(fetchTypes);
 
-const fetchLanguages = async () => {
-  try {
-    const response = await http.get("/Connective/getSortedLanguages");
-    const languages = response.data.languages;
+// const fetchLanguages = async () => {
+//   try {
+//     const response = await http.get("/Connective/getSortedLanguages");
+//     const languages = response.data.languages;
+//
+//     themeGroups.value[3].themes = languages.map((language, idx) => ({
+//       label: language,
+//       value: (idx + 1).toString(),
+//     }));
+//
+//   } catch (error) {
+//     console.error("Failed to fetch languages:", error);
+//     ElMessage.error("获取语言失败！");
+//   }
+// };
 
-    themeGroups.value[3].themes = languages.map((language, idx) => ({
-      label: language,
-      value: (idx + 1).toString(),
-    }));
-
-  } catch (error) {
-    console.error("Failed to fetch languages:", error);
-    ElMessage.error("获取语言失败！");
-  }
-};
-
-onMounted(fetchLanguages);
+// onMounted(fetchLanguages);
 
 </script>
 
