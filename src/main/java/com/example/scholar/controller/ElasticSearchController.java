@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin
 @RestController
@@ -37,6 +38,10 @@ public class ElasticSearchController {
 
 
         try{
+
+
+            System.out.print(advancedSearchPojo);
+
             return R.ok().put("works",elasticWorkService.advancedSearch(advancedSearchPojo.getAndTitles(),advancedSearchPojo.getAndTitlesFuzzy(),advancedSearchPojo.getOrTitles(),advancedSearchPojo.getOrTitlesFuzzy(),advancedSearchPojo.getNotTitles(),advancedSearchPojo.getNotTitlesFuzzy(),
                                                                         advancedSearchPojo.getAndTopics(),advancedSearchPojo.getAndTopicsFuzzy(),advancedSearchPojo.getOrTopics(),advancedSearchPojo.getOrTopicsFuzzy(),advancedSearchPojo.getNotTopics(),advancedSearchPojo.getNotTopicsFuzzy(),
                                                                         advancedSearchPojo.getAndAuthors(),advancedSearchPojo.getAndAuthorsFuzzy(),advancedSearchPojo.getOrAuthors(),advancedSearchPojo.getOrAuthorsFuzzy(),advancedSearchPojo.getNotAuthors(),advancedSearchPojo.getNotAuthorsFuzzy(),
@@ -225,27 +230,9 @@ public class ElasticSearchController {
         }
     }
 
-    @GetMapping(value = "/works/getTheme")
-    public R getTheme(@RequestParam("title")String title) {
-        try {
-            List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
-            List<SearchHit<Works>> retList = new ArrayList<>();
-            for(SearchHit<Works> tmp: list){
-                Works works = tmp.getContent();
 
-                works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
-                retList.add(tmp);
-            }
-
-
-            return R.ok().put("works", retList);
-        } catch (Exception e) {
-            return R.error(e.toString());
-        }
-    }
-
-    @GetMapping(value = "/works/getWorksByYear")
-    public R getWorksByYear(@RequestParam("title")String title,@RequestParam("year") int year) {
+    @GetMapping(value = "/works/getWorksPageNumByYear")
+    public R getWorksPageNumByYear(@RequestParam("title")String title,@RequestParam("year") int year) {
         try {
             List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
             List<SearchHit<Works>> retList = new ArrayList<>();
@@ -276,8 +263,53 @@ public class ElasticSearchController {
         }
     }
 
+    @GetMapping(value = "/works/getWorksByYear")
+    public R getWorksByYear(@RequestParam("title")String title,@RequestParam("year") int year,@RequestParam("page")int page) {
+        try {
+            int pageSize = 20;
+            int from = (page - 1) * pageSize; // 起始记录
+            int end = (page ) * pageSize-1; // 起始记录
+            int now = 0;
+
+            List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
+            List<SearchHit<Works>> retList = new ArrayList<>();
+            if(year==2015){
+                for(SearchHit<Works> tmp: list){
+                    Works works = tmp.getContent();
+                    if(works.getPublication_year()>year){
+                        continue;
+                    }
+                    works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                    retList.add(tmp);
+                }
+            }else {
+                for(SearchHit<Works> tmp: list){
+                    Works works = tmp.getContent();
+                    if(works.getPublication_year()!=year){
+                        continue;
+                    }
+                    if(now>=from&&now<=end) {
+                        works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                        retList.add(tmp);
+                    }
+                    now++;
+                }
+            }
+
+
+            return Objects.requireNonNull(R.ok().put("works", retList)).put("length",now);
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
     @GetMapping(value = "/works/getWorksByType")
-    public R getWorksByType(@RequestParam("title")String title,@RequestParam("type") String type) {
+    public R getWorksByType(@RequestParam("title")String title,@RequestParam("type") String type,@RequestParam("page")int page) {
+        int pageSize = 20;
+        int from = (page - 1) * pageSize; // 起始记录
+        int end = (page ) * pageSize-1; // 起始记录
+        int now = 0;
+
         try {
             List<SearchHit<Works>> list = elasticWorkService.searchByTitleAll(title);
             List<SearchHit<Works>> retList = new ArrayList<>();
@@ -287,13 +319,15 @@ public class ElasticSearchController {
                 if(works.getType().equals(type)){
                     continue;
                 }
-
-                works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
-                retList.add(tmp);
+                if(now>=from&&now<=end){
+                    works.setAbstractText(AbstractRestore.restoreAbstract(works.getAbstract_inverted_index()));
+                    retList.add(tmp);
+                }
+                now++;
             }
 
 
-            return R.ok().put("works", retList);
+            return Objects.requireNonNull(R.ok().put("works", retList)).put("length",now);
         } catch (Exception e) {
             return R.error(e.toString());
         }
