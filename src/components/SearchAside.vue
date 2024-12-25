@@ -11,7 +11,7 @@
           :name="themeGroup.name"
           :themes="themeGroup.themes"
           :activeTheme="activeThemes[index]"
-          @change="updateActiveThemes(index, $event)"
+          @change="updateActiveThemes(themeGroup.themes, $event)"
       />
     </el-collapse>
   </div>
@@ -69,7 +69,7 @@ const themeGroups = ref([
 
 // 更新 activeThemes 中的选中项
 const updateActiveThemes = (index, selectedThemes) => {
-  ElMessage.success(activeThemes.value)
+  console.log(index)
   activeThemes.value[index] = selectedThemes;
 };
 </script>
