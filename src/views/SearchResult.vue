@@ -4,13 +4,15 @@ import {Search} from "@element-plus/icons-vue";
 import {computed, onMounted, ref, watch} from "vue";
 import SingleResult from "@/components/single/SingleResult.vue";
 import SingleAuthor from "@/components/single/SingleAuthor.vue";
+import SingleInstitution from "@/components/single/SingleInstitution.vue";
 import router from "@/router/index.js";
 import {useRoute} from 'vue-router';
 import httpUtil from "@/api/http.js";
+import SingleResearcher from "@/components/single/SingleResearcher.vue";
+import baseUrl from "@/api/http.js";
 
 let resStore = ref([])
 let searchInput = ref("");
-let searchType = ref('1');
 const totalLength = ref(0);
 let searchResults = ref([]);
 let authorIds = ref([]);
@@ -18,6 +20,8 @@ let suggestions = ref([]);
 let showAutoComplete = ref(false);
 const route = useRoute();
 let hoveredIndex = ref(null);
+let searchType = ref(route.query.type);
+
 const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取
 let isSearchingForAuthors = ref(false);
 let isSearchingForResearchers = ref(false);
@@ -89,7 +93,40 @@ const authorInfos = ref([
     ],
   },
 ]);
-
+const researcherInfos = ref([
+  {
+    authorId: '114514',
+    authorName: '胡春明',
+    institution: '北京航空航天大学',
+    area: '计算机软件及计算机应用;电信技术;计算机硬件技术;',
+    mail: 'hucm@buaa.edu.cn',
+    avatar: ''
+  },
+  {
+    authorId: '151256',
+    authorName: '胡春明',
+    institution: '天津大学',
+    area: '动力工程;航空航天科学与工程;汽车工业;',
+    mail: '',
+    avatar: ''
+  },
+  {
+    authorId: '478126',
+    authorName: '胡春明',
+    institution: '中国科学院生态环境研究中心',
+    area: '环境科学与资源利用;建筑科学与工程;水利水电工程;',
+    mail: '',
+    avatar: ''
+  },
+  {
+    authorId: '145165',
+    authorName: '胡春明',
+    institution: '吉林大学第一临床医学院',
+    area: '外科学;肿瘤学;内分泌腺及全身性疾病;',
+    mail: '',
+    avatar: ''
+  },
+]);
 
 const handlePageChange = (page) => {
   router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
@@ -114,6 +151,7 @@ const updateSearchResults = async () => {
 const search = async () => {
   isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
   isSearchingForResearchers = (searchType.value === '6');
+  isSearchingForInstitutions = (searchType.value === '7');
   console.log(searchType.value);
   switch (searchType.value) {
     case '1'://按标题查找
@@ -246,44 +284,10 @@ const search = async () => {
       }
       break;
     case '4'://查找摘要
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-          word: searchInput.value,
-          page: currentPage.value
-        })
-
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
-
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-            if(startIndex!=-1){
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-        }
-      }
-      //searchResults = res;
+      //高级检索
+        console.log(JSON.parse(sessionStorage.getItem('searchParams')));
+      const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+      console.log(res.data);
       break;
     case '5'://查找学者
       if(searchInput.value===null||searchInput.value === '') {
@@ -314,16 +318,31 @@ const search = async () => {
         console.log(authorInfos);
       }
       break;
-      case '7'://查找机构
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
+    case '6'://查找科研人员
+      if(searchInput.value===null||searchInput.value === '') {
+        const res = await httpUtil.get('/openalex/get/page', {
           page: currentPage.value
-        })
+        });
         console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
+        const res = await httpUtil.get('/user/getScholars', {
+          name: searchInput.value
+        });
+        const authorRes = ref([]);
+        researcherInfos.value = res.data.scholars || [];
+        console.log(researcherInfos.value);
+        totalLength.value = researcherInfos.value.length;
+        searchResults.value = researcherInfos.value;
+
+      }
+      case '7'://查找机构
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })}else {
         const res = await httpUtil.get('/elasticSearch/institutions/getByDisplayName', { 
           displayName: searchInput.value,
           timeout: 20000
@@ -359,6 +378,7 @@ const handleInputChange = async () => {
   console.log(searchInput.value)
   isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
   isSearchingForResearchers = (searchType.value === '6');
+  isSearchingForInstitutions = (searchType.value === '7');
   if (searchInput.value == '') {
     showAutoComplete = false;
   } else {
@@ -414,18 +434,9 @@ const handleInputChange = async () => {
         break;
 
       case '4':
-        //摘要
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteAbstractWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const abstractSuggest = res.data.suggestions.suggest.abstractSuggest;
-        if(abstractSuggest && abstractSuggest.length>0){
-          console.log(abstractSuggest);
-          suggestions  = abstractSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
-        }
+        //高级检索
+        res = await httpUtil.get('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+        console.log(res.data);
         break;
 
       case '5':
@@ -486,6 +497,7 @@ const leaveSuggestion = (index) => {
               <el-select v-model="searchType" style="width: 115px; background-color:#FFFFFF;">
                 <el-option label="主题" value="1"/>
                 <el-option label="学者" value="5"/>
+                <el-option label="科研人员" value="6"/>
               </el-select>
             </template>
           </el-input>
@@ -514,10 +526,11 @@ const leaveSuggestion = (index) => {
       <el-main style="margin-left: 2%;width: 100%;">
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="isSearchingForAuthors" style="height: 20px;"></div>
+        <div v-if="isSearchingForResearchers" style="height: 20px;"></div>
         <div v-if="searchResults.length !== 0" style="display: flex;">
-          <div>
+          <div >
             <SingleAuthor
-            style="width: 800px;"
+              style="width: 800px;"
               v-if="isSearchingForAuthors"
               v-for="authorInfo in authorInfos"
               :key="authorInfo.id"
@@ -532,6 +545,32 @@ const leaveSuggestion = (index) => {
               :firstAuthor="authorInfo.firstPublishCount || 0"
               :highInflu="authorInfo.highQualityWorkCount || 0"
               :H_index="authorInfo.hnumber || 0" -->
+          <SingleResearcher
+              style="width: 800px;"
+              v-if="isSearchingForResearchers"
+              v-for="researcherInfo in researcherInfos"
+              :key="researcherInfo.authorId"
+              :authorId="researcherInfo.authorId"
+              :authorName="researcherInfo.authorName || '未知学者'"
+              :institution="researcherInfo.institution || '暂无'"
+              :mail="researcherInfo.mail || ''"
+              :avatar="'http://116.204.112.5:1145' + researcherInfo.avatar || ''"
+          />
+          <SingleInstitution
+              style="width: 800px;"
+              v-if="isSearchingForInstitutions"
+              v-for="result in searchResults"
+              :key="result.id"
+              :id="result.id"
+              :name="result.sourceAsMap.display_name || '未知机构'"
+              :citedByCount="result.sourceAsMap.cited_by_count || 0"
+              :worksCount="result.sourceAsMap.works_count || 0"
+              :score="result.score"
+              :homepageUrl="result.sourceAsMap.homepage_url || ''"
+              :country="result.sourceAsMap.country_code || ''"
+              :updateDate="result.sourceAsMap.updated_date || ''"
+              :type="result.sourceAsMap.type || ''"
+            />
             <SingleResult
             style="width: 1400px;"
             v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"

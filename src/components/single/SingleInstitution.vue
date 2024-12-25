@@ -1,39 +1,38 @@
 <template>
-    <div class="author-details">
-        <div class="author-header">
-        <div class="author-left">
+    <div class="institution-details">
+        <div class="institution-header">
+        <div class="institution-left">
         <el-avatar :src="avatar" :size="80" />
-            <div class="author-info">
-                <h2 class="hover-effect" @click="goToAuthorInfo">{{ name }}</h2>
-                <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
-                <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
-                <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
+            <div class="institution-info">
+                <h2 class="hover-effect" @click="goToInstitutionInfo">{{ name }}</h2>
+                <p><span style="font-weight: lighter;">机构id</span>: <span style="color: grey;">{{ id }}</span></p>
+                <p><span style="font-weight: lighter;">评分</span>: <span style="color: grey;">{{ score }}</span></p>
+                <p><span style="font-weight: lighter;">主页链接</span>: <span style="color: grey;">{{ homepageUrl }}</span></p>
             </div>
         </div>
 
-        <div class="author-middle" >
+        <div class="institution-middle" >
             <!-- <p><strong>总被引量：{{ citedByCount }}</strong></p>
             <p><strong>总发文量：{{ worksCount }}</strong></p> -->
             <p>总被引量：{{ citedByCount }}</p>
             <p>总发文量：{{ worksCount }}</p>
         </div>
 
-        <div class="author-right" >
-            <p>H指数：{{ H_index }}</p>
-            <p>第一作者发文量：{{ firstAuthor }}</p>
-            <p>高影响力论文发文量：{{ highInflu }}</p>
+        <div class="institution-right" >
+            <p>国家{{ country }}</p>
+            <p>上次更新时间{{ updateDate }}</p>
+            <p>类型{{ type }}</p>
         </div>
     </div>
     <el-divider/>
-  </div>
+    </div>
 </template>
-  
+
 <script>
 import axios from 'axios';
 import router from "@/router/index.js";
-import defaultAvatar from '@/assets/image/scholarHead.jpg';
   export default {
-    name: 'SingleAuthor',
+    name: 'SingleInstitution',
     props: {
       id: {
         type: String,
@@ -44,87 +43,58 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
         type: String,
         required: true
       },
-      workPlace: {
-        type: String,
-        required: true,
-        default:'未知机构'
-      },
-      area: {
-        type: String,
-        required: true,
-        default:'未知领域'
-      },
-      avatar: {
-        type: String,
-        required: false,
-        default: defaultAvatar
-      },
-      citedByCount: {
-        type: Number,
-        required: true
-      },
-      worksCount: {
-        type: Number,
-        required: true
-      },
-      H_index: {
-        type: Number,
-        required: true
-      },
-      firstAuthor: {
-        type: Number,
-        required: true
-      },
-      highInflu: {
-        type: Number,
-        required: true
-      },
+        score: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
+        homepageUrl: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
+        citedByCount: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
+        worksCount: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
+        country: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
+        updateDate: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
+        type: {
+            type: String,
+            required: false,
+            default:'未知机构'
+        },
     },
     methods: {
-      followAuthor() {
-        console.log(`Following author: ${this.name}`);
-      },
-      viewPublication(id) {
-        console.log(`Viewing publication with ID: ${id}`);
-      },
-      fetchAuthorDetails() {
-        axios.get(`/api/author/${this.id}`) // 改后端接口
-          .then(response => {
-            const data = response.data;
-            this.name = data.name;
-            this.description = data.description;
-            this.avatar = data.avatar;
-            this.citedByCount = data.citedByCount;
-            this.worksCount = data.worksCount;
-          })
-          .catch(error => {
-            console.error('获取作者信息错误', error);
-          });
-      },
-      fetchAuthorPublications() {
-        axios.get(`/api/author/${this.id}/publications`) // 改后端接口
-          .then(response => {
-            this.publications = response.data;
-          })
-          .catch(error => {
-            console.error('获取作者作品信息错误', error);
-          });
-      },
-    goToAuthorInfo() {
+    goToInstitutionInfo() {
       router.push({
-        name: 'authorInfo',
-        path: '/authorInfo',
+        name: 'institutionInfo',
+        path: '/institutionInfo',
         query: {
-          id: this.id,
-          name: this.name,
-          workPlace: this.workPlace,
-          area: this.area,
-          avatar: this.avatar,
-          citedByCount: this.citedByCount,
-          worksCount: this.worksCount,
-          H_index: this.H_index,
-          firstAuthor: this.firstAuthor,
-          highInflu: this.highInflu
+            id: this.id,
+            name: this.name,
+            workPlace: this.workPlace,
+            area: this.area,
+            avatar: this.avatar,
+            citedByCount: this.citedByCount,
+            worksCount: this.worksCount,
+            H_index: this.H_index,
+            firstAuthor: this.firstAuthor,
+            highInflu: this.highInflu
         }
       });
     }
@@ -133,51 +103,51 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
 </script>
   
 <style scoped>
-.author-details {
+.institutionInfo-details {
 margin-bottom: 0px;
 }
-.author-header {
+.institutionInfo-header {
 display: flex;
 justify-content: space-between;
 align-items: center;
 margin:0px;
 }
-.author-left {
+.institutionInfo-left {
 margin: 0px;
 display: flex;
 align-items: center;
 }
-.author-info h2 {
+.institutionInfo-info h2 {
 font-size: 20px;
 margin-top: 0px;
 margin-bottom: 10px;
 margin-left:20px;
 }
-.author-info .description {
+.institutionInfo-info .description {
 color: #888;
 }
-.author-info p {
+.institutionInfo-info p {
 margin: 2px 0;
 margin-left:20px;
 }
-.author-middle{
+.institutionInfo-middle{
 margin: 0px;
 }
-.author-middle p{
+.institutionInfo-middle p{
 margin: 0px;
 }
-.author-right p {
+.institutionInfo-right p {
 margin: 0px;
 color: #333;
 }
 css
-.author-right {
+.institutionInfo-right {
 flex: 1;
 text-align: center;
 margin-bottom:0px;
 margin-left:20%;
 }
-.author-publications {
+.institutionInfo-publications {
 margin-top:0px;
 }
 .publication-link {
@@ -187,13 +157,6 @@ text-decoration: underline;
 }
 .publication-link:hover {
 text-decoration: none;
-}
-.author-timeline {
-margin-top: 0px;
-}
-.vertical-divider {
-height: 80%; 
-margin: 0px; 
 }
 .article{
 margin-left: 20px;
