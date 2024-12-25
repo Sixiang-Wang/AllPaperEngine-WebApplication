@@ -57,17 +57,17 @@ const changeInput = ()=> {
 const search = async () => {
   isSearchingForAuthors = (searchType.value === '2'); // 设置查询类型
   isSearchingForResearchers = (searchType.value === '3');
-  isSearchingForResults= (searchType.value === '1');
+  isSearchingForResults= (searchType.value === '1' || route.query.type === 'yearselect' || route.query.type === 'typeselect');
+  console.log(isSearchingForResults);
   isSearchingForInstitutions = (searchType.value === '7');
-
   switch (searchType.value) {
-    case '1'://按标题查找
+    case '1' ://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
-        httpUtil.get('/elasticSearch/works/getByTitleAll',{
+        await httpUtil.get('/elasticSearch/works/getByTitleAll',{
           title: searchInput.value
         })
         searchResults.value = res.data.works;
@@ -78,6 +78,9 @@ const search = async () => {
         //   word: searchInput.value,
         //   page: currentPage.value
         // })
+        httpUtil.get('/elasticSearch/works/getByTitleAll',{
+          title: searchInput.value
+        })
         const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
           title: searchInput.value,
           page: currentPage.value
@@ -226,8 +229,33 @@ const search = async () => {
 onMounted(async ()=>{
   searchType.value = route.query.type;
   searchInput.value = route.query.input;
-  await search();
-}, );
+  if(route.query.type === 'typeselect' ){
+    console.log('typeselect');
+    isSearchingForResults = true;
+    const res = await httpUtil.get('/elasticSearch/works/getWorksByType', {
+      page: 1,
+      title: route.query.input,
+      type: route.query.year
+    });
+    searchResults.value = res.data.works;
+  }else if(route.query.type === 'yearselect'){
+    console.log('yearselect');
+    isSearchingForResults = true;
+    const res = await httpUtil.get('/elasticSearch/works/getWorksByYear', {
+      page: 1,
+      title: route.query.input,
+      year: route.query.year
+    });
+    searchResults.value = res.data.works;
+    console.log(searchType.value);
+
+  }else {
+    await search();
+  }
+  if(searchType.value === 'typeselect' || searchType.value === 'yearselect'){
+    searchType.value = '1';
+  }
+});
 const mainSearch = ()=>{
   router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value}});
   // location.reload();
