@@ -260,6 +260,7 @@ import {ElMessage} from "element-plus";
           displayName: searchInput.value,
           timeout: 20000
         })
+        console.log('institution接口通过')
         searchResults.value = res.data.authors.hits;
         console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
@@ -398,8 +399,8 @@ const leaveSuggestion = (index) => {
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
         <el-option label="主题" value="1"/>
-        <el-option label="学者" value="5"/>
-        <el-option label="科研人员" value="6"/>
+        <el-option label="学者" value="2"/>
+        <el-option label="科研人员" value="3"/>
         <el-option label="机构" value="7"/>
       </el-select>
 
