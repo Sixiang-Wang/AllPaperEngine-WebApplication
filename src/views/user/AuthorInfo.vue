@@ -2,7 +2,10 @@
   <el-card class="author-details" :body-style="{ padding: '20px' }">
     <div class="author-header" style="display: flex; justify-content: space-between; align-items: center;">
     <div class="author-left" style="display: flex; align-items: center;">
-      <el-avatar :src="avatar" :size="120" />
+<!--      <el-avatar :src="avatar" :size="120" />-->
+      <el-avatar :size="120" class="avatarClass">
+        <span>{{ author.name.charAt(0).toUpperCase() }}</span>
+      </el-avatar>
       <div class="author-info" style="margin-left: 20px;">
         <h2>{{ author.name }}</h2>
         <p class="description">{{ author.description }}</p>
@@ -55,29 +58,26 @@
 <script>
 import httpUtil from "@/api/http.js";
 import { useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import router from "@/router/index.js";
+import {ref, onMounted, computed} from 'vue';
 import avatar from '@/assets/image/scholarHead.jpg';
 
 export default {
+
   setup() {
     const route = useRoute();
     const publications = ref([]);
 
     const author = ref({
-      id: '114514',
-      name: '王思翔',
+      id: '',
+      name: '',
       description: 'IScholar官方认证学者',
       // avatar: '',
-      citedByCount: 10,
-      worksCount: 20,
+      citedByCount: 0,
+      worksCount: 0,
       publications: [
         { id: 1, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
         { id: 2, title: 'Ciallo～(∠・ω< )⌒☆', description: '柚子厨蒸鹅心', date: '2024-03-22', cited: 20 },
-        { id: 3, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-        { id: 4, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-        { id: 5, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-        { id: 6, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 10 },
-        { id: 7, title: '我要学猛虎下山', description: '一只鸡煲的自述', date: '2024-01-15', cited: 20 }
       ],
   });
 
@@ -119,9 +119,16 @@ export default {
       fetchAuthorPublications(authorId);
     });
 
+
+    const viewPublication = (id) => {
+      console.log(`Viewing publication with ID: ${id}`);
+      router.push({path: '/paper', query: {id: id}})
+    };
+
     return {
       author,
       publications,
+      viewPublication,
       avatar
     };
   }
@@ -129,6 +136,19 @@ export default {
 </script>
 
 <style scoped>
+.avatarClass {
+  color: rgba(255, 255, 255, 0.86);
+  background-color: #476ec8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 60px; /* 正确的字体大小 */
+  font-weight: bold; /* 加粗字体 */
+  text-transform: uppercase; /* 转换为大写 */
+}
+
+
+
 .author-details {
   max-width: 80%;
   margin: 20px auto;

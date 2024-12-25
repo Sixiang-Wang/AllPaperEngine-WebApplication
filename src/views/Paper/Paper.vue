@@ -80,7 +80,7 @@ const getWork = async (workId) => {
     console.log(res.data);
 
     const data = res.data.work;
-
+    citeNum.value = data.citedByCount
     /**
      * title
      */
@@ -129,7 +129,7 @@ const getWork = async (workId) => {
     if (data.publicationDate) {
       publicationDate.value = data.publicationDate;
     }
-    ifGujia.value = false;
+
   } catch (error) {
     console.error("Failed to fetch data:", error);
     // title.value = "AAA Revisited: A Comprehensive Review of Risk Factors, Management, and Hallmarks of Pathogenesis";
@@ -138,27 +138,27 @@ const getWork = async (workId) => {
 };
 
 onMounted(async () => {
-      ifGujia.value = false;
 
-      const route = useRoute();
-      const savedTab = localStorage.getItem("activeTab");
-      if (savedTab) {
-        activeName.value = savedTab;
-      }
+  const route = useRoute();
+  const savedTab = localStorage.getItem("activeTab");
+  if (savedTab) {
+    activeName.value = savedTab;
+  }
 
-      // 从查询参数中获取 id
-      workId = route.query.id;
-      console.log(workId);
+  // 从查询参数中获取 id
+  workId = route.query.id;
+  console.log(workId);
 
-      await getReference()
-      await getCite()
+  await getWork(workId);
 
+  await getReference()
+  await getCite()
 
-      updateReferencePageResults();
-      updateCitePageResults();
-      await getWork(workId);
+  await updateCitePageResults();
+  ifGujia.value = false;
+  await updateReferencePageResults();
 
-      haveFavorite();
+  haveFavorite();
 
       //获取评论
       console.log(workId);
@@ -188,6 +188,7 @@ onMounted(async () => {
     tstring : getCurrentDateTime(),
     userId: userId.value
   });
+
     }
 )
 
@@ -250,7 +251,7 @@ const getCite = async () => {
     console.log(res.data);
     citeResults.value = res.data.work;
     citeTotalLength.value = citeResults.value.length;
-    citeNum.value = citeTotalLength.value;
+    //citeNum.value = citeTotalLength.value;
   } catch (error) {
     console.error("获取引用失败:", error);
     ElMessage.error("获取引用失败");
@@ -661,19 +662,26 @@ const recommends = ref([]);
             />
           </el-tab-pane>
           <el-tab-pane label="引用" name="second">
-            <div v-if="citeResults.length!==0" style="display: flex;">
-              <div>
-                <SingleResult style="max-width: 100%"
-                              v-for="result in citePageResults" :author="result.paperInformation"
-                              :content="result.abstractText"
-                              :title="result.title" :cited="result.cited" :id="result.id"
-                ></SingleResult>
-              </div>
+            <div v-if="ifGujia">
+              <el-skeleton :rows="2" animated/>
             </div>
             <div v-else>
-              <el-empty :image=robotImage
-                        description="这篇论文没有被引用过"/>
+              <div v-if="citeResults.length!==0" style="display: flex;">
+                <div>
+                  <SingleResult style="max-width: 100%"
+                                v-for="result in citePageResults" :author="result.paperInformation"
+                                :content="result.abstractText"
+                                :title="result.title" :cited="result.cited" :id="result.id"
+                  ></SingleResult>
+                </div>
+              </div>
+              <div v-else>
+                <el-empty :image=robotImage
+                          description="这篇论文没有被引用过"/>
+              </div>
             </div>
+
+
             <el-pagination
                 v-if="citeTotalLength > 0"
                 background

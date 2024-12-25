@@ -3,12 +3,13 @@ import {onMounted, ref, watch} from "vue";
 import router from "@/router/index.js";
 import {Plus,Minus} from '@element-plus/icons-vue'
 import cookieUtil from "@/utils/cookie.js"
+import * as TimeUtil from "@/utils/time.js";
 
 //高级检索部分
 const searchRows = ref([
-  { searchInput: '', searchType: '1', logicOperator: ''},
-  { searchInput: '', searchType: '2', logicOperator: ''},
-  { searchInput: '', searchType: '3', logicOperator: ''}
+  { searchInput: '', searchType: '1', logicOperator: 'AND', ifFuzzy: '0'},
+  { searchInput: '', searchType: '2', logicOperator: 'AND', ifFuzzy: '0'},
+  { searchInput: '', searchType: '3', logicOperator: 'AND', ifFuzzy: '0'}
 ]);
 
 const minusSearchBox = (index) => {
@@ -19,7 +20,7 @@ const minusSearchBox = (index) => {
 
 const addSearchBox = () => {
   if (searchRows.value.length < 10) { // 最多可保持十行
-    searchRows.value.push({ searchInput: '', searchType: '1', logicOperator: ''});
+    searchRows.value.push({ searchInput: '', searchType: '1', logicOperator: 'AND',ifFuzzy: '0'});
   } else {
     console.log('最多只能添加10行搜索条件。');
   }
@@ -37,7 +38,7 @@ const checked4 = ref(false)
 const checked5 = ref(false)
 const checked6 = ref(false)
 
-const timeRange = ref(null);
+const timeRange = ref([]);
 
 const shortcuts = [
   {
@@ -72,9 +73,9 @@ const shortcuts = [
 // 方法：重置条件
 const resetConditions = () => {
   searchRows.value = [
-    { searchInput: '', searchType: '1', logicOperator: '' },
-    { searchInput: '', searchType: '2', logicOperator: ''},
-    { searchInput: '', searchType: '3', logicOperator: ''}
+    { searchInput: '', searchType: '1', logicOperator: 'AND', ifFuzzy: '0' },
+    { searchInput: '', searchType: '2', logicOperator: 'AND', ifFuzzy: '0'},
+    { searchInput: '', searchType: '3', logicOperator: 'AND', ifFuzzy: '0'}
   ];
   checked1.value = false;
   checked2.value = false;
@@ -90,13 +91,233 @@ const resetConditions = () => {
  */
 const dataProcess = () => {
   const len = searchRows.value.length;
+  let andAbstracts = [];
+  let andAbstractsFuzzy = [];
+  let andAuthors = [];
+  let andAuthorsFuzzy = [];
+  let andDOI = [];
+  let andDOIFuzzy = [];
+  let andFirstAuthors = [];
+  let andFirstAuthorsFuzzy = [];
+  let andInstitutions = [];
+  let andInstitutionsFuzzy = [];
+  let andTitles = [];
+  let andTitlesFuzzy = [];
+  let andTopics = [];
+  let andTopicsFuzzy = [];
+  
+  let orAbstracts = [];
+  let orAbstractsFuzzy = [];
+  let orAuthors = [];
+  let orAuthorsFuzzy = [];
+  let orDOI = [];
+  let orDOIFuzzy = [];
+  let orFirstAuthors = [];
+  let orFirstAuthorsFuzzy = [];
+  let orInstitutions = [];
+  let orInstitutionsFuzzy = [];
+  let orTitles = [];
+  let orTitlesFuzzy = [];
+  let orTopics = [];
+  let orTopicsFuzzy = [];
 
+  let notAbstracts = [];
+  let notAbstractsFuzzy = [];
+  let notAuthors = [];
+  let notAuthorsFuzzy = [];
+  let notDOI = [];
+  let notDOIFuzzy = [];
+  let notFirstAuthors = [];
+  let notFirstAuthorsFuzzy = [];
+  let notInstitutions = [];
+  let notInstitutionsFuzzy = [];
+  let notTitles = [];
+  let notTitlesFuzzy = [];
+  let notTopics = [];
+  let notTopicsFuzzy = [];
+
+  let andFuzzy = [];
+  let orFuzzy = [];
+  let notFuzzy = [];
+
+  let isFuzzy = true;
+  console.log(searchRows.value);
+  for(let tmp of searchRows.value){
+    if(tmp.searchInput!==null && tmp.searchInput !== ''){
+    console.log(tmp);
+    let op = tmp.logicOperator;
+    let type = tmp.searchType;
+    switch (op) {
+      case 'AND':
+        andFuzzy.push(tmp.ifFuzzy === '1');
+        switch (type) {
+            case '1':
+              andTitles.push(tmp.searchInput);
+              andTitlesFuzzy.push(isFuzzy);
+              break;
+            case '2':
+              andTopics.push(tmp.searchInput);
+              andTopicsFuzzy.push(isFuzzy);
+              break;
+            case '4':
+              andAuthors.push(tmp.searchInput);
+              andAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '5':
+              andFirstAuthors.push(tmp.searchInput);
+              andFirstAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '6':
+              andInstitutions.push(tmp.searchInput);
+              andInstitutionsFuzzy.push(isFuzzy);
+              break;
+            case '7':
+              andAbstracts.push(tmp.searchInput);
+              andAbstractsFuzzy.push(isFuzzy);
+              break;
+            case '8':
+              andDOI.push(tmp.searchInput);
+              andDOIFuzzy.push(isFuzzy);
+              break;
+            default:
+              console.log('wtf');
+              break;
+          }
+          break;
+
+        case 'OR':
+          orFuzzy.push(isFuzzy);
+          switch (type) {
+            case '1':
+              orTitles.push(tmp.searchInput);
+              orTitlesFuzzy.push(isFuzzy);
+              break;
+            case '2':
+              orTopics.push(tmp.searchInput);
+              orTopicsFuzzy.push(isFuzzy);
+              break;
+            case '4':
+              orAuthors.push(tmp.searchInput);
+              orAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '5':
+              orFirstAuthors.push(tmp.searchInput);
+              orFirstAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '6':
+              orInstitutions.push(tmp.searchInput);
+              orInstitutionsFuzzy.push(isFuzzy);
+              break;
+            case '7':
+              orAbstracts.push(tmp.searchInput);
+              orAbstractsFuzzy.push(isFuzzy);
+              break;
+            case '8':
+              orDOI.push(tmp.searchInput);
+              orDOIFuzzy.push(isFuzzy);
+              break;
+            default:
+              console.log('wtf');
+              break;
+          }
+          break;
+
+        case 'NOT':
+          notFuzzy.push(isFuzzy);
+          switch (type) {
+            case '1':
+              notTitles.push(tmp.searchInput);
+              notTitlesFuzzy.push(isFuzzy);
+              break;
+            case '2':
+              notTopics.push(tmp.searchInput);
+              notTopicsFuzzy.push(isFuzzy);
+              break;
+            case '4':
+              notAuthors.push(tmp.searchInput);
+              notAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '5':
+              notFirstAuthors.push(tmp.searchInput);
+              notFirstAuthorsFuzzy.push(isFuzzy);
+              break;
+            case '6':
+              notInstitutions.push(tmp.searchInput);
+              notInstitutionsFuzzy.push(isFuzzy);
+              break;
+            case '7':
+              notAbstracts.push(tmp.searchInput);
+              notAbstractsFuzzy.push(isFuzzy);
+              break;
+            case '8':
+              notDOI.push(tmp.searchInput);
+              notDOIFuzzy.push(isFuzzy);
+              break;
+            default:
+              console.log('wtf');
+              break;
+          }
+          break;
+        }
+      }
+    }
+  console.log(timeRange);
+  return {
+    andAbstracts: andAbstracts,
+    andAbstractsFuzzy: andAbstractsFuzzy,
+    andAuthors: andAuthors,
+    andAuthorsFuzzy: andAuthorsFuzzy,
+    andDOI: andDOI,
+    andDOIFuzzy: andDOIFuzzy,
+    andFirstAuthors: andFirstAuthors,
+    andFirstAuthorsFuzzy: andFirstAuthorsFuzzy,
+    andInstitutions: andInstitutions,
+    andInstitutionsFuzzy: andInstitutionsFuzzy,
+    andTitles: andTitles,
+    andTitlesFuzzy: andTitlesFuzzy,
+    andTopics: andTopics,
+    andTopicsFuzzy: andTopicsFuzzy,
+    endDate: timeRange.value=== null || timeRange.value[1] === undefined ? null:TimeUtil.formatJavaDate(timeRange.value[1]),
+    notAbstracts: notAbstracts,
+    notAbstractsFuzzy: notAbstractsFuzzy,
+    notAuthors: notAuthors,
+    notAuthorsFuzzy: notAuthorsFuzzy,
+    notDOI: notDOI,
+    notDOIFuzzy: notDOIFuzzy,
+    notFirstAuthors: notFirstAuthors,
+    notFirstAuthorsFuzzy: notFirstAuthorsFuzzy,
+    notInstitutions: notInstitutions,
+    notInstitutionsFuzzy: notInstitutionsFuzzy,
+    notTitles: notTitles,
+    notTitlesFuzzy: notTitlesFuzzy,
+    notTopics: notTopics,
+    notTopicsFuzzy: notTopicsFuzzy,
+    orAbstracts: orAbstracts,
+    orAbstractsFuzzy: orAbstractsFuzzy,
+    orAuthors: orAuthors,
+    orAuthorsFuzzy: orAuthorsFuzzy,
+    orDOI: orDOI,
+    orDOIFuzzy: orDOIFuzzy,
+    orFirstAuthors: orFirstAuthors,
+    orFirstAuthorsFuzzy: orFirstAuthorsFuzzy,
+    orInstitutions: orInstitutions,
+    orInstitutionsFuzzy: orInstitutionsFuzzy,
+    orTitles: orTitles,
+    orTitlesFuzzy: orTitlesFuzzy,
+    orTopics: orTopics,
+    orTopicsFuzzy: orTopicsFuzzy,
+    andFuzzy: andFuzzy,
+    orFuzzy: orFuzzy,
+    notFuzzy: notFuzzy,
+    startDate: timeRange.value === null || timeRange.value[0] === undefined? null:TimeUtil.formatJavaDate(timeRange.value[0]),
+  }
 }
 
 const advancedSearch = () => {
-  console.log(111);
-  dataProcess();
-  router.push({path: "/search", query: {input: searchRows.value[0].searchInput, page: 1}});
+  const para = dataProcess();
+  console.log(para);
+  sessionStorage.setItem('searchParams', JSON.stringify(para));
+  router.push({path: "/search", query: {input: searchRows.value[0].searchInput, page: 1, type: 4}});
 }
 </script>
 
@@ -109,31 +330,37 @@ const advancedSearch = () => {
       <div style="margin-top: 50px;">
         <el-row :gutter="10" v-for="(row, index) in searchRows" :key="index" style="margin: 20px;">
 
-          <el-col :span="index === 0 ? 0 : 3">
-            <el-select v-if="index !== 0" v-model="row.logicOperator" placeholder="AND">
+          <el-col :span="index ===0 ? 0: 3">
+            <el-select  v-model="row.logicOperator" placeholder="AND">
               <el-option label="AND" value="AND" />
               <el-option label="OR" value="OR" />
               <el-option label="NOT" value="NOT" />
             </el-select>
           </el-col>
-          <el-col :span="index === 0 ? 3 : 0"/>
-          <el-col :span="17">
+          <el-col :span="index === 0?3 : 0"/>
+          <el-col :span="14">
             <el-input v-model="row.searchInput" :style="{width:'100%'}" placeholder="请输入搜索内容">
               <template #prepend>
                 <el-select v-model="row.searchType" style="width: 115px" placeholder="主题">
                   <el-option label="主题" value="1" />
                   <el-option label="篇名" value="2" />
-<!--                  <el-option label="关键词" value="3" />-->
+                  <el-option label="关键词" value="3" />
                   <el-option label="作者" value="4" />
                   <el-option label="第一作者" value="5" />
                   <el-option label="作者单位" value="6" />
                   <el-option label="摘要" value="7" />
                   <el-option label="DOI" value="8" />
-                  <el-option label="参考文献" value="9" />
-                  <el-option label="文献来源" value="10" />
+<!--                  <el-option label="参考文献" value="9" />-->
+<!--                  <el-option label="文献来源" value="10" />-->
                 </el-select>
               </template>
             </el-input>
+          </el-col>
+          <el-col :span="3">
+            <el-select v-model="row.ifFuzzy" :disabled="index === 0">
+              <el-option label="精确" value="0"/>
+              <el-option label="模糊" value="1"/>
+            </el-select>
           </el-col>
           <el-col :span="index === 0 ? 0 : 2" v-if="index !== 0">
             <el-button type="text" :icon="Minus" class="plus-minus-button" @click="minusSearchBox(index)"  />
@@ -192,4 +419,5 @@ const advancedSearch = () => {
 
 <style scoped>
 @import "@/css/advancedSearch.css";
+
 </style>

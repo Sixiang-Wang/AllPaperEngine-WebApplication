@@ -185,7 +185,7 @@ const errorHandler = () => true
     </el-sub-menu>
     <el-menu-item index="/hotpoint">热点分析</el-menu-item>
     <el-menu-item index="/user/info">用户主页</el-menu-item>
-    <el-menu-item index="5">联系我吗</el-menu-item>
+    <el-menu-item index="/advancedSearch">高级检索</el-menu-item>
     <div class="header-menu-right" >
       <div class="message-icon-container">
         <div>

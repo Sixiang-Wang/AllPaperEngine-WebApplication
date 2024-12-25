@@ -14,7 +14,7 @@ import baseUrl from "@/api/http.js";
 let resStore = ref([])
 let searchInput = ref("");
 const totalLength = ref(0);
-let searchResults = ref([]);
+const searchResults = ref([]);
 let authorIds = ref([]);
 let suggestions = ref([]);
 let showAutoComplete = ref(false);
@@ -25,108 +25,11 @@ let searchType = ref(route.query.type);
 const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取
 let isSearchingForAuthors = ref(false);
 let isSearchingForResearchers = ref(false);
+let isSearchingForResults = ref(false);
 const pageSize = computed(() => Math.ceil(totalLength.value / 20));
+const researcherInfos = ref([]);
+const authorInfos = ref([]);
 
-const authorInfos = ref([
-  {
-    id: '114514',
-    name: '胡春明',
-    workPlace: '北京航空航天大学',
-    area: '计算机软件及计算机应用;电信技术;计算机硬件技术;',
-    avatar: '',
-    citedByCount: 12869,
-    worksCount: 163,
-    H_index:99,
-    firstAuthor:99,
-    highInflu:15,
-    publications: [
-        { id: 1, title: '基于Web服务的网格体系结构及其支撑环境研究', date: '2004-01-15', cited: 10 },
-        { id: 2, title: '基于虚拟机的虚拟计算环境研究与设计', description: '柚子厨蒸鹅心', date: '2007-03-22', cited: 20 },
-    ],
-  },
-  {
-    id: '151256',
-    name: '胡春明',
-    workPlace: '天津大学',
-    area: '动力工程;航空航天科学与工程;汽车工业;',
-    avatar: '',
-    citedByCount: 23268,
-    worksCount: 103,
-    H_index:25,
-    firstAuthor:56,
-    highInflu:12,
-    publications: [
-        { id: 1, title: '低压缸内直喷CNG发动机燃烧特性的影响因素', date: '2004-01-15', cited: 10 },
-        { id: 2, title: '48V轻度混合动力系统控制策略的仿真研究.', description: '柚子厨蒸鹅心', date: '2007-03-22', cited: 20 },
-    ],
-  },
-  {
-    id: '478126',
-    name: '胡春明',
-    workPlace: '中国科学院生态环境研究中心',
-    area: '环境科学与资源利用;建筑科学与工程;水利水电工程;',
-    avatar: '',
-    citedByCount: 17519,
-    worksCount: 77,
-    H_index:6,
-    firstAuthor:45,
-    highInflu:6,
-    publications: [
-        { id: 1, title: '植生型生态混凝土孔隙状态对植物生长的影响', date: '2004-01-15', cited: 10 },
-        { id: 2, title: '植生型生态混凝土孔隙碱性水环境改善的研究', description: '柚子厨蒸鹅心', date: '2007-03-22', cited: 20 },
-    ],
-  },
-  {
-    id: '145165',
-    name: '胡春明',
-    workPlace: '吉林大学第一临床医学院',
-    area: '外科学;肿瘤学;内分泌腺及全身性疾病;',
-    avatar: '',
-    citedByCount: 5352,
-    worksCount: 67,
-    H_index:14,
-    firstAuthor:26,
-    highInflu:6,
-    publications: [
-        { id: 1, title: '胫骨平台复杂骨折的治疗', date: '2004-01-15', cited: 10 },
-        { id: 2, title: '—梯形加压钢板治疗股骨髁上骨折及其力学原理', description: '柚子厨蒸鹅心', date: '2007-03-22', cited: 20 },
-    ],
-  },
-]);
-const researcherInfos = ref([
-  {
-    authorId: '114514',
-    authorName: '胡春明',
-    institution: '北京航空航天大学',
-    area: '计算机软件及计算机应用;电信技术;计算机硬件技术;',
-    mail: 'hucm@buaa.edu.cn',
-    avatar: ''
-  },
-  {
-    authorId: '151256',
-    authorName: '胡春明',
-    institution: '天津大学',
-    area: '动力工程;航空航天科学与工程;汽车工业;',
-    mail: '',
-    avatar: ''
-  },
-  {
-    authorId: '478126',
-    authorName: '胡春明',
-    institution: '中国科学院生态环境研究中心',
-    area: '环境科学与资源利用;建筑科学与工程;水利水电工程;',
-    mail: '',
-    avatar: ''
-  },
-  {
-    authorId: '145165',
-    authorName: '胡春明',
-    institution: '吉林大学第一临床医学院',
-    area: '外科学;肿瘤学;内分泌腺及全身性疾病;',
-    mail: '',
-    avatar: ''
-  },
-]);
 
 const handlePageChange = (page) => {
   router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
@@ -146,22 +49,23 @@ const updateSearchResults = async () => {
   searchResults.value = res.data.works;
 };
 
-
+const changeInput = ()=> {
+  router.push({path: "/search", query: {input: searchInput.value, page: 1, type: searchType.value}});
+}
 
 const search = async () => {
-  isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
-  isSearchingForResearchers = (searchType.value === '6');
+  isSearchingForAuthors = (searchType.value === '2'); // 设置查询类型
+  isSearchingForResearchers = (searchType.value === '3');
+  isSearchingForResults= (searchType.value === '1');
   isSearchingForInstitutions = (searchType.value === '7');
-  console.log(searchType.value);
+
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
-      console.log("begin search")
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
-        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -176,7 +80,6 @@ const search = async () => {
         })
 
         searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
         totalLength.value = res.data.page;
 
         for(let result of searchResults.value){
@@ -196,105 +99,16 @@ const search = async () => {
           // }
         }
       }
+      console.log(isSearchingForResearchers);
+      console.log(isSearchingForResults);
+      console.log(isSearchingForAuthors);
 
       break;
-    case '2'://查找篇名
-      console.log(2)
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-        //   word: searchInput.value,
-        //   page: currentPage.value
-        // })
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
-          title: searchInput.value,
-          page: currentPage.value
-        })
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
-
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-      }
-      
-      break;
-
-    case '3'://查找关键词
-      if(searchInput.value===null||searchInput.value === ''){
-        const res = await httpUtil.get('/openalex/get/page',{
-          page: currentPage.value
-        })
-        // console.log(res);
-        searchResults.value = res.data.works;
-        // console.log(searchResults.value);
-        const res2 = await httpUtil.get('/openalex/get/length');
-        totalLength.value = res2.data.leng;
-        // console.log(totalLength.value);
-      }else {
-        // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
-        //   word: searchInput.value,
-        //   page: currentPage.value
-        // })
-        const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
-          title: searchInput.value,
-          page: currentPage.value
-        })
-        searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
-        totalLength.value = searchResults.value.length;
-
-        for(let result of searchResults.value){
-          if(result.highlightFields.hasOwnProperty('title')){
-            result.content.title = result.highlightFields.title[0];
-          }
-          if(result.highlightFields.hasOwnProperty('abstract')){
-            const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
-            if(startIndex!=-1){
-              result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
-            }else{
-              result.content.abstractText = result.highlightFields.abstract[0];
-            }
-          }
-          // if(result.highlightFields.hasOwnProperty('keywordsText')){
-          //   result.content.abstractText = result.highlightFields.abstract[0];
-          // }
-        }
-      }
-      break;
-    case '4'://查找摘要
-      //高级检索
-        console.log(JSON.parse(sessionStorage.getItem('searchParams')));
-      const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
-      console.log(res.data);
-      break;
-    case '5'://查找学者
+    case '2'://查找学者
       if(searchInput.value===null||searchInput.value === '') {
         const res = await httpUtil.get('/openalex/get/page', {
-        page: currentPage.value
-      });
-        console.log("search in openalex/get/page");
+          page: currentPage.value
+        });
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -303,34 +117,74 @@ const search = async () => {
           authorName: searchInput.value
         });
         authorIds.value = res.data.getAuthorIdByAuthorName || [];
-        console.log(authorIds.value);
         totalLength.value = authorIds.value.length;
         authorInfos.value = [];
         for (let authorId of authorIds.value) {
           const authorRes = await httpUtil.get('/author/getById', {
             id: authorId
           });
-          console.log(1);
-          console.log(authorRes.data.authors);
           authorInfos.value.push(authorRes.data.authors);
         }
         searchResults.value = authorInfos.value;
-        console.log(authorInfos);
       }
       break;
-    case '6'://查找科研人员
+    //
+    // case '3'://查找关键词
+    //   if(searchInput.value===null||searchInput.value === ''){
+    //     const res = await httpUtil.get('/openalex/get/page',{
+    //       page: currentPage.value
+    //     })
+    //     // console.log(res);
+    //     searchResults.value = res.data.works;
+    //     // console.log(searchResults.value);
+    //     const res2 = await httpUtil.get('/openalex/get/length');
+    //     totalLength.value = res2.data.leng;
+    //     // console.log(totalLength.value);
+    //   }else {
+    //     // const res = await httpUtil.get('/elasticSearch/works/getByTitleOrAbstractOrKeywords', {
+    //     //   word: searchInput.value,
+    //     //   page: currentPage.value
+    //     // })
+    //     const res = await httpUtil.get('/elasticSearch/works/getByTitleByPage', {
+    //       title: searchInput.value,
+    //       page: currentPage.value
+    //     })
+    //     searchResults.value = res.data.works || [];
+    //     console.log(searchResults.value);
+    //     totalLength.value = searchResults.value.length;
+    //
+    //     for(let result of searchResults.value){
+    //       if(result.highlightFields.hasOwnProperty('title')){
+    //         result.content.title = result.highlightFields.title[0];
+    //       }
+    //       if(result.highlightFields.hasOwnProperty('abstract')){
+    //         const startIndex = result.highlightFields.abstract[0].indexOf("<span style='color:red'>");
+    //         if(startIndex!=-1){
+    //           result.content.abstractText = result.highlightFields.abstract[0].substring(startIndex);
+    //         }else{
+    //           result.content.abstractText = result.highlightFields.abstract[0];
+    //         }
+    //       }
+    //       // if(result.highlightFields.hasOwnProperty('keywordsText')){
+    //       //   result.content.abstractText = result.highlightFields.abstract[0];
+    //       // }
+    //     }
+    //   }
+    //   break;
+
+    case '3'://查找科研人员
       if(searchInput.value===null||searchInput.value === '') {
         const res = await httpUtil.get('/openalex/get/page', {
           page: currentPage.value
         });
-        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
-      }else {
+      } else {
         const res = await httpUtil.get('/user/getScholars', {
           name: searchInput.value
         });
+
         const authorRes = ref([]);
         researcherInfos.value = res.data.scholars || [];
         console.log(researcherInfos.value);
@@ -492,16 +346,17 @@ const leaveSuggestion = (index) => {
     <el-header>
       <div>
         <div style="background-color: transparent !important;">
-          <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容"  @input="handleInputChange">
+          <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容">
             <template #prepend>
               <el-select v-model="searchType" style="width: 115px; background-color:#FFFFFF;">
                 <el-option label="主题" value="1"/>
-                <el-option label="学者" value="5"/>
-                <el-option label="科研人员" value="6"/>
+                <el-option label="学者" value="2"/>
+                <el-option label="科研人员" value="3"/>
+                <el-option label="机构" value="7"/>
               </el-select>
             </template>
           </el-input>
-          <el-button :icon="Search" @click="search" class="search-button"/>
+          <el-button :icon="Search" @click="changeInput" class="search-button"/>
         </div>
         <div v-if="showAutoComplete" class="autocomplete-container">
           <div 
@@ -527,7 +382,7 @@ const leaveSuggestion = (index) => {
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
         <div v-if="isSearchingForAuthors" style="height: 20px;"></div>
         <div v-if="isSearchingForResearchers" style="height: 20px;"></div>
-        <div v-if="searchResults.length !== 0" style="display: flex;">
+        <div v-if="searchResults.length !==0" style="display: flex;">
           <div >
             <SingleAuthor
               style="width: 800px;"
@@ -572,8 +427,8 @@ const leaveSuggestion = (index) => {
               :type="result.sourceAsMap.type || ''"
             />
             <SingleResult
-            style="width: 1400px;"
-            v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
+                          v-if="isSearchingForResults"
+                           v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                           :content="result.content.abstractText"
                           :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
           </div>
