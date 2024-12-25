@@ -299,50 +299,50 @@ import {ElMessage} from "element-plus";
 
 
 const handleInputChange = async () => {
-  // console.log(searchInput.value)
+  console.log('handleInputChange working');
+  console.log(searchInput.value)
   if (searchInput.value == '') {
     showAutoComplete = false;
   } else {
     showAutoComplete = true;
   }
-
+  console.log(searchInput.value.length)
+  console.log(showAutoComplete)
   if (searchInput.value.length > 0) {
     let res = null;
     switch (searchType.value){
       case '1':
-        //主题
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
+        //篇名
+        res = await httpUtil.get('/elasticSearch/works/autoCompletionWithCompletionSuggester', {
           searchContent: searchInput.value 
         });
+        console.log(res.data);
         const titleSuggest1 = res.data.suggestions.suggest.title_suggest;
+        console.log(titleSuggest1);
         if(titleSuggest1 && titleSuggest1.length>0){
-          // console.log(titleSuggest1);
+          console.log(titleSuggest1);
           suggestions  = titleSuggest1[0].options.map(option => option.text);
           showAutoComplete = true;
         }else{
           showAutoComplete = false;
         }
         break;
-      case '2'://查找学者
-        // if(searchInput.value===null||searchInput.value === ''){
-        //   const res = await httpUtil.get('/openalex/get/page',{
-        //     page: currentPage.value
-        //   })
-        //   console.log("search in openalex/get/page");
-        //   searchResults.value = res.data.works;
-        //   const res2 = await httpUtil.get('/openalex/get/length');
-        //   totalLength.value = res2.data.leng;
-        // }else {
-        //   const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
-        //     authorName: searchInput.value,
-        //     timeout: 20000
-        //   })
-        //   searchResults.value = res.data.getAuthorIdByAuthorName || [];
-        //   console.log(searchResults.value);
-        //   totalLength.value = searchResults.value.length;
-        // }
-        // router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
-        // break;
+      case '2':
+        // 学者
+        res = await httpUtil.get('/elasticSearch/authors/autoCompleteAuthorsWithCompletionSuggester', {
+          searchContent: searchInput.value 
+        });
+        console.log(res.data);
+        const authorSuggest1 = res.data.suggestions.suggest.display_name_suggest;
+        console.log(authorSuggest1);
+        if(authorSuggest1 && authorSuggest1.length>0){
+          console.log(authorSuggest1);
+          suggestions  = authorSuggest1[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
+        break;
       case '3'://查找科研人员
         // if(searchInput.value===null||searchInput.value === ''){
         //   const res = await httpUtil.get('/openalex/get/page',{
@@ -363,6 +363,22 @@ const handleInputChange = async () => {
         // }
         // router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
         // break;
+      case '7':
+        //机构
+        res = await httpUtil.get('/elasticSearch/institutions/autoCompleteInstitutionsWithCompletionSuggester', {
+          searchContent: searchInput.value 
+        });
+        console.log(res.data);
+        const institutionSuggest1 = res.data.suggestions.suggest.display_name_suggest;
+        console.log(institutionSuggest1);
+        if(institutionSuggest1 && institutionSuggest1.length>0){
+          console.log(institutionSuggest1);
+          suggestions  = institutionSuggest1[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
+        break;
     }
   } else {
     showAutoComplete = false;
@@ -403,12 +419,7 @@ const leaveSuggestion = (index) => {
         <el-option label="科研人员" value="3"/>
         <el-option label="机构" value="7"/>
       </el-select>
-
-
-
-
     </template>
-
   </el-input>
   <el-button :icon="Search" @click="search" class="search-button"  />
   <el-button @click="advancedSearch" class="advanced-search-button" type="text">高级检索 ></el-button>
