@@ -47,7 +47,9 @@ const updateSearchResults = async () => {
   searchResults.value = res.data.works;
 };
 
-
+const changeInput = ()=> {
+  router.push({path: "/search", query: {input: searchInput.value, page: 1, type: searchType.value}});
+}
 
 const search = async () => {
   isSearchingForAuthors = (searchType.value === '2'); // 设置查询类型
@@ -239,7 +241,7 @@ const leaveSuggestion = (index) => {
               </el-select>
             </template>
           </el-input>
-          <el-button :icon="Search" @click="search" class="search-button"/>
+          <el-button :icon="Search" @click="changeInput" class="search-button"/>
         </div>
         <div v-if="showAutoComplete" class="autocomplete-container">
           <div 
