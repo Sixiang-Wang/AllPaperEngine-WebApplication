@@ -12,6 +12,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,7 +33,19 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
         searchSourceBuilder.size(20);
         boolQuery.must(QueryBuilders.matchQuery("display_name", displayName));
         searchSourceBuilder.query(boolQuery);
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("display_name");
+        highlightBuilder.preTags("<span style=\"color:red;\">"); // 使用红色样式标签
+        highlightBuilder.postTags("</span>");
+        searchSourceBuilder.highlighter(highlightBuilder);
+
         searchRequestWorks.source(searchSourceBuilder);
+
+
+
+
+
 
         try {
             SearchResponse works =  client.search(searchRequestWorks, RequestOptions.DEFAULT);
@@ -60,7 +73,14 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
         searchSourceBuilder.size(20);
         boolQuery.must(QueryBuilders.matchQuery("display_name", displayName));
         searchSourceBuilder.query(boolQuery);
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("display_name");
+        highlightBuilder.preTags("<span style=\"color:red;\">"); // 使用红色样式标签
+        highlightBuilder.postTags("</span>");
+        searchSourceBuilder.highlighter(highlightBuilder);
         searchRequestWorks.source(searchSourceBuilder);
+
+
 
         try {
             SearchResponse works =  client.search(searchRequestWorks, RequestOptions.DEFAULT);

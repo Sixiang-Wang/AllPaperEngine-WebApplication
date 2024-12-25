@@ -5,6 +5,7 @@ import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.dto.AuthorSpecificResultDto;
 import com.example.scholar.service.InstitutionService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -18,6 +19,8 @@ public class InstitutionController {
     @Resource
     private InstitutionService institutionService;
 
+
+    @Cacheable(value = "suggestWorksCache", key = "#workId")
     @GetMapping(value="/getInstitutionById")
     public R getInstitutionById(@RequestParam("id") String id){
         try{

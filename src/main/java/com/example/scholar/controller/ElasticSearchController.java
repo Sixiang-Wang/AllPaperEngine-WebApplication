@@ -4,6 +4,7 @@ package com.example.scholar.controller;
 import com.example.scholar.dao.WorkMapper;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.domain.openalexElasticsearch.Works;
+import com.example.scholar.pojo.AdvancedSearchPojo;
 import com.example.scholar.service.ElasticAuthorService;
 import com.example.scholar.service.ElasticWorkService;
 import com.example.scholar.service.impl.ElasticWorksServiceImpl;
@@ -27,26 +28,19 @@ public class ElasticSearchController {
     private ElasticAuthorService elasticAuthorService;
 
 
-    @GetMapping(value = "/works/AdvancedSearch")
-    public R getWorksByAdvancedSearch(@RequestParam(value = "andTitles",required = false) List<String> andTitles,@RequestParam(value = "andTitlesFuzzy",required = false) List<Boolean> andTitlesFuzzy,@RequestParam(value = "orTitles",required = false) List<String> orTitles,@RequestParam(value = "orTitlesFuzzy",required = false) List<Boolean> orTitlesFuzzy,@RequestParam(value = "notTitles",required = false) List<String> notTitles,@RequestParam(value = "notTitlesFuzzy",required = false) List<Boolean> notTitlesFuzzy,
-                                      @RequestParam(value = "andTopics",required = false) List<String> andTopics,@RequestParam(value = "andTopicsFuzzy",required = false) List<Boolean> andTopicsFuzzy,@RequestParam(value = "orTopics",required = false) List<String> orTopics,@RequestParam(value = "orTopicsFuzzy",required = false) List<Boolean> orTopicsFuzzy,@RequestParam(value = "notTopics",required = false) List<String> notTopics,@RequestParam(value = "notTopicsFuzzy",required = false) List<Boolean> notTopicsFuzzy,
-                                      @RequestParam(value = "andAuthors",required = false) List<String> andAuthors,@RequestParam(value = "andAuthorsFuzzy",required = false) List<Boolean> andAuthorsFuzzy,@RequestParam(value = "orAuthors",required = false) List<String> orAuthors,@RequestParam(value = "orAuthorsFuzzy",required = false) List<Boolean> orAuthorsFuzzy,@RequestParam(value = "notAuthors",required = false) List<String> notAuthors,@RequestParam(value = "notAuthorsFuzzy",required = false) List<Boolean> notAuthorsFuzzy,//author名字
-                                      @RequestParam(value = "andFirstAuthors",required = false) List<String> andFirstAuthors,@RequestParam(value = "andFirstAuthorsFuzzy",required = false) List<Boolean> andFirstAuthorsFuzzy,@RequestParam(value = "orFirstAuthors",required = false) List<String> orFirstAuthors,@RequestParam(value = "orFirstAuthorsFuzzy",required = false) List<Boolean> orFirstAuthorsFuzzy,@RequestParam(value = "notFirstAuthors",required = false) List<String> notFirstAuthors,@RequestParam(value = "notFirstAuthorsFuzzy",required = false) List<Boolean> notFirstAuthorsFuzzy,
-                                      @RequestParam(value = "andInstitutions",required = false) List<String> andInstitutions,@RequestParam(value = "andInstitutionsFuzzy",required = false) List<Boolean> andInstitutionsFuzzy,@RequestParam(value = "orInstitutions",required = false) List<String> orInstitutions,@RequestParam(value = "orInstitutionsFuzzy",required = false) List<Boolean> orInstitutionsFuzzy,@RequestParam(value = "notInstitutions",required = false) List<String> notInstitutions,@RequestParam(value = "notInstitutionsFuzzy",required = false) List<Boolean> notInstitutionsFuzzy,
-                                      @RequestParam(value = "andAbstracts",required = false) List<String> andAbstracts,@RequestParam(value = "andAbstractsFuzzy",required = false) List<Boolean> andAbstractsFuzzy,@RequestParam(value = "orAbstracts",required = false) List<String> orAbstracts,@RequestParam(value = "orAbstractsFuzzy",required = false) List<Boolean> orAbstractsFuzzy,@RequestParam(value = "notAbstracts",required = false) List<String> notAbstracts,@RequestParam(value = "notAbstractsFuzzy",required = false) List<Boolean> notAbstractsFuzzy,
-                                      @RequestParam(value = "andDOI",required = false) List<String> andDOI,@RequestParam(value = "andDOIFuzzy",required = false) List<Boolean> andDOIFuzzy,@RequestParam(value = "orDOI",required = false) List<String> orDOI,@RequestParam(value = "orDOIFuzzy",required = false) List<Boolean> orDOIFuzzy,@RequestParam(value = "notDOI",required = false) List<String> notDOI,@RequestParam(value = "notDOIFuzzy",required = false) List<Boolean> notDOIFuzzy,
-                                      @RequestParam(value = "startDate",required = false) java.sql.Date startDate,@RequestParam(value = "endDate",required = false) java.sql.Date endDate){
+    @PostMapping(value = "/works/AdvancedSearch")
+    public R getWorksByAdvancedSearch(@RequestBody(required = true) AdvancedSearchPojo advancedSearchPojo){
 
 
         try{
-            return R.ok().put("works",elasticWorkService.advancedSearch(andTitles,andTitlesFuzzy,orTitles,orTitlesFuzzy,notTitles,notTitlesFuzzy,
-                                                                        andTopics,andTopicsFuzzy,orTopics,orTopicsFuzzy,notTopics,notTopicsFuzzy,
-                                                                        andAuthors,andAuthorsFuzzy,orAuthors,orAuthorsFuzzy,notAuthors,notAuthorsFuzzy,
-                                                                        andFirstAuthors,andFirstAuthorsFuzzy,orFirstAuthors,orFirstAuthorsFuzzy,notFirstAuthors,notFirstAuthorsFuzzy,
-                                                                        andInstitutions,andInstitutionsFuzzy,orInstitutions,orInstitutionsFuzzy,notInstitutions,notInstitutionsFuzzy,
-                                                                        andAbstracts,andAbstractsFuzzy,orAbstracts,orAbstractsFuzzy,notAbstracts,notAbstractsFuzzy,
-                                                                        andDOI,andDOIFuzzy,orDOI,orDOIFuzzy,notDOI,notDOIFuzzy,
-                                                                        startDate,endDate));
+            return R.ok().put("works",elasticWorkService.advancedSearch(advancedSearchPojo.getAndTitles(),advancedSearchPojo.getAndTitlesFuzzy(),advancedSearchPojo.getOrTitles(),advancedSearchPojo.getOrTitlesFuzzy(),advancedSearchPojo.getNotTitles(),advancedSearchPojo.getNotTitlesFuzzy(),
+                                                                        advancedSearchPojo.getAndTopics(),advancedSearchPojo.getAndTopicsFuzzy(),advancedSearchPojo.getOrTopics(),advancedSearchPojo.getOrTopicsFuzzy(),advancedSearchPojo.getNotTopics(),advancedSearchPojo.getNotTopicsFuzzy(),
+                                                                        advancedSearchPojo.getAndAuthors(),advancedSearchPojo.getAndAuthorsFuzzy(),advancedSearchPojo.getOrAuthors(),advancedSearchPojo.getOrAuthorsFuzzy(),advancedSearchPojo.getNotAuthors(),advancedSearchPojo.getNotAuthorsFuzzy(),
+                                                                        advancedSearchPojo.getAndFirstAuthors(),advancedSearchPojo.getAndFirstAuthorsFuzzy(),advancedSearchPojo.getOrFirstAuthors(),advancedSearchPojo.getOrFirstAuthorsFuzzy(),advancedSearchPojo.getNotFirstAuthors(),advancedSearchPojo.getNotFirstAuthorsFuzzy(),
+                                                                        advancedSearchPojo.getAndInstitutions(),advancedSearchPojo.getAndInstitutionsFuzzy(),advancedSearchPojo.getOrInstitutions(),advancedSearchPojo.getOrInstitutionsFuzzy(),advancedSearchPojo.getNotInstitutions(),advancedSearchPojo.getNotInstitutionsFuzzy(),
+                                                                        advancedSearchPojo.getAndAbstracts(),advancedSearchPojo.getAndAbstractsFuzzy(),advancedSearchPojo.getOrAbstracts(),advancedSearchPojo.getOrAbstractsFuzzy(),advancedSearchPojo.getNotAbstracts(),advancedSearchPojo.getNotAbstractsFuzzy(),
+                                                                        advancedSearchPojo.getAndDOI(),advancedSearchPojo.getAndDOIFuzzy(),advancedSearchPojo.getOrDOI(),advancedSearchPojo.getOrDOIFuzzy(),advancedSearchPojo.getNotDOI(),advancedSearchPojo.getNotDOIFuzzy(),
+                                                                        advancedSearchPojo.getStartDate(),advancedSearchPojo.getEndDate()));
         }catch (Throwable e){
             return R.error(e.toString());
         }

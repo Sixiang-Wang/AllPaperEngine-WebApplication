@@ -15,6 +15,7 @@ import com.example.scholar.service.AdminService;
 import com.example.scholar.service.AuthorService;
 import com.example.scholar.util.AuthorNameRestore;
 import com.example.scholar.util.JsonDisposer;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -62,6 +63,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 
     @Override
+    @Cacheable(value = "getAuthorsByWorkIdCache", key = "#workId")
     public ArrayList<WorkAuthorResultDto> getAuthorsByWorkId(String workId) {
         List<AuthorShips> authorships = authorMapper.selectAuthorsById(workId);
 //        System.out.print(authorships);
@@ -124,6 +126,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Cacheable(value = "getHighQualityWorksByAuthorIdCache", key = "#authorId")
     public List<Work> getHighQualityWorksByAuthorId(String authorId) {
         List<String> workIds = authorMapper.getWorkIdsByAuthorId(authorId);
         List<Work> works = new ArrayList<>();
