@@ -665,9 +665,12 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     }
 
 
+
+
     @Override
     public List<SearchHit<Works>> searchByTitle(String title) {
         List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
+
         return searchHits;
     }
 

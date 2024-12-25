@@ -8,6 +8,7 @@ import com.example.scholar.service.AuthorService;
 import com.example.scholar.service.ConceptsService;
 import com.example.scholar.service.InstitutionsService;
 import com.example.scholar.service.WorkService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -72,6 +73,7 @@ public class OpenAlexController {
 
 
     @GetMapping(value="/work/getWorkItsReference")
+    @Cacheable(value = "getWorkItsReferenceCache", key = "#workId")
     public R getWorkItsReference(@RequestParam("workId") String workId){
         try{
             return R.ok().put("work",workService.getWorkItsReferenced(workId));
@@ -83,6 +85,7 @@ public class OpenAlexController {
 
 
     @GetMapping(value="/work/getWorkReferenceIt")
+    @Cacheable(value = "getWorkReferenceItCache", key = "#workId")
     public R getWorkReferenceIt(@RequestParam("workId") String workId){
         try{
             return R.ok().put("work",workService.getWorkReferenceIt(workId));

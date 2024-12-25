@@ -2,6 +2,7 @@ package com.example.scholar.controller;
 import com.example.scholar.domain.User;
 import com.example.scholar.domain.constant.R;
 import com.example.scholar.service.AuthorService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -15,6 +16,7 @@ public class AuthorController {
 
 
     @GetMapping(value="/getAuthorIdByAuthorName")
+    @Cacheable(value = "getAuthorIdByAuthorNameCache", key = "#authorName")
     public R getAuthorIdByAuthorName(@RequestParam("authorName") String authorName){
         try{
             return R.ok().put("getAuthorIdByAuthorName",authorService.getAuthorIdByAuthorName(authorName));
@@ -133,6 +135,7 @@ public class AuthorController {
     }
 
     @GetMapping("/getById")
+    @Cacheable(value = "getAuthorByIdCache", key = "#id")
     public R getAuthorsById(@RequestParam("id")String id){
         try{
             return R.ok().put("authors", authorService.getAuthorById(id));
@@ -142,6 +145,7 @@ public class AuthorController {
     }
 
     @GetMapping("/getSpecificById")
+    @Cacheable(value = "getAuthorSpecificByIdCache", key = "#id")
     public R getSpecificAuthorById(@RequestParam("id")String id){
         try{
             return R.ok().put("author", authorService.getSpecificAuthorById(id));

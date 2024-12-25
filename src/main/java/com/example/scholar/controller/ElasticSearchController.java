@@ -9,6 +9,7 @@ import com.example.scholar.service.ElasticAuthorService;
 import com.example.scholar.service.ElasticWorkService;
 import com.example.scholar.service.impl.ElasticWorksServiceImpl;
 import com.example.scholar.util.AbstractRestore;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class ElasticSearchController {
 
 
     @PostMapping(value = "/works/AdvancedSearch")
+    @Cacheable(value = "AdvancedSearchWorksCache", key = "#advancedSearchPojo.toString()")
     public R getWorksByAdvancedSearch(@RequestBody(required = true) AdvancedSearchPojo advancedSearchPojo){
 
 
@@ -58,6 +60,7 @@ public class ElasticSearchController {
     }
 
     @GetMapping(value="/works/getByTitleByPage")
+    @Cacheable(value = "getByTitleByPageCache", key = "#title+ '_' + #page")
     public R getWorksByTitleByPage(@RequestParam("title")String title, @RequestParam("page")int page){
         try{
             List<SearchHit<Works>> list = elasticWorkService.searchByTitleByPage(title,page);
@@ -73,18 +76,20 @@ public class ElasticSearchController {
 
 
     @GetMapping(value="/authors/getByDisplayName")
-    public R getByDisplayName(@RequestParam("displayName") String displayName){
+    @Cacheable(value = "getAuthorsByDisplayNameCache", key = "#displayName + '_' + #page")
+    public R getByDisplayName(@RequestParam("displayName") String displayName,@RequestParam("page") int page){
         try{
-            return R.ok().put("authors",elasticAuthorService.searchByDisplayNameByPage(displayName));
+            return R.ok().put("authors",elasticAuthorService.searchByDisplayNameByPage(displayName,page));
         }catch (Exception e){
             return R.error(e.toString());
         }
     }
 
     @GetMapping(value="/institutions/getByDisplayName")
-    public R getInstitutionsByDisplayName(@RequestParam("displayName") String displayName){
+    @Cacheable(value = "getInstitutionByDisplayNameCache", key = "#displayName + '_' + #page")
+    public R getInstitutionsByDisplayName(@RequestParam("displayName") String displayName,@RequestParam("page") int page){
         try{
-            return R.ok().put("authors",elasticAuthorService.searchByDisplayName(displayName));
+            return R.ok().put("authors",elasticAuthorService.searchByDisplayName(displayName,page));
         }catch (Exception e){
             return R.error(e.toString());
         }

@@ -7,15 +7,17 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service("ElasticAuthorService")
 public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
@@ -23,7 +25,7 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
     private RestHighLevelClient client;
 
     @Override
-    public SearchHits searchByDisplayNameByPage(String displayName) {
+    public List<SearchHit> searchByDisplayNameByPage(String displayName, int page) {
         SearchRequest searchRequestWorks = new SearchRequest("authors_index");
         client = new RestHighLevelClient(
                 RestClient.builder(new HttpHost("116.204.112.5", 9200, "http")));
@@ -42,15 +44,24 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
 
         searchRequestWorks.source(searchSourceBuilder);
 
-
-
-
-
-
         try {
             SearchResponse works =  client.search(searchRequestWorks, RequestOptions.DEFAULT);
             SearchHits searchHits = works.getHits();
-            return searchHits;
+
+            int max = searchHits.getHits().length;
+            int from = (page-1)*20;
+            int to = page*20;
+
+            List<org.elasticsearch.search.SearchHit> newList = new ArrayList<>();
+            if(to>max){
+                to = max;
+            }
+            for(int i=from;i<to;i++){
+                newList.add(searchHits.getAt(i));
+            }
+            return newList;
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,7 +74,7 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
 
     //这个搜institution
     @Override
-    public SearchHits searchByDisplayName(String displayName) {
+    public List<SearchHit> searchByDisplayName(String displayName, int page) {
         SearchRequest searchRequestWorks = new SearchRequest("institutions_index");
         client = new RestHighLevelClient(
                 RestClient.builder(new HttpHost("116.204.112.5", 9200, "http")));
@@ -85,7 +96,22 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
         try {
             SearchResponse works =  client.search(searchRequestWorks, RequestOptions.DEFAULT);
             SearchHits searchHits = works.getHits();
-            return searchHits;
+
+
+            int max = searchHits.getHits().length;
+            int from = (page-1)*20;
+            int to = page*20;
+
+            List<org.elasticsearch.search.SearchHit> newList = new ArrayList<>();
+            if(to>max){
+                to = max;
+            }
+            for(int i=from;i<to;i++){
+                newList.add(searchHits.getAt(i));
+            }
+            return newList;
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -94,5 +120,6 @@ public class ElasticAuthorsServiceImpl implements ElasticAuthorService {
 
 
     }
+
 
 }
