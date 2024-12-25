@@ -2,12 +2,12 @@
     <div class="author-details">
         <div class="author-header">
         <div class="author-left">
-          <el-avatar :src="avatar" :size="80" />
+        <el-avatar :src="avatar" :size="80" />
             <div class="author-info">
-              <h2 class="hover-effect" @click="goToAuthorInfo">{{ name }}</h2>
-              <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
-              <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
-              <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
+                <h2 class="hover-effect" @click="goToAuthorInfo">{{ name }}</h2>
+                <p><span style="font-weight: lighter;">学者id</span>: <span style="color: grey;">{{ id }}</span></p>
+                <p><span style="font-weight: lighter;">工作单位</span>: <span style="color: grey;">{{ workPlace }}</span></p>
+                <p><span style="font-weight: lighter;">领域</span>: <span style="color: grey;">{{ area }}</span></p>
             </div>
         </div>
 
@@ -24,11 +24,6 @@
             <p>高影响力论文发文量：{{ highInflu }}</p>
         </div>
     </div>
-
-    <!-- <div class="article">
-        <p><strong>代表文章</strong>：{{ publications[0].title }}</p>
-    </div> -->
-
     <el-divider/>
   </div>
 </template>
@@ -37,7 +32,6 @@
 import axios from 'axios';
 import router from "@/router/index.js";
 import defaultAvatar from '@/assets/image/scholarHead.jpg';
-import httpUtil from "@/api/http.js";
   export default {
     name: 'SingleAuthor',
     props: {
@@ -52,19 +46,19 @@ import httpUtil from "@/api/http.js";
       },
       workPlace: {
         type: String,
-        required: false,
+        required: true,
         default:'未知机构'
       },
       area: {
         type: String,
-        required: false,
+        required: true,
         default:'未知领域'
       },
-      // avatar: {
-      //   type: String,
-      //   required: false,
-      //   default: defaultAvatar
-      // },
+      avatar: {
+        type: String,
+        required: false,
+        default: defaultAvatar
+      },
       citedByCount: {
         type: Number,
         required: true
@@ -73,29 +67,18 @@ import httpUtil from "@/api/http.js";
         type: Number,
         required: true
       },
-      // H_index: {
-      //   type: Number,
-      //   required: true
-      // },
-      // firstAuthor: {
-      //   type: Number,
-      //   required: true
-      // },
-      // highInflu: {
-      //   type: Number,
-      //   required: true
-      // },
-    },
-    data() {
-      return {
-        publications: [],
-        H_index: null,
-        firstAuthor: null,
-        highInflu: null,
-      };
-    },
-    mounted() {
-    this.fetchAuthorDetails();
+      H_index: {
+        type: Number,
+        required: true
+      },
+      firstAuthor: {
+        type: Number,
+        required: true
+      },
+      highInflu: {
+        type: Number,
+        required: true
+      },
     },
     methods: {
       followAuthor() {
@@ -104,16 +87,19 @@ import httpUtil from "@/api/http.js";
       viewPublication(id) {
         console.log(`Viewing publication with ID: ${id}`);
       },
-      async fetchAuthorDetails() {
-        this.H_index = await httpUtil.get('/author/getHNumberByAuthorId', {
-          authorId: this.id
-        }).then(response => response.data.getHNumberByAuthorId);
-        this.firstAuthor = await httpUtil.get('/author/getFirstPublishWorkCountByAuthorId', {
-          authorId: this.id
-        }).then(response => response.data.getFirstPublishWorkCountByAuthorId);
-        this.highInflu = await httpUtil.get('/author/getHighQualityWorksCountByAuthorId', {
-          authorId: this.id
-        }).then(response => response.data.getHighQualityWorksCountByAuthorId);
+      fetchAuthorDetails() {
+        axios.get(`/api/author/${this.id}`) // 改后端接口
+          .then(response => {
+            const data = response.data;
+            this.name = data.name;
+            this.description = data.description;
+            this.avatar = data.avatar;
+            this.citedByCount = data.citedByCount;
+            this.worksCount = data.worksCount;
+          })
+          .catch(error => {
+            console.error('获取作者信息错误', error);
+          });
       },
       fetchAuthorPublications() {
         axios.get(`/api/author/${this.id}/publications`) // 改后端接口

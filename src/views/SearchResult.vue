@@ -100,7 +100,8 @@ const handlePageChange = (page) => {
 };
 
 const updateSearchResults = async () => {
-  console.log(searchInput.value)
+  console.log(666)
+  console.log(currentPage.value)
   const res = await httpUtil.get('/openalex/get/page', {
     page: currentPage.value
   });
@@ -313,6 +314,27 @@ const search = async () => {
         console.log(authorInfos);
       }
       break;
+      case '7'://查找机构
+      if(searchInput.value===null||searchInput.value === ''){
+        const res = await httpUtil.get('/openalex/get/page',{
+          page: currentPage.value
+        })
+        console.log("search in openalex/get/page");
+        searchResults.value = res.data.works;
+        const res2 = await httpUtil.get('/openalex/get/length');
+        totalLength.value = res2.data.leng;
+      }else {
+        const res = await httpUtil.get('/elasticSearch/institutions/getByDisplayName', { 
+          displayName: searchInput.value,
+          timeout: 20000
+        })
+        searchResults.value = res.data.authors.hits;
+        console.log('机构之前')
+        console.log(searchResults.value);
+        totalLength.value = searchResults.value.length;
+        console.log(totalLength.value);
+      }
+      break;
   }
 }
 onMounted(async ()=>{
@@ -421,6 +443,10 @@ const handleInputChange = async () => {
         // }
         totalLength.value = authorInfos.value.length;
         break;
+
+      case '7':
+        //机构
+        totalLength.value = searchResults.value.length;
     }
     
   } else {
@@ -499,12 +525,13 @@ const leaveSuggestion = (index) => {
               :name="authorInfo.displayName || '未知学者'"
               :citedByCount="authorInfo.citedByCount || 0"
               :worksCount="authorInfo.worksCount || 0"
+              :workPlaece="lastKnownInstitution"
+            />
+            <!-- :
               :worksApiUrl="authorInfo.worksApiUrl || ''"
               :firstAuthor="authorInfo.firstPublishCount || 0"
               :highInflu="authorInfo.highQualityWorkCount || 0"
-              :H_index="authorInfo.hnumber || 0"
-            />
-
+              :H_index="authorInfo.hnumber || 0" -->
             <SingleResult
             style="width: 1400px;"
             v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
