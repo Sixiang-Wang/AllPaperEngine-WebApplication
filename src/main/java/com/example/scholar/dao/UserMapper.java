@@ -200,4 +200,6 @@ public interface UserMapper {
     @Select("select distinct institution_id from works_authorships where author_id = #{id} limit 1")
     String getInstitutionIdByAuthorId(String id);
 
+    @Select("select userid from user where author_id = #{id}")
+    String getUserIdByAuthorId(String id);
 }

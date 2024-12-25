@@ -14,7 +14,7 @@ public class CacheConfiguration {
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10)) // 设置缓存的有效时间
+                .entryTtl(Duration.ofMinutes(30)) // 设置缓存的有效时间
                 .disableCachingNullValues();  // 不缓存null值
 
         return RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory))

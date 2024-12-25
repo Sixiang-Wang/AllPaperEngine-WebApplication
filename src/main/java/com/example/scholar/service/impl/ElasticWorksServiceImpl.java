@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.springframework.cache.annotation.Cacheable;
 
 @Service("ElasticWorkService")
 public class ElasticWorksServiceImpl implements ElasticWorkService {
@@ -643,6 +643,8 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         }
     }
     public static long count = 0;
+
+
     @Override
     public List<SearchHit<Works>> searchByTitleByPage(String title, int page) {
         // 每页显示的记录数
@@ -677,6 +679,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         // 返回当前页的搜索结果
         return searchHits.getSearchHits();
     }
+
 
 
 
@@ -1098,6 +1101,43 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         return null;
     }
 
+
+    @Cacheable(value = "worksByTitleCache", key = "#title")
+    @Override
+    public List<SearchHit<Works>> searchByTitleAll(String title) {
+
+        // 使用 Elasticsearch 的分页功能
+        Query query = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.matchQuery("title", title))
+                .withHighlightFields(new HighlightBuilder.Field("title")
+                        .preTags("<span style='color:red'>")
+                        .postTags("</span>")
+                        .numOfFragments(0))
+                .build();
+        count = 0;
+        try{
+            Query tmpQuery = new NativeSearchQueryBuilder()
+                    .withQuery(QueryBuilders.matchQuery("title", title))
+                    .withHighlightFields(new HighlightBuilder.Field("title")
+                            .preTags("<span style='color:red'>")
+                            .postTags("</span>")
+                            .numOfFragments(0))
+                    .build();
+            org.springframework.data.elasticsearch.core.SearchHits<Works> tmp = elasticsearchRestTemplate.search(query, Works.class);
+            count = tmp.getTotalHits();
+        }catch (Exception e){
+            count = 10000;
+        }
+        org.springframework.data.elasticsearch.core.SearchHits<Works> searchHits = elasticsearchRestTemplate.search(query, Works.class);
+
+        // 返回当前页的搜索结果
+        return searchHits.getSearchHits();
+    }
+
+    @Override
+    public List<SearchHit<Works>> searchByYear(String title){
+        return null;
+    }
 
 
 }

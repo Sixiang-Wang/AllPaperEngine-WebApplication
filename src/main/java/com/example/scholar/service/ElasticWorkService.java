@@ -76,5 +76,8 @@ public interface ElasticWorkService {
 
 
 
+    public List<SearchHit<Works>> searchByTitleAll(String title);
+
+    public List<SearchHit<Works>> searchByYear(String title);
 
 }

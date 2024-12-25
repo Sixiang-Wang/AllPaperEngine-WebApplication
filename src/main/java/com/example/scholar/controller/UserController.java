@@ -784,6 +784,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getUserIdByAuthorId")
+    public R getUserByAuthorId(@RequestParam("authorId")String authorId){
+        try{
+            return R.ok().put("userId", userMapper.getUserIdByAuthorId(authorId));
+        }catch (Exception e){
+            return R.error(e.toString());
+        }
+    }
+
     @GetMapping("/getAll")
     @ApiOperation("获取全部用户")
     public R getAll(){
