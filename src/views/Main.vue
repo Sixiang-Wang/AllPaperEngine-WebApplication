@@ -255,6 +255,7 @@ import {ElMessage} from "element-plus";
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
       }else {
+        console.log(searchInput.value);
         const res = await httpUtil.get('/elasticSearch/institutions/getByDisplayName', { 
           displayName: searchInput.value,
           timeout: 20000

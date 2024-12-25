@@ -19,9 +19,9 @@
         </div>
 
         <div class="institution-right" >
-            <p>国家{{ country }}</p>
-            <p>上次更新时间{{ updateDate }}</p>
-            <p>类型{{ type }}</p>
+            <p>国家：{{ country }}</p>
+            <p>上次更新时间：{{ updateDate }}</p>
+            <p>类型：{{ type }}</p>
         </div>
     </div>
     <el-divider/>
@@ -37,7 +37,7 @@ import router from "@/router/index.js";
       id: {
         type: String,
         required: true,
-        default:'胡春明'
+        default:'xxxxxx'
       },
       name: {
         type: String,
@@ -46,37 +46,37 @@ import router from "@/router/index.js";
         score: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         homepageUrl: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         citedByCount: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         worksCount: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         country: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         updateDate: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
         type: {
             type: String,
             required: false,
-            default:'未知机构'
+            default:'未知'
         },
     },
     methods: {
@@ -103,51 +103,51 @@ import router from "@/router/index.js";
 </script>
   
 <style scoped>
-.institutionInfo-details {
+.institution-details {
 margin-bottom: 0px;
 }
-.institutionInfo-header {
+.institution-header {
 display: flex;
 justify-content: space-between;
 align-items: center;
 margin:0px;
 }
-.institutionInfo-left {
+.institution-left {
 margin: 0px;
 display: flex;
 align-items: center;
 }
-.institutionInfo-info h2 {
+.institution-info h2 {
 font-size: 20px;
 margin-top: 0px;
 margin-bottom: 10px;
 margin-left:20px;
 }
-.institutionInfo-info .description {
+.institution-info .description {
 color: #888;
 }
-.institutionInfo-info p {
+.institution-info p {
 margin: 2px 0;
 margin-left:20px;
 }
-.institutionInfo-middle{
+.institution-middle{
 margin: 0px;
 }
-.institutionInfo-middle p{
+.institution-middle p{
 margin: 0px;
 }
-.institutionInfo-right p {
+.institution-right p {
 margin: 0px;
 color: #333;
 }
 css
-.institutionInfo-right {
+.institution-right {
 flex: 1;
 text-align: center;
 margin-bottom:0px;
 margin-left:20%;
 }
-.institutionInfo-publications {
+.institution-publications {
 margin-top:0px;
 }
 .publication-link {
