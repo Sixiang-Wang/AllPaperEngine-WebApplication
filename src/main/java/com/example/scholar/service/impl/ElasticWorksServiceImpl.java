@@ -90,6 +90,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         SearchRequest searchRequestWorksAuthorShips = new SearchRequest("works_authorships_index");
         SearchRequest searchRequestTopics = new SearchRequest("topics_index");
         SearchRequest searchRequestInstitutions = new SearchRequest("institutions_index");
+        SearchRequest searchRequestWorksTopics = new SearchRequest("works_topics_index");
 
         if(andTitles == null){
             andTitles = new ArrayList<String>();
@@ -266,6 +267,11 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         BoolQueryBuilder boolQuery6 = QueryBuilders.boolQuery();
         searchSourceBuilder6.size(20);
 
+        //searchSourceBuilder7 boolQuery7 for works_topics_index for search worksId by topicsId
+        SearchSourceBuilder searchSourceBuilder7 = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery7 = QueryBuilders.boolQuery();
+        searchSourceBuilder7.size(20);
+
 
         String url = "jdbc:mysql://116.204.112.5:3306/openalex";
         String username = "root";
@@ -289,7 +295,21 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         }
 
         //TODO: ES做topic相关works的检索
-
+        Set<String> worksTopicIds = new HashSet<>();
+        List<String> list = worksTopicIds.stream().collect(Collectors.toList());
+        if(!topicIds.isEmpty()){
+            addMatchQueries(boolQuery7,null,null,list,null,null,null,"topic_id");
+            searchSourceBuilder7.query(boolQuery7);
+            searchRequestWorksTopics.source(searchSourceBuilder7);
+            SearchResponse worksTopics =  client.search(searchRequestWorksTopics, RequestOptions.DEFAULT);
+            SearchHits searchHits = worksTopics.getHits();
+            //获得了所有匹配的相关普通作者 下一步 取出所有topicid 拿到worksauthorships里面搜索出workid
+            // 提取所有匹配的 topicid
+            for (org.elasticsearch.search.SearchHit hit : searchHits.getHits()) {
+                String workId = (String) hit.getSourceAsMap().get("work_id");
+                worksTopicIds.add(workId);
+            }
+        }
 
 
 
@@ -309,23 +329,6 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
             }
         }
 
-
-
-        //TODO: institutions Mysql
-//        String sql = SQLInstitutionBuilder.buildSQLQuery(andInstitutions,orInstitutions,notInstitutions);
-//        List<String> institutionids = new ArrayList<>();
-//        try (Connection conn = DriverManager.getConnection(url, username, password);
-//             PreparedStatement pstmt = conn.prepareStatement(sql);
-//             ResultSet rs = pstmt.executeQuery()) {
-//            // 处理查询结果
-//            while (rs.next()) {
-//                // 读取每一行数据
-//                institutionids.add(rs.getString("id"));
-//            }
-//            System.out.print(institutionids);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
 
 
         //TODO:  find workids by institutionids
@@ -435,6 +438,17 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                 }
             }
         }
+
+        if(!worksTopicIds.isEmpty()){
+        }else{
+            if(worksIds.isEmpty()){
+                worksIds.addAll(worksTopicIds);
+            }else{
+                worksIds.retainAll(worksTopicIds);
+            }
+        }
+
+
         SearchResponse works;
         SearchHits searchHits;
         //TODO:再做worksindex的搜索
@@ -446,7 +460,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                 //那么就只听worksindex的条件
             }else{
                 //做一次交集运算 searchHits中id属于worksIds的项目
-                List<String> list = worksIds.stream().collect(Collectors.toList());
+                list = worksIds.stream().collect(Collectors.toList());
                 addMatchQueries(boolQuery1,null,null,list,null,null,null,"id");
             }
 
@@ -477,7 +491,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                 //按时间范围过滤搜索
                 //es搜索
                 //id属于worksIds的项目
-                List<String> list = worksIds.stream().collect(Collectors.toList());
+                list = worksIds.stream().collect(Collectors.toList());
                 addMatchQueries(boolQuery1,null,null,list,null,null,null,"id");
                 // 添加时间范围过滤
                 if (startDate != null && endDate != null) {
@@ -746,24 +760,6 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
                     .size(10);
             suggestBuilder.addSuggestion("title_suggest", titleSuggestion);
 
-            // 添加abstractSuggest
-//            CompletionSuggestionBuilder abstractSuggestion = SuggestBuilders.completionSuggestion("abstract.suggest_field")
-//                    .prefix(searchContent)
-//                    .size(10);
-//            suggestBuilder.addSuggestion("abstractSuggest", abstractSuggestion);
-
-//            // 添加display_name_suggest
-//            CompletionSuggestionBuilder displayNameSuggestion = SuggestBuilders.completionSuggestion("display_name.suggest_field")
-//                    .prefix(searchContent)
-//                    .size(10);
-//            suggestBuilder.addSuggestion("display_name_suggest", displayNameSuggestion);
-
-//            // 添加keywordstextSuggest
-//            CompletionSuggestionBuilder keywordsTextSuggestion = SuggestBuilders.completionSuggestion("keywordstext.suggest_field")
-//                    .prefix(searchContent)
-//                    .size(10);
-//            suggestBuilder.addSuggestion("keywordstextSuggest", keywordsTextSuggestion);
-
             // 设置SuggestBuilder到SearchSourceBuilder
             sourceBuilder.suggest(suggestBuilder);
 
@@ -777,17 +773,6 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
             // 处理搜索结果
             Suggest suggest = searchResponse.getSuggest();
 
-//            if (suggest != null) {
-//                suggest.forEach(suggestion -> {
-//                    System.out.println("Suggestion Name: " + suggestion.getName());
-//                    suggestion.getEntries().forEach(entry -> {
-//                        System.out.println("  Text: " + entry.getText());
-//                        entry.getOptions().forEach(option -> {
-//                            System.out.println("    -- Score: " + option.getScore() + ", Text: " + option.getText());
-//                        });
-//                    });
-//                });
-//            }
             return new Json(suggest.toString());
 
         } catch (Exception e) {

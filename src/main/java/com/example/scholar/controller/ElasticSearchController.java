@@ -185,12 +185,24 @@ public class ElasticSearchController {
         }
     }
 
-    @GetMapping(value = "/authors/autoCompleteWithCompletionSuggester")
+
+
+    @GetMapping(value = "/authors/autoCompleteAuthorsWithCompletionSuggester")
     public R autoCompleteAuthorWithCompletionSuggester(@RequestParam("searchContent") String searchContent) {
         try {
-            return R.ok().put("suggestions", elasticWorkService.AutoCompleteAuthorWithCompletionSuggester(searchContent));
+            return R.ok().put("suggestions", elasticAuthorService.AutoCompleteAuthorsWithCompletionSuggester(searchContent));
         } catch (Exception e) {
             return R.error(e.toString());
         }
     }
+
+    @GetMapping(value = "/institutions/autoCompleteInstitutionsWithCompletionSuggester")
+    public R autoCompleteInstitutionsWithCompletionSuggester(@RequestParam("searchContent") String searchContent) {
+        try {
+            return R.ok().put("suggestions", elasticAuthorService.AutoCompleteInstitutionsWithCompletionSuggester(searchContent));
+        } catch (Exception e) {
+            return R.error(e.toString());
+        }
+    }
+
 }
