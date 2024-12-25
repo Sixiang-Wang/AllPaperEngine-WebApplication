@@ -81,8 +81,10 @@ const search = async () => {
           page: currentPage.value
         })
 
+
         searchResults.value = res.data.works || [];
         totalLength.value = res.data.page;
+
 
         for(let result of searchResults.value){
           if(result.highlightFields.hasOwnProperty('title')){
