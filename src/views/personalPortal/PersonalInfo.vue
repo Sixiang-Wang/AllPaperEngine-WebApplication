@@ -190,7 +190,6 @@ const deleteClaimed = (id) => {
               <el-table-column>
                 <template #default="scope">
                   <el-button style="margin-left: 70px" @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
-                  <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
                 </template>
               </el-table-column>
               <!--

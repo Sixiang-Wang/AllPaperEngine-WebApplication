@@ -224,7 +224,6 @@ const search = async () => {
 
     case '4':
       //高级检索
-      ElMessage.success('111')
       console.log("111111111111111111111");
       const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
       console.log(res.data);
@@ -338,7 +337,6 @@ const handleInputChange = async () => {
 
       case '4':
         //高级检索
-        ElMessage.success('111')
         res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
         console.log(res.data);
         break;
@@ -484,8 +482,8 @@ const leaveSuggestion = (index) => {
               :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
             <SingleResult
               v-if="isSearchingForAdvancedResults"
-                v-for="result in searchResults" :key="result.id" :author="result.workAuthorResultDtos.length==0?'未知作者':result.workAuthorResultDtos[0].authorResultDto.authorName
- || '未知学者'"
+                v-for="result in searchResults" :key="result.id" :author="result.workAuthorResultDtos.length==0?' ':result.workAuthorResultDtos[0].authorResultDto.authorName
+ || ' '"
               :content="result.abstractText"
               :title="result.title" :cited="result.citedByCount" :id="result.id"/>
           </div>
