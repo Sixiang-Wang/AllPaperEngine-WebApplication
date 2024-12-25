@@ -1,6 +1,7 @@
 package com.example.scholar.service.impl;
 
 import com.example.scholar.dao.SearchedWorkMapper;
+import com.example.scholar.domain.openalexElasticsearch.Authors;
 import com.example.scholar.domain.openalexElasticsearch.Works;
 import com.example.scholar.repository.ElasticSearchRepository;
 import com.example.scholar.service.ElasticWorkService;
@@ -686,6 +687,44 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         List<SearchHit<Works>> searchHits = elasticSearchRepository.findByTitle(title);
 
         return searchHits;
+    }
+
+    @Override
+    public List<Authors> searchAuthorsByInstitutionId(String institutionId) {
+        SearchRequest searchRequestAuthors = new SearchRequest("authors_index");
+        SearchRequest searchRequestWorksAuthorShips = new SearchRequest("works_authorships_index");
+        client = new RestHighLevelClient(
+                RestClient.builder(new HttpHost("116.204.112.5", 9200, "http")));
+
+
+        //searchSourceBuilder1 boolQuery1 for works_authorships_index
+        SearchSourceBuilder searchSourceBuilder1 = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery1 = QueryBuilders.boolQuery();
+        searchSourceBuilder1.size(20);
+
+        //searchSourceBuilder2 boolQuery2 for authorsindex
+        SearchSourceBuilder searchSourceBuilder2 = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery2 = QueryBuilders.boolQuery();
+        searchSourceBuilder2.size(20);
+
+
+        boolQuery1.must(QueryBuilders.matchQuery("institution_id", institutionId));
+        searchSourceBuilder1.query(boolQuery1);
+        searchRequestWorksAuthorShips.source(searchSourceBuilder1);
+        SearchResponse authorships;
+        try {
+            authorships =  client.search(searchRequestWorksAuthorShips, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Set<String> authorIds = new HashSet<>();
+        for (org.elasticsearch.search.SearchHit hit : authorships.getHits()) {
+            String authorId = (String) hit.getSourceAsMap().get("author_id");
+            authorIds.add(authorId);
+        }
+        return null;
+
+
     }
 
     @Override

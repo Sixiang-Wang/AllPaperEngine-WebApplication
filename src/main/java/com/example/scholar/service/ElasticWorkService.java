@@ -25,6 +25,9 @@ public interface ElasticWorkService {
 
     List<SearchHit<Works>> searchByTitle(String title);
 
+    List<Authors> searchAuthorsByInstitutionId(String institutionId);
+
+
     void searchAssistant(String title);
 
     int getLenthOfFindTitleOrKeywordsTextOrAbstract(String searchTerm);
