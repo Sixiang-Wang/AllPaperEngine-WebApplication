@@ -122,7 +122,7 @@ export default {
           });
     },
     GoToPersonalPortal(authorId) {
-      this.$router.push({ path: '/user/personalInfoVisit', query: { authorId: authorId } });
+      this.$router.push({ path: '/personalInfoVisit', query: { authorId: authorId } });
     },
     toggleUnderline() {
       // 检查是否已经添加了underline类
