@@ -37,12 +37,10 @@ import {ElMessage} from "element-plus";
     switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
-      console.log("begin search")
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
-        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -56,7 +54,6 @@ import {ElMessage} from "element-plus";
           page: currentPage.value
         })
         searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
 
         for(let result of searchResults.value){
@@ -223,7 +220,7 @@ import {ElMessage} from "element-plus";
           timeout: 20000
         })
         searchResults.value = res.data.getAuthorIdByAuthorName || [];
-        console.log(searchResults.value);
+        // console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
       }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
@@ -233,7 +230,7 @@ import {ElMessage} from "element-plus";
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
-        console.log("search in openalex/get/page");
+        // console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -243,7 +240,7 @@ import {ElMessage} from "element-plus";
           timeout: 20000
         })
         searchResults.value = res.data.scholars || [];
-        console.log(searchResults.value);
+        // console.log(searchResults.value);
         totalLength.value = searchResults.value.length;
       }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
@@ -280,7 +277,7 @@ import {ElMessage} from "element-plus";
 
 
 const handleInputChange = async () => {
-  console.log(searchInput.value)
+  // console.log(searchInput.value)
   if (searchInput.value == '') {
     showAutoComplete = false;
   } else {
@@ -297,97 +294,53 @@ const handleInputChange = async () => {
         });
         const titleSuggest1 = res.data.suggestions.suggest.title_suggest;
         if(titleSuggest1 && titleSuggest1.length>0){
-          console.log(titleSuggest1);
+          // console.log(titleSuggest1);
           suggestions  = titleSuggest1[0].options.map(option => option.text);
           showAutoComplete = true;
         }else{
           showAutoComplete = false;
         }
         break;
-      // case '2':
-      //   //篇名
-      //   res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
-      //     searchContent: searchInput.value
-      //   });
-      //   const titleSuggest = res.data.suggestions.suggest.title_suggest;
-      //   if(titleSuggest && titleSuggest.length>0){
-      //     console.log(titleSuggest);
-      //     suggestions  = titleSuggest[0].options.map(option => option.text);
-      //     showAutoComplete = true;
-      //   }else{
-      //     showAutoComplete = false;
-      //   }
-      //
-      //
-      //   break;
-      // case '3':
-      //   //关键词
-      //   res = await httpUtil.get('/elasticSearch/works/autoCompleteKeywordsWithCompletionSuggester', {
-      //     searchContent: searchInput.value
-      //   });
-      //   const keywordstextSuggest = res.data.suggestions.suggest.keywordstextSuggest;
-      //   if(keywordstextSuggest && keywordstextSuggest.length>0){
-      //     console.log(keywordstextSuggest);
-      //     suggestions  = keywordstextSuggest[0].options.map(option => option.text);
-      //     showAutoComplete = true;
-      //   }else{
-      //     showAutoComplete = false;
-      //   }
-      //   break;
-      // case '4':
-      //   //摘要
-      //   res = await httpUtil.get('/elasticSearch/works/autoCompleteAbstractWithCompletionSuggester', {
-      //     searchContent: searchInput.value
-      //   });
-      //   const abstractSuggest = res.data.suggestions.suggest.abstractSuggest;
-      //   if(abstractSuggest && abstractSuggest.length>0){
-      //     console.log(abstractSuggest);
-      //     suggestions  = abstractSuggest[0].options.map(option => option.text);
-      //     showAutoComplete = true;
-      //   }else{
-      //     showAutoComplete = false;
-      //   }
-      //   break;
       case '2'://查找学者
-        if(searchInput.value===null||searchInput.value === ''){
-          const res = await httpUtil.get('/openalex/get/page',{
-            page: currentPage.value
-          })
-          console.log("search in openalex/get/page");
-          searchResults.value = res.data.works;
-          const res2 = await httpUtil.get('/openalex/get/length');
-          totalLength.value = res2.data.leng;
-        }else {
-          const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
-            authorName: searchInput.value,
-            timeout: 20000
-          })
-          searchResults.value = res.data.getAuthorIdByAuthorName || [];
-          console.log(searchResults.value);
-          totalLength.value = searchResults.value.length;
-        }
-        router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
-        break;
+        // if(searchInput.value===null||searchInput.value === ''){
+        //   const res = await httpUtil.get('/openalex/get/page',{
+        //     page: currentPage.value
+        //   })
+        //   console.log("search in openalex/get/page");
+        //   searchResults.value = res.data.works;
+        //   const res2 = await httpUtil.get('/openalex/get/length');
+        //   totalLength.value = res2.data.leng;
+        // }else {
+        //   const res = await httpUtil.get('/author/getAuthorIdByAuthorName', {
+        //     authorName: searchInput.value,
+        //     timeout: 20000
+        //   })
+        //   searchResults.value = res.data.getAuthorIdByAuthorName || [];
+        //   console.log(searchResults.value);
+        //   totalLength.value = searchResults.value.length;
+        // }
+        // router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+        // break;
       case '3'://查找科研人员
-        if(searchInput.value===null||searchInput.value === ''){
-          const res = await httpUtil.get('/openalex/get/page',{
-            page: currentPage.value
-          })
-          console.log("search in openalex/get/page");
-          searchResults.value = res.data.works;
-          const res2 = await httpUtil.get('/openalex/get/length');
-          totalLength.value = res2.data.leng;
-        }else {
-          const res = await httpUtil.get('/author/getReseacherIdByReseacherName', {
-            authorName: searchInput.value,
-            timeout: 20000
-          })
-          searchResults.value = res.data.getReseacherIdByReseacherName || [];
-          console.log(searchResults.value);
-          totalLength.value = searchResults.value.length;
-        }
-        router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
-        break;
+        // if(searchInput.value===null||searchInput.value === ''){
+        //   const res = await httpUtil.get('/openalex/get/page',{
+        //     page: currentPage.value
+        //   })
+        //   console.log("search in openalex/get/page");
+        //   searchResults.value = res.data.works;
+        //   const res2 = await httpUtil.get('/openalex/get/length');
+        //   totalLength.value = res2.data.leng;
+        // }else {
+        //   const res = await httpUtil.get('/author/getReseacherIdByReseacherName', {
+        //     authorName: searchInput.value,
+        //     timeout: 20000
+        //   })
+        //   searchResults.value = res.data.getReseacherIdByReseacherName || [];
+        //   console.log(searchResults.value);
+        //   totalLength.value = searchResults.value.length;
+        // }
+        // router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
+        // break;
     }
   } else {
     showAutoComplete = false;

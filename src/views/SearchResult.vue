@@ -24,8 +24,9 @@ let searchType = ref(route.query.type);
 const currentPage = ref(Number(route.query.page) || 1); // 确保 currentPage 从 URL 获取
 let isSearchingForAuthors = ref(false);
 let isSearchingForResearchers = ref(false);
+let isSearchingForResults = ref(false);
 const pageSize = computed(() => Math.ceil(totalLength.value / 20));
-
+const researcherInfos = ref([]);
 const authorInfos = ref([]);
 
 
@@ -49,18 +50,16 @@ const updateSearchResults = async () => {
 
 
 const search = async () => {
-  isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
-  isSearchingForResearchers = (searchType.value === '6');
-  console.log(searchType.value);
+  isSearchingForAuthors = (searchType.value === '2'); // 设置查询类型
+  isSearchingForResearchers = (searchType.value === '3');
+  isSearchingForResults= (searchType.value === '4');
   switch (searchType.value) {
     case '1'://按标题查找
       //为方便测试，这里保留搜索所有结果的接口
-      console.log("begin search")
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
-        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -75,7 +74,6 @@ const search = async () => {
         })
 
         searchResults.value = res.data.works || [];
-        console.log(searchResults.value);
         totalLength.value = res.data.page;
 
         for(let result of searchResults.value){
@@ -102,7 +100,6 @@ const search = async () => {
         const res = await httpUtil.get('/openalex/get/page', {
           page: currentPage.value
         });
-        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -111,22 +108,16 @@ const search = async () => {
           authorName: searchInput.value
         });
         authorIds.value = res.data.getAuthorIdByAuthorName || [];
-        console.log(authorIds.value);
         totalLength.value = authorIds.value.length;
         authorInfos.value = [];
         for (let authorId of authorIds.value) {
           const authorRes = await httpUtil.get('/author/getById', {
             id: authorId
           });
-          console.log(1);
-          console.log(authorRes.data.authors);
           authorInfos.value.push(authorRes.data.authors);
         }
         searchResults.value = authorInfos.value;
-        console.log(authorInfos);
       }
-      break;
-
       break;
     //
     // case '3'://查找关键词
@@ -177,7 +168,6 @@ const search = async () => {
         const res = await httpUtil.get('/openalex/get/page', {
           page: currentPage.value
         });
-        console.log("search in openalex/get/page");
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -185,6 +175,7 @@ const search = async () => {
         const res = await httpUtil.get('/user/getScholars', {
           name: searchInput.value
         });
+
         const authorRes = ref([]);
         researcherInfos.value = res.data.scholars || [];
         console.log(researcherInfos.value);
@@ -195,9 +186,7 @@ const search = async () => {
       break;
     case '4'://查找摘要
       //高级检索
-      console.log(JSON.parse(sessionStorage.getItem('searchParams')));
       const res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
-      console.log(res.data);
       break;
   }
 }
@@ -306,7 +295,8 @@ const leaveSuggestion = (index) => {
 
             <SingleResult
             style="width: 1400px;"
-            v-else v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
+                          v-if="isSearchingForResults"
+                           v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                           :content="result.content.abstractText"
                           :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
           </div>

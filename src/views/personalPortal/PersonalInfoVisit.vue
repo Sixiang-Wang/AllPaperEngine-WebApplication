@@ -47,7 +47,6 @@ const firstHighQualityWorksCount = ref(0);
 const HNumber = ref(0);
 const citedCount = ref(0);
 const worksCount = ref(0);
-
 // 获取个人成果
 onMounted(async () => {
   let userIdData = await httpUtil.get("/user/getUserIdByAuthorId", {authorId: authorId});
@@ -171,7 +170,7 @@ const simpleSearch = async () => {
         </el-tab-pane>
 
         <el-tab-pane label="学术关系网" name="second">
-          <Graph/>
+          <Graph :id="userId"/>
         </el-tab-pane>
       </el-tabs>
     </el-card>
