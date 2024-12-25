@@ -56,6 +56,16 @@ const router = createRouter({
             component: () => import('@/components/single/SingleAuthor.vue')
         },
         {
+            path: '/singleInstitution',
+            name: 'singleInstitution',
+            component: ()=> import('@/components/single/SingleInstitution.vue')
+        },
+        {
+            path: '/personalInfoVisit',
+            name: 'PersonalPortalInfoVisit',
+            component: ()=> import('@/views/personalPortal/PersonalInfoVisit.vue')
+        },
+        {
             path: '/hotpoint',
             name: 'hotpoint',
             component: () => import('@/views/Hotpoint.vue')

@@ -4,6 +4,7 @@ import {Search,Plus,Minus} from "@element-plus/icons-vue";
 import httpUtil from "@/api/http.js"
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
+import {useRoute} from 'vue-router';
 import * as cookieUtil from "@/utils/cookie.js";
 import SingleResultInAcademicClaim from "@/components/single/SingleResultInAcademicClaim.vue";
 const myAchievement = ref([
@@ -23,6 +24,16 @@ const searchInput = ref("");
 const searchType = ref('1');
 const totalLength = ref(0);
 let searchResults = ref([]);
+
+const route = useRoute();
+
+const handlePageChange = (page) => {
+  router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
+    currentPage.value = page;
+    updateSearchResults();
+    window.scrollTo({top: 0});
+  });
+};
 
 const simpleSearch = async () => {
   console.log(searchType.value);
@@ -390,23 +401,27 @@ onMounted(()=>{
           </template>
         </el-input>
         <el-button :icon="Search" @click="simpleSearch" class="claim-button"/>
-        <div v-if="isSearched" style="margin-top: 3%; max-height: 100%; overflow-y: auto;">
-          <div style="max-height: 100%; overflow-y: auto;">
-            <SingleResultInAcademicClaim v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
-                          :content="result.content.abstractText"
-                          :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
-            <!-- <el-table :data="searchedPapers" @row-click="handleRowDbClick" show-overflow-tooltip :row-style="rowStyle" >
-              <el-table-column prop="title" label="论文名称" width="250"></el-table-column>
-              <el-table-column prop="publicationDate" label="发表时间" width="150"></el-table-column>
-              <el-table-column prop="publication" label="发表期刊" width="100"></el-table-column>
-              <el-table-column prop="search">
-                <template #default="scope">
-                  <el-button @click="goToPaper(scope.row.id)" color="#1F578F">查看论文</el-button>
-                </template>
-              </el-table-column>
-            </el-table> -->
-          </div>
+        <div v-if="isSearched" style="margin-top: 3%; max-height: 100%; overflow-y: hidden;">
+          <SingleResultInAcademicClaim v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
+                        :content="result.content.abstractText"
+                        :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
+          <!-- <el-table :data="searchedPapers" @row-click="handleRowDbClick" show-overflow-tooltip :row-style="rowStyle" >
+            <el-table-column prop="title" label="论文名称" width="250"></el-table-column>
+            <el-table-column prop="publicationDate" label="发表时间" width="150"></el-table-column>
+            <el-table-column prop="publication" label="发表期刊" width="100"></el-table-column>
+            <el-table-column prop="search">
+              <template #default="scope">
+                <el-button @click="goToPaper(scope.row.id)" color="#1F578F">查看论文</el-button>
+              </template>
+            </el-table-column>
+          </el-table> -->
         </div>
+        <el-pagination background layout="prev, pager, next"
+                       :total="totalLength"
+                       :page-size="20"
+                       :current-page="currentPage"
+                       @current-change="handlePageChange"
+        />
       </el-tab-pane>
     </el-tabs>
   </el-card>

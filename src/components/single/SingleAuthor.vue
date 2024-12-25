@@ -40,6 +40,7 @@
 import axios from 'axios';
 import router from "@/router/index.js";
 import defaultAvatar from '@/assets/image/scholarHead.jpg';
+import httpUtil from "@/api/http.js";
   export default {
     name: 'SingleAuthor',
     props: {
@@ -54,19 +55,19 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
       },
       workPlace: {
         type: String,
-        required: true,
+        required: false,
         default:'未知机构'
       },
       area: {
         type: String,
-        required: true,
+        required: false,
         default:'未知领域'
       },
-      avatar: {
-        type: String,
-        required: false,
-        default: defaultAvatar
-      },
+      // avatar: {
+      //   type: String,
+      //   required: false,
+      //   default: defaultAvatar
+      // },
       citedByCount: {
         type: Number,
         required: true
@@ -75,18 +76,29 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
         type: Number,
         required: true
       },
-      H_index: {
-        type: Number,
-        required: true
-      },
-      firstAuthor: {
-        type: Number,
-        required: true
-      },
-      highInflu: {
-        type: Number,
-        required: true
-      },
+      // H_index: {
+      //   type: Number,
+      //   required: true
+      // },
+      // firstAuthor: {
+      //   type: Number,
+      //   required: true
+      // },
+      // highInflu: {
+      //   type: Number,
+      //   required: true
+      // },
+    },
+    data() {
+      return {
+        publications: [],
+        H_index: null,
+        firstAuthor: null,
+        highInflu: null,
+      };
+    },
+    mounted() {
+    this.fetchAuthorDetails();
     },
     data(){
       return {
@@ -122,19 +134,16 @@ import defaultAvatar from '@/assets/image/scholarHead.jpg';
       viewPublication(id) {
         console.log(`Viewing publication with ID: ${id}`);
       },
-      fetchAuthorDetails() {
-        axios.get(`/api/author/${this.id}`) // 改后端接口
-          .then(response => {
-            const data = response.data;
-            this.name = data.name;
-            this.description = data.description;
-            this.avatar = data.avatar;
-            this.citedByCount = data.citedByCount;
-            this.worksCount = data.worksCount;
-          })
-          .catch(error => {
-            console.error('获取作者信息错误', error);
-          });
+      async fetchAuthorDetails() {
+        this.H_index = await httpUtil.get('/author/getHNumberByAuthorId', {
+          authorId: this.id
+        }).then(response => response.data.getHNumberByAuthorId);
+        this.firstAuthor = await httpUtil.get('/author/getFirstPublishWorkCountByAuthorId', {
+          authorId: this.id
+        }).then(response => response.data.getFirstPublishWorkCountByAuthorId);
+        this.highInflu = await httpUtil.get('/author/getHighQualityWorksCountByAuthorId', {
+          authorId: this.id
+        }).then(response => response.data.getHighQualityWorksCountByAuthorId);
       },
       fetchAuthorPublications() {
         axios.get(`/api/author/${this.id}/publications`) // 改后端接口
