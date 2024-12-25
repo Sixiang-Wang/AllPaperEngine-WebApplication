@@ -4,15 +4,23 @@
 
 <script setup>
 import * as echarts from 'echarts';
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
 
 const props = defineProps({
-  id: 0
+  authorId: String
 })
-
+const userId = ref(0);
 onMounted(async()=>{
+  console.log(props.authorId);
+  try{
+    let userIdData = await httpUtil.get("/user/getUserIdByAuthorId", {authorId: props.authorId});
+    userId.value = userIdData.data.userId;
+  }catch (e){
+    console.error(e);
+  }
+
   const chart = echarts.init(document.getElementById('graph'));
   console.log(localStorage.getItem("ifAuthentication"));
   const option = {
@@ -62,9 +70,13 @@ onMounted(async()=>{
       },
     ],
   };
-  if(cookieUtil.getCookie("token") === ''){
+  console.log(userId.value);
+  if(userId.value !== 0 ){
+    console.log(userId.value);
+    console.log(111);
+
     const res = await httpUtil.get('/net/get2',{
-      userId: props.id
+      userId: userId.value
     })
     console.log(res.data);
     option.series[0].data = res.data.data;

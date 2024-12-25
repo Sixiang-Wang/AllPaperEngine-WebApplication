@@ -2,7 +2,10 @@
     <div class="institution-details">
         <div class="institution-header">
         <div class="institution-left">
-        <el-avatar :src="avatar" :size="80" />
+        <!-- <el-avatar :src="avatar" :size="80" style="min-width: 17%;" /> -->
+        <el-avatar :size="80" class="custom-avatar">
+          <el-icon><HomeFilled /></el-icon>
+        </el-avatar>
             <div class="institution-info">
                 <h2 class="hover-effect" @click="goToInstitutionInfo">{{ name }}</h2>
                 <p><span style="font-weight: lighter;">机构id</span>: <span style="color: grey;">{{ id }}</span></p>
@@ -31,6 +34,7 @@
 <script>
 import axios from 'axios';
 import router from "@/router/index.js";
+import { HomeFilled } from '@element-plus/icons-vue';
   export default {
     name: 'SingleInstitution',
     props: {
@@ -115,6 +119,7 @@ margin:0px;
 .institution-left {
 margin: 0px;
 display: flex;
+width:50%;
 align-items: center;
 }
 .institution-info h2 {
@@ -132,6 +137,7 @@ margin-left:20px;
 }
 .institution-middle{
 margin: 0px;
+width:20%;
 }
 .institution-middle p{
 margin: 0px;
@@ -146,6 +152,7 @@ flex: 1;
 text-align: center;
 margin-bottom:0px;
 margin-left:20%;
+width:30%;
 }
 .institution-publications {
 margin-top:0px;
@@ -170,5 +177,11 @@ color:rgba(34, 0, 255, 0.759)
 .hover-effect:hover {
   color: rgba(34, 0, 255, 0.759);
   text-decoration: underline;
+}
+.custom-avatar {
+  size:80px;
+}
+.custom-avatar .el-icon {
+  font-size: 40px; 
 }
 </style>
