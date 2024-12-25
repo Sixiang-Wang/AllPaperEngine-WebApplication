@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from "vue";
-import {ArrowRight, Delete, StarFilled} from "@element-plus/icons-vue";
+import {ArrowRight, CircleCloseFilled, Delete, StarFilled} from "@element-plus/icons-vue";
 import httpUtil from "@/api/http.js";
 
 // 导入 Element UI 的图标
@@ -153,7 +153,7 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column label="操作" #default="scope">
-              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.publicationid)"/>
+              <el-button circle class="collect-button" :icon="CircleCloseFilled" @click="OnDeleteButtonClicked(scope.row.publicationid)"/>
             </el-table-column>
 
           </el-table>
@@ -199,7 +199,7 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column label="操作" #default="scope">
-              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+              <el-button circle class="collect-button" :icon="Delete" @click="OnDeleteButtonClicked(scope.row.id)"/>
             </el-table-column>
 
           </el-table>
@@ -222,7 +222,7 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column label="操作" #default="scope">
-              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+              <el-button circle class="collect-button" :icon="Delete" @click="OnDeleteButtonClicked(scope.row.id)"/>
             </el-table-column>
 
           </el-table>
@@ -245,7 +245,7 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column label="操作" #default="scope">
-              <el-button circle class="collect-button" :icon="StarFilled" @click="OnDeleteButtonClicked(scope.row.id)"/>
+              <el-button circle class="collect-button" :icon="Delete" @click="OnDeleteButtonClicked(scope.row.id)"/>
             </el-table-column>
 
           </el-table>
@@ -290,9 +290,9 @@ onMounted(async () => {
 
 .collect-button{
   border: none;
-  color: #fff14e;
+  color: #0a0a09;
   background-color: transparent;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .collect-button:hover{
