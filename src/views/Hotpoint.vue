@@ -2,7 +2,7 @@
   <el-container>
     <el-header style="margin-bottom: 20px;">
       <h1>热点领域分析</h1>
-      <p>以下是技术领域中的一些关键技术与概念的词云，词语的大小代表其相关性或热度。</p>
+      <p>选择下面的领域、学科、子领域，获取热点分析统计图表。</p>
     </el-header>
 
     <el-container>
