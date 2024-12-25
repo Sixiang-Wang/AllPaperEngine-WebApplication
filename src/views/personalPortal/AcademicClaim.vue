@@ -28,11 +28,9 @@ let searchResults = ref([]);
 const route = useRoute();
 
 const handlePageChange = (page) => {
-  router.push({path: "/search", query: {input: route.query.input, page: page, type: searchType.value}}).then(() => {
-    currentPage.value = page;
-    updateSearchResults();
-    window.scrollTo({top: 0});
-  });
+  currentPage.value = page;
+  simpleSearch();
+  window.scrollTo({top: 0});
 };
 
 const simpleSearch = async () => {
@@ -401,7 +399,7 @@ onMounted(()=>{
           </template>
         </el-input>
         <el-button :icon="Search" @click="simpleSearch" class="claim-button"/>
-        <div v-if="isSearched" style="margin-top: 3%; max-height: 100%; overflow-y: hidden;">
+        <div v-if="isSearched" style="margin-top: 3%; max-height: 100%; margin-left:5%; overflow-y: hidden;">
           <SingleResultInAcademicClaim v-for="result in searchResults" :key="result.content.id" :author="result.paperInformation"
                         :content="result.content.abstractText"
                         :title="result.content.title" :cited="result.content.cited_by_count" :id="result.content.id"/>
@@ -415,13 +413,13 @@ onMounted(()=>{
               </template>
             </el-table-column>
           </el-table> -->
+          <el-pagination background layout="prev, pager, next"
+                         :total="totalLength"
+                         :page-size="20"
+                         :current-page="currentPage"
+                         @current-change="handlePageChange"
+          />
         </div>
-        <el-pagination background layout="prev, pager, next"
-                       :total="totalLength"
-                       :page-size="20"
-                       :current-page="currentPage"
-                       @current-change="handlePageChange"
-        />
       </el-tab-pane>
     </el-tabs>
   </el-card>

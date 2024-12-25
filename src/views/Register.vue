@@ -59,7 +59,7 @@ const startCountdown = async () => {
       if (countdown.value <= 0) {
         clearInterval(interval);
         isCounting.value = false;
-        verificationCodeisValid = false;
+        //verificationCodeisValid = false;
       }
     }, 1000);
   } catch (error) {
@@ -97,7 +97,11 @@ const register = async () => {
     
     if (res.data.msg === "register success") {
       ElMessage.success("注册成功！");
-      await router.push('/login');
+
+      setTimeout(async () => {
+        await router.push('/login');
+      }, 1000);
+      window.location.reload();
     } else {
       ElMessage.error("注册失败，请重试");
     }

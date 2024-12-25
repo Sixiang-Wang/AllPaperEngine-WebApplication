@@ -112,6 +112,12 @@ const simpleSearch = async () => {
     paper.isSelected = false;
   });
 };
+
+const deleteClaimed = (id) => {
+
+}
+
+
 </script>
 
 <template>
@@ -183,14 +189,18 @@ const simpleSearch = async () => {
               <el-table-column prop="cited" label="引用次数" width="90"></el-table-column>
               <el-table-column>
                 <template #default="scope">
+                  <el-button style="margin-left: 70px" @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
                   <el-button @click="goToPaper(scope.row.id)" color="#1F578F">点击查看</el-button>
                 </template>
               </el-table-column>
+              <!--
               <el-table-column>
                 <template #default="scope">
                   <el-button @click="deleteClaimed(scope.row.id)" color="#C00000">点击删除</el-button>
                 </template>
               </el-table-column>
+              -->
+
             </el-table>
         </el-tab-pane>
 

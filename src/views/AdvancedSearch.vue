@@ -135,12 +135,7 @@ const dataProcess = () => {
   let notTitlesFuzzy = [];
   let notTopics = [];
   let notTopicsFuzzy = [];
-
-  let andFuzzy = [];
-  let orFuzzy = [];
-  let notFuzzy = [];
-
-  let isFuzzy = true;
+  
   console.log(searchRows.value);
   for(let tmp of searchRows.value){
     if(tmp.searchInput!==null && tmp.searchInput !== ''){
@@ -149,35 +144,34 @@ const dataProcess = () => {
     let type = tmp.searchType;
     switch (op) {
       case 'AND':
-        andFuzzy.push(tmp.ifFuzzy === '1');
         switch (type) {
-            case '1':
-              andTitles.push(tmp.searchInput);
-              andTitlesFuzzy.push(isFuzzy);
-              break;
             case '2':
+              andTitles.push(tmp.searchInput);
+              andTitlesFuzzy.push(tmp.ifFuzzy==='1'?true:false);
+              break;
+            case '1':
               andTopics.push(tmp.searchInput);
-              andTopicsFuzzy.push(isFuzzy);
+              andTopicsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '4':
               andAuthors.push(tmp.searchInput);
-              andAuthorsFuzzy.push(isFuzzy);
+              andAuthorsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '5':
               andFirstAuthors.push(tmp.searchInput);
-              andFirstAuthorsFuzzy.push(isFuzzy);
+              andFirstAuthorsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '6':
               andInstitutions.push(tmp.searchInput);
-              andInstitutionsFuzzy.push(isFuzzy);
+              andInstitutionsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '7':
               andAbstracts.push(tmp.searchInput);
-              andAbstractsFuzzy.push(isFuzzy);
+              andAbstractsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '8':
               andDOI.push(tmp.searchInput);
-              andDOIFuzzy.push(isFuzzy);
+              andDOIFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             default:
               console.log('wtf');
@@ -186,35 +180,34 @@ const dataProcess = () => {
           break;
 
         case 'OR':
-          orFuzzy.push(isFuzzy);
           switch (type) {
-            case '1':
-              orTitles.push(tmp.searchInput);
-              orTitlesFuzzy.push(isFuzzy);
-              break;
             case '2':
+              orTitles.push(tmp.searchInput);
+              orTitlesFuzzy.push(tmp.ifFuzzy==='1'?true:false);
+              break;
+            case '1':
               orTopics.push(tmp.searchInput);
-              orTopicsFuzzy.push(isFuzzy);
+              orTopicsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '4':
               orAuthors.push(tmp.searchInput);
-              orAuthorsFuzzy.push(isFuzzy);
+              orAuthorsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '5':
               orFirstAuthors.push(tmp.searchInput);
-              orFirstAuthorsFuzzy.push(isFuzzy);
+              orFirstAuthorsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '6':
               orInstitutions.push(tmp.searchInput);
-              orInstitutionsFuzzy.push(isFuzzy);
+              orInstitutionsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '7':
               orAbstracts.push(tmp.searchInput);
-              orAbstractsFuzzy.push(isFuzzy);
+              orAbstractsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '8':
               orDOI.push(tmp.searchInput);
-              orDOIFuzzy.push(isFuzzy);
+              orDOIFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             default:
               console.log('wtf');
@@ -223,35 +216,34 @@ const dataProcess = () => {
           break;
 
         case 'NOT':
-          notFuzzy.push(isFuzzy);
           switch (type) {
-            case '1':
-              notTitles.push(tmp.searchInput);
-              notTitlesFuzzy.push(isFuzzy);
-              break;
             case '2':
+              notTitles.push(tmp.searchInput);
+              notTitlesFuzzy.push(tmp.ifFuzzy==='1'?true:false);
+              break;
+            case '1':
               notTopics.push(tmp.searchInput);
-              notTopicsFuzzy.push(isFuzzy);
+              notTopicsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '4':
               notAuthors.push(tmp.searchInput);
-              notAuthorsFuzzy.push(isFuzzy);
+              notAuthorsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '5':
               notFirstAuthors.push(tmp.searchInput);
-              notFirstAuthorsFuzzy.push(isFuzzy);
+              notFirstAuthorsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '6':
               notInstitutions.push(tmp.searchInput);
-              notInstitutionsFuzzy.push(isFuzzy);
+              notInstitutionsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '7':
               notAbstracts.push(tmp.searchInput);
-              notAbstractsFuzzy.push(isFuzzy);
+              notAbstractsFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             case '8':
               notDOI.push(tmp.searchInput);
-              notDOIFuzzy.push(isFuzzy);
+              notDOIFuzzy.push(tmp.ifFuzzy==='1'?true:false);
               break;
             default:
               console.log('wtf');
@@ -306,9 +298,6 @@ const dataProcess = () => {
     orTitlesFuzzy: orTitlesFuzzy,
     orTopics: orTopics,
     orTopicsFuzzy: orTopicsFuzzy,
-    andFuzzy: andFuzzy,
-    orFuzzy: orFuzzy,
-    notFuzzy: notFuzzy,
     startDate: timeRange.value === null || timeRange.value[0] === undefined? null:TimeUtil.formatJavaDate(timeRange.value[0]),
   }
 }
@@ -400,7 +389,7 @@ const advancedSearch = () => {
       </div>
     </div>
 
-    <div :style="{ height: '520px', width: '20%',marginRight:'9%',boxShadow: '0 0 8px rgba(0, 0, 0, 0.3)' }">
+    <div :style="{ height: '490px', width: '21%',marginRight:'9%',boxShadow: '0 0 8px rgba(0, 0, 0, 0.3)' }">
       <p class="hStyle">高级检索使用方法：</p>
       <hr class="line">
       <p class="pStyle">高级检索支持使用运算符*、+、-、''、""、()进行同一检索项内多个检索词的组合运算，检索框内输入的内容不得超过120个字符。<br>
