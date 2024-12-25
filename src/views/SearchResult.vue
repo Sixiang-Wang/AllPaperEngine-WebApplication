@@ -423,7 +423,7 @@ const leaveSuggestion = (index) => {
               :avatar="'http://116.204.112.5:1145' + researcherInfo.avatar || ''"
           />
           <SingleInstitution
-              style="width: 800px;"
+              style="width: 1000px;"
               v-if="isSearchingForInstitutions"
               v-for="result in searchResults"
               :key="result.id"
