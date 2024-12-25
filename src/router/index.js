@@ -48,6 +48,11 @@ const router = createRouter({
                     name: 'PersonalPortalInfo',
                     component: ()=> import('@/views/personalPortal/PersonalInfo.vue')
                 },
+                {
+                    path: '/user/personalInfoVisit',
+                    name: 'PersonalPortalInfoVisit',
+                    component: ()=> import('@/views/personalPortal/PersonalInfoVisit.vue')
+                },
             ]
         },
         {

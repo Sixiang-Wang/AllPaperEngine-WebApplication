@@ -228,7 +228,7 @@ import {ElMessage} from "element-plus";
       }
       router.push({path: "/search", query: {input: searchInput.value, page: 1,type: searchType.value,searchResult:searchResults}});
       break;
-      case '6'://查找科研人员
+    case '6'://查找科研人员
       if(searchInput.value===null||searchInput.value === ''){
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
