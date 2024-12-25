@@ -16,7 +16,7 @@ const avatarUrl = computed(()=>{
   return http.getUrlWithoutSlash() + avatar;
 });
 
-const userId = ref([]);
+const userId = ref(0);
 const userName = ref([]);
 
 const route = useRoute();
@@ -51,7 +51,7 @@ const worksCount = ref(0);
 onMounted(async () => {
   let userIdData = await httpUtil.get("/user/getUserIdByAuthorId", {authorId: authorId});
   userId.value = userIdData.data.userId;
-
+  console.log(userId.value);
   try {
     const res = await httpUtil.get('/claim/get/personal', { scholarId: userId.value });
     if (res.data && res.data.works) {
@@ -156,7 +156,10 @@ const simpleSearch = async () => {
 
     <el-card style="max-width: 65%; margin-left: 15%; margin-top: 1.5%">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" type="border-card">
-        <el-tab-pane label="成果管理" name="first">
+        <el-tab-pane label="学术关系网" name="first">
+          <Graph :author-id="authorId"/>
+        </el-tab-pane>
+        <el-tab-pane label="成果管理" name="second">
           <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
             <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
             <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
@@ -169,9 +172,7 @@ const simpleSearch = async () => {
           </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="学术关系网" name="second">
-          <Graph :id="userId"/>
-        </el-tab-pane>
+
       </el-tabs>
     </el-card>
 </template>

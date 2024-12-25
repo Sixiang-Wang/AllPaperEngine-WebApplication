@@ -42,7 +42,6 @@ const handlePageChange = (page) => {
 };
 
 const updateSearchResults = async () => {
-  console.log(666)
   console.log(currentPage.value)
   const res = await httpUtil.get('/openalex/get/page', {
     page: currentPage.value
@@ -68,6 +67,9 @@ const search = async () => {
         const res = await httpUtil.get('/openalex/get/page',{
           page: currentPage.value
         })
+        httpUtil.get('/elasticSearch/works/getByTitleAll',{
+          title: searchInput.value
+        })
         searchResults.value = res.data.works;
         const res2 = await httpUtil.get('/openalex/get/length');
         totalLength.value = res2.data.leng;
@@ -81,8 +83,10 @@ const search = async () => {
           page: currentPage.value
         })
 
+
         searchResults.value = res.data.works || [];
         totalLength.value = res.data.page;
+
 
         for(let result of searchResults.value){
           if(result.highlightFields.hasOwnProperty('title')){
@@ -387,7 +391,7 @@ const leaveSuggestion = (index) => {
     </el-header>
     <el-container>
       <el-aside>
-        <SearchAside/>
+        <SearchAside :search-input="searchInput"/>
       </el-aside>
       <el-main style="margin-left: 2%;width: 100%;">
         <span class="search-result-statistic">共查询到{{ totalLength }}个结果，当前为第{{ currentPage }}页</span>
