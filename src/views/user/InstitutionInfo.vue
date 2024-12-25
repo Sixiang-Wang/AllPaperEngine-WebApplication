@@ -83,6 +83,7 @@ setup() {
     const fetchInstitutionData = async (id) => {
       console.log('Fetching institution data...', id);
       try {
+
         const response = await httpUtil.get(`institution/getInstitutionById?id=${id}`);
         institution.value = response.data.getInstitutionById;
         console.log('Institution data:', institution.value);
