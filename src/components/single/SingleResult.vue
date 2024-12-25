@@ -4,7 +4,7 @@ import {Compass, Star} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 
-defineProps({
+const props = defineProps({
   title: String,
   author: String,
   content: String,
