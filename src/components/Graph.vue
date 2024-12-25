@@ -8,7 +8,9 @@ import {onMounted} from "vue";
 import * as httpUtil from "@/api/http.js";
 import * as cookieUtil from "@/utils/cookie.js";
 
-
+const props = defineProps({
+  id: 0
+})
 
 onMounted(async()=>{
   const chart = echarts.init(document.getElementById('graph'));
@@ -60,43 +62,85 @@ onMounted(async()=>{
       },
     ],
   };
-  const res = await httpUtil.get('/net/get',{},{
-    Authorization: cookieUtil.getCookie("token"),
-  })
-  console.log(res.data);
-  option.series[0].data = res.data.data;
-  option.series[0].links = res.data.links;
-  option.series[0].data.forEach(item=>{
-    switch (item.type){
-      case 'SELF':
-        item.itemStyle = {
-          color: '#1F578F'
-        }
-        break;
-      case 'INSTITUTION_RELATED':
-        item.itemStyle = {
-          color: '#1F578F'
-        }
-        break;
-      case 'WORK_RELATED':
-        item.itemStyle = {
-          color: '#3299b1'
-        }
-        break;
-    }
-
-  })
-  option.series[0].links.forEach(item=>{
-    item.lineStyle = {
-      normal: {
-        curveness: 0.05
+  if(cookieUtil.getCookie("token") === ''){
+    const res = await httpUtil.get('/net/get2',{
+      userId: props.id
+    })
+    console.log(res.data);
+    option.series[0].data = res.data.data;
+    option.series[0].links = res.data.links;
+    option.series[0].data.forEach(item=>{
+      switch (item.type){
+        case 'SELF':
+          item.itemStyle = {
+            color: '#1F578F'
+          }
+          break;
+        case 'INSTITUTION_RELATED':
+          item.itemStyle = {
+            color: '#1F578F'
+          }
+          break;
+        case 'WORK_RELATED':
+          item.itemStyle = {
+            color: '#3299b1'
+          }
+          break;
       }
-    };
-    // item.force =
-  })
-  console.log(option.series[0]);
-  setTimeout(()=>{
-    chart.setOption(option);
-  },100);
+
+    })
+    option.series[0].links.forEach(item=>{
+      item.lineStyle = {
+        normal: {
+          curveness: 0.05
+        }
+      };
+      // item.force =
+    })
+    console.log(option.series[0]);
+    setTimeout(()=>{
+      chart.setOption(option);
+    },100);
+  }else {
+    const res = await httpUtil.get('/net/get', {}, {
+      Authorization: cookieUtil.getCookie("token"),
+    })
+    console.log(res.data);
+    option.series[0].data = res.data.data;
+    option.series[0].links = res.data.links;
+    option.series[0].data.forEach(item=>{
+      switch (item.type){
+        case 'SELF':
+          item.itemStyle = {
+            color: '#1F578F'
+          }
+          break;
+        case 'INSTITUTION_RELATED':
+          item.itemStyle = {
+            color: '#1F578F'
+          }
+          break;
+        case 'WORK_RELATED':
+          item.itemStyle = {
+            color: '#3299b1'
+          }
+          break;
+      }
+
+    })
+    option.series[0].links.forEach(item=>{
+      item.lineStyle = {
+        normal: {
+          curveness: 0.05
+        }
+      };
+      // item.force =
+    })
+    console.log(option.series[0]);
+    setTimeout(()=>{
+      chart.setOption(option);
+    },100);
+  }
+
 })
 </script>
