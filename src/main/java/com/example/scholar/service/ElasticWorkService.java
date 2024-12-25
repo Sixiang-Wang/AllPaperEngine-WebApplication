@@ -3,6 +3,7 @@ package com.example.scholar.service;
 
 import com.example.scholar.domain.openalexElasticsearch.Authors;
 import com.example.scholar.domain.openalexElasticsearch.Works;
+import com.example.scholar.dto.WorkSpecificResultDto;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.search.suggest.Suggest;
@@ -65,7 +66,7 @@ public interface ElasticWorkService {
      *
      */
 
-    SearchResponse advancedSearch(
+    List<WorkSpecificResultDto> advancedSearch(
             List<String> andTitles,List<Boolean> andTitlesFuzzy, List<String> orTitles,List<Boolean> orTitlesFuzzy, List<String> notTitles,List<Boolean> notTitlesFuzzy,
             List<String> andTopics,List<Boolean> andTopicsFuzzy, List<String> orTopics,List<Boolean> orTopicsFuzzy, List<String> notTopics,List<Boolean> notTopicsFuzzy,
             List<String> andAuthors,List<Boolean> andAuthorsFuzzy, List<String> orAuthors,List<Boolean> orAuthorsFuzzy, List<String> notAuthors,List<Boolean> notAuthorsFuzzy,//author名字

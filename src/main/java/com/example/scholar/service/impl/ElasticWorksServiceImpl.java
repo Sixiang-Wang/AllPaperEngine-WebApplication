@@ -1,10 +1,18 @@
 package com.example.scholar.service.impl;
 
+import com.example.scholar.dao.AuthorMapper;
 import com.example.scholar.dao.SearchedWorkMapper;
+import com.example.scholar.domain.openalex.Author;
 import com.example.scholar.domain.openalexElasticsearch.Authors;
 import com.example.scholar.domain.openalexElasticsearch.Works;
+import com.example.scholar.dto.AuthorResultDto;
+import com.example.scholar.dto.WorkAuthorResultDto;
+import com.example.scholar.dto.WorkResultDto;
+import com.example.scholar.dto.WorkSpecificResultDto;
 import com.example.scholar.repository.ElasticSearchRepository;
 import com.example.scholar.service.ElasticWorkService;
+import com.example.scholar.util.AbstractRestore;
+import com.example.scholar.util.JsonDisposer;
 import com.example.scholar.util.SQLAuthorBuilder;
 import com.example.scholar.util.SQLInstitutionBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -69,7 +77,8 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
     private ElasticWorkService elasticWorkService;
 
 
-
+    @Resource
+    private AuthorMapper authorMapper;
 
     private RestHighLevelClient client;
 
@@ -77,7 +86,7 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         this.client = client;
     }
 
-    public SearchResponse advancedSearch(List<String> andTitles,List<Boolean> andTitlesFuzzy, List<String> orTitles,List<Boolean> orTitlesFuzzy, List<String> notTitles,List<Boolean> notTitlesFuzzy,
+    public List<WorkSpecificResultDto> advancedSearch(List<String> andTitles,List<Boolean> andTitlesFuzzy, List<String> orTitles,List<Boolean> orTitlesFuzzy, List<String> notTitles,List<Boolean> notTitlesFuzzy,
                                          List<String> andTopics,List<Boolean> andTopicsFuzzy, List<String> orTopics,List<Boolean> orTopicsFuzzy, List<String> notTopics,List<Boolean> notTopicsFuzzy,
                                          List<String> andAuthors,List<Boolean> andAuthorsFuzzy, List<String> orAuthors,List<Boolean> orAuthorsFuzzy, List<String> notAuthors,List<Boolean> notAuthorsFuzzy,//author名字
                                          List<String> andFirstAuthors,List<Boolean> andFirstAuthorsFuzzy, List<String> orFirstAuthors,List<Boolean> orFirstAuthorsFuzzy, List<String> notFirstAuthors,List<Boolean> notFirstAuthorsFuzzy,
@@ -245,10 +254,10 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         BoolQueryBuilder boolQuery2 = QueryBuilders.boolQuery();
         searchSourceBuilder2.size(20);
 
-        //searchSourceBuilder3 boolQuery2 for worksauthorshipsindex
+        //searchSourceBuilder3 boolQuery3 for worksauthorshipsindex to get authorIds by workId
         SearchSourceBuilder searchSourceBuilder3 = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery3 = QueryBuilders.boolQuery();
-        searchSourceBuilder2.size(20);
+        searchSourceBuilder3.size(20);
 
 
         //searchSourceBuilder4 boolQuery4 for authors_index for firstAuthor
@@ -512,7 +521,56 @@ public class ElasticWorksServiceImpl implements ElasticWorkService {
         }
 
         System.out.print(searchHits);
-        return works;
+        //对于每个search到的work查找他对应的作者,以及abstract
+
+        List<WorkSpecificResultDto>  workSpecificResultDtoList = new ArrayList<>();
+        for (org.elasticsearch.search.SearchHit hit : searchHits.getHits()) {
+            String workId = (String) hit.getSourceAsMap().get("id");
+            WorkSpecificResultDto workSpecificResultDto = new WorkSpecificResultDto();
+            workSpecificResultDto.setDoi((String) hit.getSourceAsMap().get("doi"));
+            workSpecificResultDto.setType((String) hit.getSourceAsMap().get("type"));
+            workSpecificResultDto.setCitedByCount((Integer) hit.getSourceAsMap().get("cited_by_count"));
+            workSpecificResultDto.setAbstractText(AbstractRestore.restoreAbstract((String) hit.getSourceAsMap().get("abstract_inverted_index")));
+            workSpecificResultDto.setTitle((String) hit.getSourceAsMap().get("title"));
+            workSpecificResultDto.setPublicationYear((Integer) hit.getSourceAsMap().get("publication_year"));
+            workSpecificResultDto.setPublicationDate((String) hit.getSourceAsMap().get("publication_date"));
+            workSpecificResultDto.setId(workId);
+            //getAuthorResult
+
+            searchRequestWorksAuthorShips = new SearchRequest("works_authorships_index");
+            //searchSourceBuilder3 boolQuery3 for worksauthorshipsindex to get authorIds by workId
+            searchSourceBuilder3 = new SearchSourceBuilder();
+            boolQuery3 = QueryBuilders.boolQuery();
+            searchSourceBuilder3.size(20);
+            boolQuery3.must(QueryBuilders.matchQuery("work_id", workId));
+            searchSourceBuilder3.query(boolQuery3);
+            searchRequestWorksAuthorShips.source(searchSourceBuilder3);
+            SearchResponse Authors =  client.search(searchRequestWorksAuthorShips, RequestOptions.DEFAULT);
+            SearchHits AuthorHits = Authors.getHits();
+            ArrayList<WorkAuthorResultDto> workAuthorResultDtos = new ArrayList<>();
+            for (org.elasticsearch.search.SearchHit hit1 : AuthorHits.getHits()) {
+                String authorId = (String) hit1.getSourceAsMap().get("author_id");
+                Author author = authorMapper.selectAuthorById(authorId);
+                WorkAuthorResultDto workAuthorResultDto = new WorkAuthorResultDto();
+                AuthorResultDto authorResultDto = new AuthorResultDto();
+                authorResultDto.setAuthorId(authorId);
+                if(author!=null){
+                    authorResultDto.setAuthorName(author.getDisplayName());
+                    authorResultDto.setWorksCount(author.getWorksCount());
+                    authorResultDto.setCitedByCount(author.getCitedByCount());
+                    authorResultDto.setWorksApiUrl(author.getWorksApiUrl());
+                }
+                workAuthorResultDto.setAuthorResultDto(authorResultDto);
+                workAuthorResultDto.setPosition((String) hit1.getSourceAsMap().get("author_position"));
+                workAuthorResultDto.setInstitutionId((String) hit1.getSourceAsMap().get("institution_id"));
+                workAuthorResultDtos.add(workAuthorResultDto);
+            }
+            workSpecificResultDto.setWorkAuthorResultDtos(workAuthorResultDtos);
+            workSpecificResultDtoList.add(workSpecificResultDto);
+        }
+
+        return  workSpecificResultDtoList;
+
     }
 
     public static void main(String[] args) {

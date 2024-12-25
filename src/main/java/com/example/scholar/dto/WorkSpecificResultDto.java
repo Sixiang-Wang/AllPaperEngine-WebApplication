@@ -10,6 +10,7 @@ import java.util.Map;
 @Data
 public class WorkSpecificResultDto {
     private ArrayList<WorkAuthorResultDto> workAuthorResultDtos;
+    private String id;
     private String doi;
     private String title;
     private String abstractText;
