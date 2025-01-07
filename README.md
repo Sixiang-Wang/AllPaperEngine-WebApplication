@@ -4,7 +4,9 @@
 
 # 我要宣布个事！
 
-
+master分支：前端项目
+Backend分支：后端项目
+Manager分支：后台管理系统
 
 > [!NOTE]
 >
