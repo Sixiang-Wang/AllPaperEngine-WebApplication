@@ -1,4 +1,4 @@
-# music-manage
+# manage
 
 > A Vue.js project
 
