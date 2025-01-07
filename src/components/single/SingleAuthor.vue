@@ -21,11 +21,7 @@
             <p>总发文量：{{ worksCount }}</p>
         </div>
 
-        <div class="author-right" >
-            <p>H指数：{{ H_index }}</p>
-            <p>第一作者发文量：{{ firstAuthor }}</p>
-            <p>高影响力论文发文量：{{ highInflu }}</p>
-        </div>
+
     </div>
 
     <!-- <div class="article">

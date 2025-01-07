@@ -79,7 +79,7 @@ const apiUrl = "http://116.204.112.5:1145/hotspot/getTopicsWorksCount";
 const fetchedWordCloudData = ref([]);
 
 const fetchWordCloudData = async () => {
-  console.log("获取词云数据...");
+
   try {
     const response = await httpUtil.get(`/hotspot/getTopicsWorksCount?domainDisplayName=${selectedDomain.value}&fieldDisplayName=${selectedField.value}&subfieldDisplayName=${selectedSubfield.value}`);
 

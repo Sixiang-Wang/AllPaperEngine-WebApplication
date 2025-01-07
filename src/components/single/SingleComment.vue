@@ -22,6 +22,7 @@ const ifMine = ref(false);
 onMounted(async()=>{
   const token = cookieUtil.getCookie("token");
   console.log(props.userId);
+
   const res = await httpUtil.get('/user/validation',{
     userId: props.userId
   },{ Authorization: token});

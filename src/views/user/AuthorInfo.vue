@@ -91,10 +91,17 @@ export default {
           name: data.displayName,
           citedByCount: data.citedByCount,
           worksCount: data.worksCount,
-          firstPublishCount:data.firstPublishCount,
-          highQualityWorkCount:data.highQualityWorkCount,
-          hnumber:data.hnumber,
         };
+
+        const response2 = await httpUtil.get(`/author/getFirstPublishWorkCountByAuthorId?authorId=${id}`);
+        author.value.firstPublishCount = response2.data.getFirstPublishWorkCountByAuthorId;
+
+        const response3 = await httpUtil.get(`/author/getHighQualityWorksCountByAuthorId?authorId=${id}`);
+        author.value.highQualityWorkCount = response3.data.getHighQualityWorksCountByAuthorId;
+
+        const response4 = await httpUtil.get(`/author/getHNumberByAuthorId?authorId=${id}`);
+        console.log(response4)
+        author.value.hnumber = response4.data.getHNumberByAuthorId;
       } catch (error) {
         console.error('获取作者信息错误', error);
       }

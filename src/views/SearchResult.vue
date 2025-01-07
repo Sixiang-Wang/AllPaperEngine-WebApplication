@@ -138,6 +138,7 @@ const search = async () => {
           });
           authorInfos.value.push(authorRes.data.authors);
         }
+
         searchResults.value = authorInfos.value;
       }
       break;
@@ -275,27 +276,120 @@ watch(route, (newRoute) => {
   searchResults.value = newRoute.query.searchResult || [];
   // updateSearchResults();
 });
+//
+// const handleInputChange = async () => {
+//   console.log(searchInput.value)
+//   isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
+//   isSearchingForResearchers = (searchType.value === '6');
+//   isSearchingForInstitutions = (searchType.value === '7');
+//   if (searchInput.value == '') {
+//     showAutoComplete = false;
+//   } else {
+//     showAutoComplete = true;
+//   }
+//
+//   if (searchInput.value.length > 0) {
+//     let res = null;
+//     switch (searchType.value){
+//       case '1':
+//         //主题
+//         res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
+//           searchContent: searchInput.value
+//         });
+//         const titleSuggest1 = res.data.suggestions.suggest.title_suggest;
+//         if(titleSuggest1 && titleSuggest1.length>0){
+//           console.log(titleSuggest1);
+//           suggestions  = titleSuggest1[0].options.map(option => option.text);
+//           showAutoComplete = true;
+//         }else{
+//           showAutoComplete = false;
+//         }
+//         break;
+//
+//       case '2':
+//         //篇名
+//         res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
+//           searchContent: searchInput.value
+//         });
+//         const titleSuggest = res.data.suggestions.suggest.title_suggest;
+//         if(titleSuggest && titleSuggest.length>0){
+//           console.log(titleSuggest);
+//           suggestions  = titleSuggest[0].options.map(option => option.text);
+//           showAutoComplete = true;
+//         }else{
+//           showAutoComplete = false;
+//         }
+//         break;
+//
+//       case '3':
+//         //关键词
+//         res = await httpUtil.get('/elasticSearch/works/autoCompleteKeywordsWithCompletionSuggester', {
+//           searchContent: searchInput.value
+//         });
+//         const keywordstextSuggest = res.data.suggestions.suggest.keywordstextSuggest;
+//         if(keywordstextSuggest && keywordstextSuggest.length>0){
+//           console.log(keywordstextSuggest);
+//           suggestions  = keywordstextSuggest[0].options.map(option => option.text);
+//           showAutoComplete = true;
+//         }else{
+//           showAutoComplete = false;
+//         }
+//         break;
+//
+//       case '4':
+//         //高级检索
+//         res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
+//         console.log(res.data);
+//         break;
+//
+//       case '5':
+//         //学者
+//         // res = await httpUtil.get('/elasticSearch/works/autoCompleteScholarWithCompletionSuggester', { //接口todo
+//         //   searchContent: searchInput.value
+//         // });
+//         // const scholarSuggest = res.data.suggestions.suggest.scholarSuggest;
+//         // if(scholarSuggest && scholarSuggest.length>0){
+//         //   console.log(scholarSuggest);
+//         //   suggestions  = scholarSuggest[0].options.map(option => option.text);
+//         //   showAutoComplete = true;
+//         // }else{
+//         //   showAutoComplete = false;
+//         // }
+//         totalLength.value = authorInfos.value.length;
+//         break;
+//
+//       case '7':
+//         //机构
+//         totalLength.value = searchResults.value.length;
+//     }
+//
+//   } else {
+//     autocompleteSuggestions = [];
+//     showAutoComplete = false;
+//   }
+// };
 
 const handleInputChange = async () => {
+  console.log('handleInputChange working');
   console.log(searchInput.value)
-  isSearchingForAuthors = (searchType.value === '5'); // 设置查询类型
-  isSearchingForResearchers = (searchType.value === '6');
-  isSearchingForInstitutions = (searchType.value === '7');
   if (searchInput.value == '') {
     showAutoComplete = false;
   } else {
     showAutoComplete = true;
   }
-
+  console.log(searchInput.value.length)
+  console.log(showAutoComplete)
   if (searchInput.value.length > 0) {
     let res = null;
     switch (searchType.value){
       case '1':
-        //主题
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
-          searchContent: searchInput.value 
+        //篇名
+        res = await httpUtil.get('/elasticSearch/works/autoCompletionWithCompletionSuggester', {
+          searchContent: searchInput.value
         });
+        console.log(res.data);
         const titleSuggest1 = res.data.suggestions.suggest.title_suggest;
+        console.log(titleSuggest1);
         if(titleSuggest1 && titleSuggest1.length>0){
           console.log(titleSuggest1);
           suggestions  = titleSuggest1[0].options.map(option => option.text);
@@ -304,70 +398,48 @@ const handleInputChange = async () => {
           showAutoComplete = false;
         }
         break;
-
       case '2':
-        //篇名
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteTitleWithCompletionSuggester', {
-          searchContent: searchInput.value 
+        // 学者
+        res = await httpUtil.get('/elasticSearch/authors/autoCompleteAuthorsWithCompletionSuggester', {
+          searchContent: searchInput.value
         });
-        const titleSuggest = res.data.suggestions.suggest.title_suggest;
-        if(titleSuggest && titleSuggest.length>0){
-          console.log(titleSuggest);
-          suggestions  = titleSuggest[0].options.map(option => option.text);
+        console.log(res.data);
+        const authorSuggest1 = res.data.suggestions.suggest.display_name_suggest;
+        console.log(authorSuggest1);
+        if(authorSuggest1 && authorSuggest1.length>0){
+          console.log(authorSuggest1);
+          suggestions  = authorSuggest1[0].options.map(option => option.text);
           showAutoComplete = true;
         }else{
           showAutoComplete = false;
         }
         break;
-
-      case '3':
-        //关键词
-        res = await httpUtil.get('/elasticSearch/works/autoCompleteKeywordsWithCompletionSuggester', {
-          searchContent: searchInput.value 
-        });
-        const keywordstextSuggest = res.data.suggestions.suggest.keywordstextSuggest;
-        if(keywordstextSuggest && keywordstextSuggest.length>0){
-          console.log(keywordstextSuggest);
-          suggestions  = keywordstextSuggest[0].options.map(option => option.text);
-          showAutoComplete = true;
-        }else{
-          showAutoComplete = false;
-        }
-        break;
-
       case '4':
         //高级检索
         res = await httpUtil.post('/elasticSearch/works/AdvancedSearch', JSON.parse(sessionStorage.getItem('searchParams')));
         console.log(res.data);
         break;
-
-      case '5':
-        //学者
-        // res = await httpUtil.get('/elasticSearch/works/autoCompleteScholarWithCompletionSuggester', { //接口todo
-        //   searchContent: searchInput.value 
-        // });
-        // const scholarSuggest = res.data.suggestions.suggest.scholarSuggest;
-        // if(scholarSuggest && scholarSuggest.length>0){
-        //   console.log(scholarSuggest);
-        //   suggestions  = scholarSuggest[0].options.map(option => option.text);
-        //   showAutoComplete = true;
-        // }else{
-        //   showAutoComplete = false;
-        // }
-        totalLength.value = authorInfos.value.length;
-        break;
-
       case '7':
         //机构
-        totalLength.value = searchResults.value.length;
+        res = await httpUtil.get('/elasticSearch/institutions/autoCompleteInstitutionsWithCompletionSuggester', {
+          searchContent: searchInput.value
+        });
+        console.log(res.data);
+        const institutionSuggest1 = res.data.suggestions.suggest.display_name_suggest;
+        console.log(institutionSuggest1);
+        if(institutionSuggest1 && institutionSuggest1.length>0){
+          console.log(institutionSuggest1);
+          suggestions  = institutionSuggest1[0].options.map(option => option.text);
+          showAutoComplete = true;
+        }else{
+          showAutoComplete = false;
+        }
+        break;
     }
-    
   } else {
-    autocompleteSuggestions = [];
     showAutoComplete = false;
   }
 };
-
 
 
 
@@ -394,10 +466,10 @@ const leaveSuggestion = (index) => {
     <el-header>
       <div>
         <div style="background-color: transparent !important;">
-          <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容">
+          <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容" @keyup.enter="search" @input="handleInputChange">
             <template #prepend>
               <el-select v-model="searchType" style="width: 115px; background-color:#FFFFFF;">
-                <el-option label="主题" value="1"/>
+                <el-option label="篇名" value="1"/>
                 <el-option label="学者" value="2"/>
                 <el-option label="科研人员" value="3"/>
                 <el-option label="高级检索" value="4"/>

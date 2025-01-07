@@ -414,7 +414,7 @@ const leaveSuggestion = (index) => {
   <el-input v-model="searchInput" class="search-input" placeholder="请输入搜索内容" @keyup.enter="search" @input="handleInputChange">
     <template #prepend>
       <el-select v-model="searchType" style="width: 115px">
-        <el-option label="主题" value="1"/>
+        <el-option label="篇名" value="1"/>
         <el-option label="学者" value="2"/>
         <el-option label="科研人员" value="3"/>
         <el-option label="机构" value="7"/>
@@ -425,10 +425,10 @@ const leaveSuggestion = (index) => {
   <el-button @click="advancedSearch" class="advanced-search-button" type="text">高级检索 ></el-button>
   </div>
   <div v-if="showAutoComplete" class="autocomplete-container">
-    <div 
-      v-for="(suggestion, index) in suggestions" 
-        :key="index" 
-        class="autocomplete-item" 
+    <div
+      v-for="(suggestion, index) in suggestions"
+        :key="index"
+        class="autocomplete-item"
         @click="selectSuggestion(suggestion)"
         @mouseenter="hoverSuggestion(index)"
         @mouseleave="leaveSuggestion(index)"

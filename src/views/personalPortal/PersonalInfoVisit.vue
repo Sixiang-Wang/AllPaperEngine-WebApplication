@@ -11,10 +11,7 @@ import { useRoute } from 'vue-router';
 import Graph from "@/components/Graph.vue";
 
 // avatar 头像
-const avatarUrl = computed(()=>{
-  const avatar = localStorage.getItem('avatar') || '/hahashenmedoumeiyou';
-  return http.getUrlWithoutSlash() + avatar;
-});
+const avatarUrl = ref('');
 
 const userId = ref(0);
 const userName = ref([]);
@@ -68,6 +65,7 @@ onMounted(async () => {
   user = await httpUtil.get("/user/getById", {userId: userId.value});
   console.log(user.data);
   userName.value = user.data.user.name;
+  avatarUrl.value = http.getUrlWithoutSlash()+user.data.user.avatar;
 
 
   let firstPublishWorkCountdata = await httpUtil.get("/author/getFirstPublishWorkCountByAuthorId", {authorId: authorId});
@@ -159,7 +157,7 @@ const simpleSearch = async () => {
         <el-tab-pane label="学术关系网" name="first">
           <Graph :author-id="authorId"/>
         </el-tab-pane>
-        <el-tab-pane label="成果管理" name="second">
+        <el-tab-pane label="成果展示" name="second">
           <el-table :data="myAchievement" stripe @rowDblclick="goToPaper">
             <el-table-column prop="title" label="论文名称" width="400"></el-table-column>
             <el-table-column prop="publicationDate" label="发表时间" width="180"></el-table-column>
